@@ -7,6 +7,7 @@ import {
   START,
   ZONE_INFO,
   impassable,
+  workerFor,
   workersCapacity,
 } from '../config';
 import type {
@@ -122,7 +123,7 @@ function bestBuildingFor(t: Tile, spec: Specialty | null, rnd: () => number): Ti
   if (t.terrain === 'tog' || t.terrain === 'qorli_tog') return 'tower';
   if (t.terrain === 'orman' || t.terrain === 'daryo') return 'none';
   if (t.terrain === 'yaylov') return 'pasture';
-  if (t.terrain === 'unumdor') return 'farm';
+  if (t.terrain === 'unumdor') return rnd() < 0.3 ? 'bog' : 'farm';
   if (spec === 'chorva') return rnd() < 0.6 ? 'pasture' : 'farm';
   if (spec === 'dehqon') return rnd() < 0.75 ? 'farm' : 'pasture';
   return rnd() < 0.5 ? 'farm' : 'pasture';
@@ -193,7 +194,7 @@ function setupAiState(s: GameState, f: Faction, core: Tile, rnd: () => number, s
     t.building = bestBuildingFor(t, f.specialty, rnd);
     t.level = t.building === 'none' ? 0 : 1;
     t.crop = t.terrain === 'chol' ? 'arpa' : 'bugdoy';
-    t.workers = t.building === 'farm' || t.building === 'pasture' || t.building === 'mine' ? 2 + Math.floor(rnd() * 2) : 0;
+    t.workers = workerFor(t.building) ? 2 + Math.floor(rnd() * 2) : 0;
     t.painted = painted;
   }
   // Bitta qal'a chegarada.
@@ -237,7 +238,7 @@ function setupEmpire(s: GameState, f: Faction, provId: number, rnd: () => number
     } else if (t.terrain !== 'daryo') {
       t.building = bestBuildingFor(t, f.style === 'fors' ? 'chorva' : 'dehqon', rnd);
       t.level = t.building === 'none' ? 0 : 2;
-      t.workers = t.building === 'farm' || t.building === 'pasture' || t.building === 'mine' ? 3 : 0;
+      t.workers = workerFor(t.building) ? 3 : 0;
       t.painted = true;
     }
   }
@@ -404,9 +405,8 @@ export function totalArmy(s: GameState, fid: number): Army {
 }
 
 export function assignedWorkers(s: GameState, fid: number, w: WorkerType): number {
-  const b = w === 'dehqon' ? 'farm' : w === 'chopon' ? 'pasture' : 'mine';
   let n = 0;
-  for (const t of s.tiles) if (t.owner === fid && t.building === b) n += t.workers;
+  for (const t of s.tiles) if (t.owner === fid && workerFor(t.building) === w) n += t.workers;
   return n;
 }
 
@@ -421,13 +421,12 @@ export function coreInfo(f: Faction) {
 /** Bo'sh ishchilarni bo'sh o'rinlarga avtomatik biriktiradi. */
 export function autoAssignWorkers(s: GameState, f: Faction): void {
   for (const w of ['dehqon', 'chopon', 'konchi'] as WorkerType[]) {
-    const b = w === 'dehqon' ? 'farm' : w === 'chopon' ? 'pasture' : 'mine';
     let idle = f.workers[w] - assignedWorkers(s, f.id, w);
     if (idle < 0) {
       // Ishchilar kamaygan bo'lsa (talon) plitalardan olib tashlash.
       for (const t of s.tiles) {
         if (idle >= 0) break;
-        if (t.owner !== f.id || t.building !== b) continue;
+        if (t.owner !== f.id || workerFor(t.building) !== w) continue;
         const r = Math.min(t.workers, -idle);
         t.workers -= r;
         idle += r;
@@ -436,7 +435,7 @@ export function autoAssignWorkers(s: GameState, f: Faction): void {
     }
     for (const t of s.tiles) {
       if (idle <= 0) break;
-      if (t.owner !== f.id || t.building !== b) continue;
+      if (t.owner !== f.id || workerFor(t.building) !== w) continue;
       const free = workersCapacity(t.level) - t.workers;
       if (free <= 0) continue;
       const add = Math.min(free, idle);

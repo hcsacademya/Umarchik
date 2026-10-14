@@ -39,7 +39,7 @@ export type UnitCat = 'piyoda' | 'kamonchi' | 'nayzachi' | 'otliq';
 
 export type Army = Partial<Record<UnitType, number>>;
 
-export type BuildingType = 'none' | 'core' | 'farm' | 'pasture' | 'mine' | 'tower' | 'fort' | 'city';
+export type BuildingType = 'none' | 'core' | 'farm' | 'bog' | 'pasture' | 'mine' | 'tower' | 'fort' | 'city';
 
 export type Crop = 'bugdoy' | 'arpa';
 export type FactionKind = 'player' | 'ai' | 'empire';

@@ -81,11 +81,17 @@ export const RES_INFO: Record<ResKey, { name: string; icon: string }> = {
   qoy: { name: 'Qo\'y', icon: '🐑' },
 };
 
-export const WORKER_INFO: Record<WorkerType, { name: string; plural: string; hireCost: number; building: BuildingType }> = {
-  dehqon: { name: 'Dehqon', plural: 'Dehqonlar', hireCost: 20, building: 'farm' },
-  chopon: { name: 'Cho\'pon', plural: 'Cho\'ponlar', hireCost: 20, building: 'pasture' },
-  konchi: { name: 'Konchi', plural: 'Konchilar', hireCost: 30, building: 'mine' },
+export const WORKER_INFO: Record<WorkerType, { name: string; plural: string; hireCost: number }> = {
+  dehqon: { name: 'Dehqon', plural: 'Dehqonlar', hireCost: 20 },
+  chopon: { name: 'Cho\'pon', plural: 'Cho\'ponlar', hireCost: 20 },
+  konchi: { name: 'Konchi', plural: 'Konchilar', hireCost: 30 },
 };
+
+/** Qaysi binoda qaysi ishchi ishlaydi. */
+const WORKPLACE: Partial<Record<BuildingType, WorkerType>> = { farm: 'dehqon', bog: 'dehqon', pasture: 'chopon', mine: 'konchi' };
+export function workerFor(b: BuildingType): WorkerType | null {
+  return WORKPLACE[b] ?? null;
+}
 
 export interface UnitDef {
   name: string;
@@ -184,6 +190,7 @@ export interface BuildingDef {
 
 export const BUILDINGS: Record<Exclude<BuildingType, 'none' | 'core' | 'city'>, BuildingDef> = {
   farm: { name: 'Ekinzor', costKumush: 25, maxLevel: 5, allowed: ['tekislik', 'unumdor', 'vodiy', 'yaylov', 'chol'], desc: 'Dehqonlar don yetishtiradi' },
+  bog: { name: 'Bog\'', costKumush: 45, maxLevel: 5, allowed: ['tekislik', 'unumdor', 'vodiy'], desc: 'Devorli mevali bog\': dehqonlar ekinzordan ko\'proq oziq-ovqat oladi' },
   pasture: { name: 'Yaylov (qo\'ra)', costKumush: 25, maxLevel: 5, allowed: ['tekislik', 'vodiy', 'yaylov', 'chol', 'unumdor'], desc: 'Cho\'ponlar qo\'y boqadi' },
   mine: { name: 'Kon', costKumush: 45, maxLevel: 5, allowed: ['tog', 'qorli_tog'], needsDeposit: false, desc: 'Konchilar kumush qazadi (tog\' yoki kon joyi)' },
   tower: { name: 'Kuzatuv minorasi', costKumush: 70, maxLevel: 5, allowed: null, desc: 'Hujum haqida ertaroq va aniqroq xabar' },

@@ -166,5 +166,25 @@
   "file": "core_2.webp",
   "scale": 0.8,
   "anchorY": 0.8
+ },
+ "farm": {
+  "file": "farm.webp",
+  "scale": 1.04,
+  "anchorY": 0.537
+ },
+ "bog": {
+  "file": "bog.webp",
+  "scale": 1.04,
+  "anchorY": 0.557
+ },
+ "pasture": {
+  "file": "pasture.webp",
+  "scale": 1.04,
+  "anchorY": 0.545
+ },
+ "mine": {
+  "file": "mine.webp",
+  "scale": 1.04,
+  "anchorY": 0.562
  }
 }

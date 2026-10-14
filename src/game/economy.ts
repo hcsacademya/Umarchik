@@ -15,6 +15,7 @@ import {
   impassable,
   levelMult,
   omborProtect,
+  workerFor,
   upgradeCost,
   workersCapacity,
 } from '../config';
@@ -54,7 +55,7 @@ function costText(cost: Partial<Record<ResKey, number>>): string {
 // ---------------- Ishlab chiqarish ----------------
 
 export function tileGoods(t: Tile): Goods | null {
-  if (t.building === 'farm') return 'don';
+  if (t.building === 'farm' || t.building === 'bog') return 'don';
   if (t.building === 'pasture') return 'qoy';
   if (t.building === 'mine') return 'kumush';
   return null;
@@ -72,6 +73,10 @@ export function tileProduction(s: GameState, t: Tile): number {
     if (t.crop === 'arpa') m = 0.75 + m * 0.25; // arpa kambag'al yerda ham o'sadi
     else if (t.terrain === 'unumdor' || t.terrain === 'vodiy') m *= 1.1;
     return t.workers * ECON.farmRate * m * lm * levelMult(f.workerLevels.dehqon) * starve;
+  }
+  if (t.building === 'bog') {
+    const tm: Partial<Record<Tile['terrain'], number>> = { unumdor: 1.45, vodiy: 1.35, tekislik: 1.15 };
+    return t.workers * ECON.farmRate * 1.2 * (tm[t.terrain] ?? 1) * lm * levelMult(f.workerLevels.dehqon) * starve;
   }
   if (t.building === 'pasture') {
     const tm: Partial<Record<Tile['terrain'], number>> = { yaylov: 1.5, vodiy: 1.1, tekislik: 1.0, unumdor: 0.9, chol: 0.6 };
@@ -376,11 +381,11 @@ export function hireWorker(s: GameState, w: WorkerType): ActionResult {
 
 export function changeTileWorkers(s: GameState, t: Tile, delta: number): ActionResult {
   const f = s.factions[s.playerId];
-  const w: WorkerType | null = t.building === 'farm' ? 'dehqon' : t.building === 'pasture' ? 'chopon' : t.building === 'mine' ? 'konchi' : null;
+  const w = workerFor(t.building);
   if (!w || t.owner !== f.id) return fail('Bu yerda ishchi ishlamaydi');
   if (delta > 0) {
     let assigned = 0;
-    for (const o of s.tiles) if (o.owner === f.id && o.building === t.building) assigned += o.workers;
+    for (const o of s.tiles) if (o.owner === f.id && workerFor(o.building) === w) assigned += o.workers;
     if (assigned >= f.workers[w]) return fail(`Bo'sh ${WORKER_INFO[w].name.toLowerCase()} yo'q — yollang`);
     if (t.workers >= workersCapacity(t.level)) return fail('Bu ishxona to\'la — darajasini oshiring');
     t.workers++;

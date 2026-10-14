@@ -18,6 +18,7 @@ import {
   levelMult,
   upgradeCost,
   visualTier,
+  workerFor,
   workersCapacity,
 } from '../config';
 import { armyStrength, sideMult, hasWall } from '../game/combat';
@@ -197,7 +198,7 @@ export class UI {
     const p = this.p;
     const c = dailyCosts(s, p);
     let donProd = 0;
-    for (const t of s.tiles) if (t.owner === p.id && t.building === 'farm') donProd += tileProduction(s, t);
+    for (const t of s.tiles) if (t.owner === p.id && tileGoods(t) === 'don') donProd += tileProduction(s, t);
     const setRes = (k: string, v: string, delta?: number, warn = false) => {
       const el = this.resEls[k];
       (el.querySelector('.v') as HTMLElement).textContent = v;
@@ -446,7 +447,7 @@ export class UI {
       body.append(h('div', { class: 'sec' }, `${d.name} · ${t.level}-daraja`), h('div', { class: 'note' }, d.desc));
       const g = tileGoods(t);
       if (g) {
-        const w: WorkerType = t.building === 'farm' ? 'dehqon' : t.building === 'pasture' ? 'chopon' : 'konchi';
+        const w = workerFor(t.building) as WorkerType;
         const prod = tileProduction(s, t);
         body.append(
           h(
@@ -887,8 +888,7 @@ export class UI {
         const lvl = p.workerLevels[w];
         const cost = upgradeCost(lvl + 1);
         let assigned = 0;
-        const b = WORKER_INFO[w].building;
-        for (const t of s.tiles) if (t.owner === p.id && t.building === b) assigned += t.workers;
+        for (const t of s.tiles) if (t.owner === p.id && workerFor(t.building) === w) assigned += t.workers;
         cards.append(
           h(
             'div',

@@ -1,4 +1,4 @@
-import { GAME, UNITS, ZONE_INFO, impassable } from '../config';
+import { GAME, UNITS, ZONE_INFO, impassable, workerFor } from '../config';
 import type { Army, Faction, GameState, MarchPurpose, MarchingArmy, PendingBattle, Tile, UnitType, WorkerType } from '../types';
 import { armyAdd, armyCount, armyEmpty, armyEntries, clamp, fmt } from '../util';
 import { DIRS4, neighbors4, tileAt } from '../world/mapgen';
@@ -414,7 +414,7 @@ function checkCaptures(s: GameState): void {
 }
 
 function workerTypeOf(t: Tile): WorkerType | null {
-  return t.building === 'farm' ? 'dehqon' : t.building === 'pasture' ? 'chopon' : t.building === 'mine' ? 'konchi' : null;
+  return workerFor(t.building);
 }
 
 function transferTile(s: GameState, t: Tile, newOwner: number, garrison: Army): void {

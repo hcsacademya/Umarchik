@@ -327,7 +327,7 @@ export class MapView {
         key = `city_${f?.style ?? 'rim'}`;
         break;
       case 'farm':
-        key = t.crop === 'arpa' ? 'farm_arpa' : 'farm';
+        key = t.crop === 'arpa' && getAsset('farm_arpa') ? 'farm_arpa' : 'farm';
         break;
       default:
         key = t.building;
@@ -345,7 +345,8 @@ export class MapView {
       case 'city':
         return fromSprite(citySprite(f?.style ?? 'rim', color));
       case 'farm':
-        return fromSprite(farmSprite(t.crop, t.level));
+      case 'bog':
+        return fromSprite(farmSprite(t.building === 'bog' ? 'arpa' : t.crop, t.level));
       case 'pasture':
         return fromSprite(pastureSprite(t.level));
       case 'mine':

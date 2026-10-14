@@ -8,6 +8,7 @@ art/ papkasidagi asl rasmlarni o'yin uchun tayyorlaydi:
 
 O'rnatish:  pip install rembg onnxruntime scipy pillow numpy
 Ishga tushirish (loyiha ildizidan):  python tools/prepare_assets.py
+Faqat ayrim rasmlar:                  python tools/prepare_assets.py ishxonalar umumiy_xarita
 """
 import json
 import os
@@ -55,6 +56,8 @@ SPEC = [
     ('qarorgoh_1', 'building', 'core_1'),
     ('poytaxt_rim', 'building', 'capital_rim'),
     ('poytaxt_fors', 'building', 'capital_fors'),
+    # 2x2 varaq: ekinzor, bog', yaylov, kon — romb plitalar
+    ('ishxonalar.webp', 'tiles2x2', [['farm', 'bog'], ['pasture', 'mine']]),
 ]
 
 # Bir rasmni bir nechta kalit ishlatadi.
@@ -111,7 +114,8 @@ def split_cols(im, n):
 
 
 def split_rows(im, n):
-    return [p.rotate(90, expand=True) for p in split_cols(im.rotate(-90, expand=True), n)]
+    # -90° burilganda pastki qator chapga tushadi — tartibni tiklash uchun teskari.
+    return [p.rotate(90, expand=True) for p in split_cols(im.rotate(-90, expand=True), n)][::-1]
 
 
 def largest_part(im):
@@ -154,6 +158,14 @@ def portrait(im):
     return crop.resize((PORTRAIT, PORTRAIT), Image.LANCZOS)
 
 
+def tile_spec(im):
+    """Romb plitali rasm: eni plita eniga teng, markazi rombning o'rtasi."""
+    w, h = im.size
+    thick = 0.045 * w  # tuproq qirrasi
+    anchor_from_bottom = thick + w * 0.25
+    return dict(scale=1.04, anchorY=round(1 - anchor_from_bottom / h, 3))
+
+
 def save(im, key, manifest, extra=None):
     fn = f'{key}.webp'
     im.save(os.path.join(OUT, fn), 'WEBP', quality=86, method=6)
@@ -176,8 +188,12 @@ def main():
             for k, v in json.load(fh).items():
                 if not k.startswith('_'):
                     manifest[k] = v
+    only = set(sys.argv[1:])
     for name, kind, keys in SPEC:
-        path = os.path.join(ART, name + '.jpg')
+        base = os.path.splitext(name)[0]
+        if only and base not in only:
+            continue
+        path = os.path.join(ART, name if '.' in name else name + '.jpg')
         print('…', name)
         im = cutout(path)
         if kind == 'single':
@@ -196,6 +212,12 @@ def main():
             for r, row in enumerate(rows):
                 for c, part in enumerate(split_cols(bbox_crop(row), 4)):
                     figure_out(part, keys[r][c], manifest)
+        elif kind == 'tiles2x2':
+            rows = split_rows(bbox_crop(im), 2)
+            for r, row in enumerate(rows):
+                for c, part in enumerate(split_cols(bbox_crop(row), 2)):
+                    b = fit(bbox_crop(largest_part(part)), max_w=480)
+                    save(b, keys[r][c], manifest, tile_spec(b))
         elif kind == 'building':
             b = fit(bbox_crop(im), max_w=760 if keys.startswith('capital') else 560)
             save(b, keys, manifest, BUILDING_SPEC.get(keys))
@@ -207,6 +229,12 @@ def main():
         pa, pt = alias.replace('unit_', 'portrait_'), target.replace('unit_', 'portrait_')
         if pt in manifest:
             manifest[pa] = manifest[pt]
+
+    if only and 'umumiy_xarita' not in only:
+        with open(old_path, 'w') as fh:
+            json.dump(manifest, fh, ensure_ascii=False, indent=1)
+        print('tayyor:', len(manifest) - 1, 'kalit')
+        return
 
     # Xarita
     print('… umumiy_xarita')
