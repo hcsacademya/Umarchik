@@ -1,0 +1,10 @@
+{
+  "name": "Tarixiy strategiya",
+  "short_name": "Strategiya",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#1b140d",
+  "theme_color": "#2a1d12",
+  "icons": []
+}
