@@ -2,7 +2,6 @@ import { GAME, TERRAIN_INFO } from '../config';
 import type { GameState, Tile } from '../types';
 import { tileRand } from '../util';
 import { tileAt } from '../world/mapgen';
-import { getAsset } from './assets';
 import { diamondPath, shade, tileCenter, TH, TW, WORLD_H, WORLD_W } from './iso';
 import { sparkle } from './sprites';
 
@@ -11,33 +10,30 @@ import { sparkle } from './sprites';
  * va viloyat chegaralari). Har kadrda faqat shu rasm siljitiladi.
  */
 export function renderTerrainLayer(s: GameState): HTMLCanvasElement {
+  // Yarim o'lchamda (telefon xotirasi uchun); chizishda 2 barobar kattalashtiriladi.
   const c = document.createElement('canvas');
-  c.width = WORLD_W;
-  c.height = WORLD_H;
+  c.width = Math.ceil(WORLD_W / 2);
+  c.height = Math.ceil(WORLD_H / 2);
   const ctx = c.getContext('2d')!;
+  ctx.scale(0.5, 0.5);
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
 
-  const bg = getAsset('map_background');
-  if (bg) {
-    // Tayyor umumiy xarita rasmi berilgan bo'lsa — uni fon qilib qo'yamiz.
-    ctx.drawImage(bg.img, 0, 0, WORLD_W, WORLD_H);
-  } else {
-    // 1) asosiy romblar
-    for (let sum = 0; sum <= GAME.mapW + GAME.mapH - 2; sum++) {
-      for (let x = 0; x <= sum; x++) {
-        const y = sum - x;
-        const t = tileAt(s.tiles, x, y);
-        if (t) baseTile(ctx, s, t);
-      }
+  // Bu qatlam faqat umumiy xarita rasmi yuklanmaganda ishlatiladi.
+  // 1) asosiy romblar
+  for (let sum = 0; sum <= GAME.mapW + GAME.mapH - 2; sum++) {
+    for (let x = 0; x <= sum; x++) {
+      const y = sum - x;
+      const t = tileAt(s.tiles, x, y);
+      if (t && t.terrain !== 'tashqi') baseTile(ctx, s, t);
     }
-    // 2) bezaklar (orqadan oldinga)
-    for (let sum = 0; sum <= GAME.mapW + GAME.mapH - 2; sum++) {
-      for (let x = 0; x <= sum; x++) {
-        const y = sum - x;
-        const t = tileAt(s.tiles, x, y);
-        if (t) decorate(ctx, t);
-      }
+  }
+  // 2) bezaklar (orqadan oldinga)
+  for (let sum = 0; sum <= GAME.mapW + GAME.mapH - 2; sum++) {
+    for (let x = 0; x <= sum; x++) {
+      const y = sum - x;
+      const t = tileAt(s.tiles, x, y);
+      if (t && t.terrain !== 'tashqi') decorate(ctx, t);
     }
   }
   // 3) viloyat chegaralari — oltin nuqtali chiziq
@@ -70,6 +66,7 @@ export function renderTerrainLayer(s: GameState): HTMLCanvasElement {
 function provinceBorders(ctx: CanvasRenderingContext2D, s: GameState, off: number): void {
   ctx.beginPath();
   for (const t of s.tiles) {
+    if (t.terrain === 'tashqi') continue;
     const { x: cx, y: cy } = tileCenter(t.x, t.y);
     const T = [cx, cy - TH / 2 + off];
     const Rr = [cx + TW / 2, cy + off];
@@ -77,11 +74,11 @@ function provinceBorders(ctx: CanvasRenderingContext2D, s: GameState, off: numbe
     const L = [cx - TW / 2, cy + off];
     const r = tileAt(s.tiles, t.x + 1, t.y);
     const d = tileAt(s.tiles, t.x, t.y + 1);
-    if (r && r.province !== t.province) {
+    if (r && r.province !== t.province && r.terrain !== 'tashqi') {
       ctx.moveTo(Rr[0], Rr[1]);
       ctx.lineTo(B[0], B[1]);
     }
-    if (d && d.province !== t.province) {
+    if (d && d.province !== t.province && d.terrain !== 'tashqi') {
       ctx.moveTo(B[0], B[1]);
       ctx.lineTo(L[0], L[1]);
     }

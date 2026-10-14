@@ -14,6 +14,7 @@ import {
   WORKER_INFO,
   ZONE_INFO,
   buildingUpgradeCost,
+  impassable,
   levelMult,
   upgradeCost,
   visualTier,
@@ -59,6 +60,7 @@ import { coreInfo, coreTile, ownedTiles, soldierCount, totalArmy, totalWorkers }
 import type { MapView } from '../render/mapView';
 import type { Army, Faction, GameState, Goods, MarchingArmy, PendingBattle, Tile, UnitType, WorkerType } from '../types';
 import { armyCount, armyEntries, dayLabel, fmt, tileRand } from '../util';
+import { getAsset } from '../render/assets';
 import { btn, h, levelDots, unitEmoji, unitIcon, workerIcon } from './dom';
 
 export interface App {
@@ -382,7 +384,7 @@ export class UI {
   private sideUnowned(body: HTMLElement, t: Tile): void {
     const s = this.s;
     body.append(h('div', { class: 'note' }, TERRAIN_INFO[t.terrain].desc));
-    if (t.terrain === 'kol') return;
+    if (impassable(t)) return;
     const r = canBuyTile(s, t);
     const price = landPrice(s, t);
     body.append(
@@ -408,6 +410,8 @@ export class UI {
     const p = this.p;
     if (t.building === 'core') {
       const info = coreInfo(p);
+      const pic = getAsset(`core_${p.coreLevel}`);
+      if (pic) body.append(h('img', { class: 'core-pic', src: pic.img.src, alt: info.name }));
       body.append(
         h('div', { class: 'sec' }, `Qarorgoh: ${info.name} (${p.coreLevel}/4)`),
         h('div', { class: 'kv' }, h('span', null, 'Yerlar'), h('b', null, `${ownedTiles(s, p.id).length}/${info.maxTiles}`)),
@@ -448,7 +452,7 @@ export class UI {
           h(
             'div',
             { class: 'row between' },
-            h('span', { class: 'row' }, workerIcon(w), h('b', null, `${t.workers}/${workersCapacity(t.level)} ${WORKER_INFO[w].plural.toLowerCase()}`)),
+            h('span', { class: 'row' }, workerIcon(w, p.workerLevels[w]), h('b', null, `${t.workers}/${workersCapacity(t.level)} ${WORKER_INFO[w].plural.toLowerCase()}`)),
             h('span', { class: 'stepper' }, btn('−', () => this.result(changeTileWorkers(s, t, -1)), 'small'), btn('+', () => this.result(changeTileWorkers(s, t, 1)), 'small')),
           ),
           h('div', { class: 'kv' }, h('span', null, 'Kunlik mahsulot'), h('b', null, `${prod.toFixed(1)} ${RES_INFO[g].name.toLowerCase()}`)),
@@ -576,7 +580,7 @@ export class UI {
           h(
             'div',
             { class: 'row between' },
-            h('span', { class: 'row' }, unitIcon(k), h('span', null, h('b', null, UNITS[k].name), h('span', { class: 'note' }, ` (${n} bor, ${this.p.unitLevels[k]}-daraja)`))),
+            h('span', { class: 'row' }, unitIcon(k, this.p.unitLevels[k]), h('span', null, h('b', null, UNITS[k].name), h('span', { class: 'note' }, ` (${n} bor, ${this.p.unitLevels[k]}-daraja)`))),
             h(
               'span',
               { class: 'stepper' },
@@ -715,7 +719,7 @@ export class UI {
           h(
             'div',
             { class: `card ${ok ? '' : 'locked'}` },
-            h('h4', null, unitIcon(k), d.name, h('span', { class: 'chip' }, `${p.unitLevels[k]}-dar.`)),
+            h('h4', null, unitIcon(k, p.unitLevels[k]), d.name, h('span', { class: 'chip' }, `${p.unitLevels[k]}-dar.`)),
             h('div', { class: 'stats' }, `❤ ${Math.round(d.hp * levelMult(p.unitLevels[k]))} · ⚔ ${Math.round(d.atk * levelMult(p.unitLevels[k]))} · 🛡 ${d.def} · ${d.range > 60 ? 'uzoqdan' : 'yaqindan'}`),
             h('div', { class: 'stats' }, `Narx: ●${d.costBronza}${d.costKumush ? ` ◈${d.costKumush}` : ''} · maosh ●${d.wage}/kun · ovqat ${d.food}`),
             ok
@@ -739,7 +743,7 @@ export class UI {
       const army = totalArmy(s, p.id);
       body.append(
         h('div', { class: 'sec' }, 'Amir'),
-        h('div', { class: 'row' }, unitIcon('amir'), h('span', null, p.amirWoundedUntil > 0 ? `Amir yarador — ${Math.ceil((p.amirWoundedUntil - s.day) * 24)} soatdan keyin qaytadi` : 'Amir — siz, davlat boshlig\'i. Jangda yonidagilarni ruhlantiradi.')),
+        h('div', { class: 'row' }, unitIcon('amir', p.unitLevels.amir, 'big'), h('span', null, p.amirWoundedUntil > 0 ? `Amir yarador — ${Math.ceil((p.amirWoundedUntil - s.day) * 24)} soatdan keyin qaytadi` : 'Amir — siz, davlat boshlig\'i. Jangda yonidagilarni ruhlantiradi.')),
         h('div', { class: 'sec' }, 'Qo\'mondon'),
         h('div', { class: 'note' }, `Zirhlangan otliq guruh boshlig'i: 1 qo'mondon, ${UNLOCK.commanderSquad.zirhli_otliq} zirhli otliq, ${UNLOCK.commanderSquad.zirhli_nayzachi} zirhli nayzachi.`),
       );
@@ -762,7 +766,7 @@ export class UI {
           const d = UNITS[k];
           const have = (army[k] ?? 0) > 0;
           cards.append(
-            h('div', { class: 'card' }, h('h4', null, unitIcon(k), d.name), h('div', { class: 'stats' }, `●${d.costBronza} ◈${d.costKumush}`), have ? h('div', { class: 'note good' }, 'Xizmatda') : btn('Yollash', () => this.result(hireSpecial(s, k)), 'small gold')),
+            h('div', { class: 'card' }, h('h4', null, unitIcon(k, p.unitLevels[k]), d.name), h('div', { class: 'stats' }, `●${d.costBronza} ◈${d.costKumush}`), have ? h('div', { class: 'note good' }, 'Xizmatda') : btn('Yollash', () => this.result(hireSpecial(s, k)), 'small gold')),
           );
         }
         body.append(cards);
@@ -869,7 +873,7 @@ export class UI {
           h(
             'div',
             { class: 'card' },
-            h('h4', null, unitIcon(k), UNITS[k].name, h('span', { class: 'chip' }, `ko'rinish ${visualTier(lvl)}/4`)),
+            h('h4', null, unitIcon(k, lvl), UNITS[k].name, h('span', { class: 'chip' }, `ko'rinish ${visualTier(lvl)}/4`)),
             levelDots(lvl),
             h('div', { class: 'stats' }, `Kuch: x${levelMult(lvl).toFixed(2)}${lvl < MAX_UPGRADE_LEVEL ? ` → x${levelMult(lvl + 1).toFixed(2)}` : ''}`),
             lvl < MAX_UPGRADE_LEVEL ? btn(`⬆ ◈ ${cost}`, () => this.result(upgradeUnit(s, k)), 'small gold', p.res.kumush < cost) : h('div', { class: 'note good' }, 'Eng yuqori daraja'),
@@ -889,7 +893,7 @@ export class UI {
           h(
             'div',
             { class: 'card' },
-            h('h4', null, workerIcon(w), WORKER_INFO[w].plural, h('span', { class: 'chip' }, `${p.workers[w]} (${p.workers[w] - assigned} bo'sh)`)),
+            h('h4', null, workerIcon(w, lvl), WORKER_INFO[w].plural, h('span', { class: 'chip' }, `${p.workers[w]} (${p.workers[w] - assigned} bo'sh)`)),
             levelDots(lvl),
             h('div', { class: 'stats' }, `Unumdorlik: x${levelMult(lvl).toFixed(2)}`),
             h(
@@ -910,7 +914,7 @@ export class UI {
         h(
           'div',
           { class: 'card' },
-          h('h4', null, h('span', { class: 'portrait' }, '🏰'), `Qarorgoh: ${info.name}`),
+          h('h4', null, getAsset(`core_${p.coreLevel}`) ? h('span', { class: 'portrait' }, h('img', { src: getAsset(`core_${p.coreLevel}`)!.img.src, alt: '' })) : h('span', { class: 'portrait' }, '🏰'), `Qarorgoh: ${info.name}`),
           levelDots(p.coreLevel, 4),
           h('div', { class: 'stats' }, `Yer ${info.maxTiles} · ishchi ${info.maxWorkers} · askar ${info.maxSoldiers}`),
           next ? btn(`⬆ ${next.name} (◈${next.costKumush} ●${next.costBronza})`, () => this.result(upgradeCore(s)), 'small gold') : h('div', { class: 'note good' }, 'Eng yuqori daraja'),

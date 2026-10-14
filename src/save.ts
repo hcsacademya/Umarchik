@@ -26,9 +26,5 @@ export function loadGame(): GameState | null {
 }
 
 export function hasSave(): boolean {
-  try {
-    return !!localStorage.getItem(KEY);
-  } catch {
-    return false;
-  }
+  return loadGame() !== null;
 }

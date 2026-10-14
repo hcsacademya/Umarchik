@@ -511,7 +511,7 @@ export class BattleView {
   private drawUnit(ctx: CanvasRenderingContext2D, u: BUnit): void {
     const color = this.colors[u.side];
     const tier = this.tiers[u.side][u.type] ?? 1;
-    const img = getAsset(`unit_${u.type}`);
+    const img = getAsset(`unit_${u.type}_${tier}`) ?? getAsset(`unit_${u.type}`);
     ctx.save();
     ctx.translate(u.x, u.y);
     if (u.retreating) ctx.globalAlpha = 0.75;
@@ -519,13 +519,25 @@ export class BattleView {
     ctx.beginPath();
     ctx.ellipse(0, 1, u.cat === 'otliq' ? 12 : 7, u.cat === 'otliq' ? 4 : 3, 0, 0, Math.PI * 2);
     ctx.fill();
+    if (img) {
+      // Rasmlar bir xil rangda — tomonni oyoq ostidagi rangli halqa ko'rsatadi.
+      ctx.fillStyle = withAlpha(color, 0.6);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.ellipse(0, 1, u.cat === 'otliq' ? 14 : 9, u.cat === 'otliq' ? 5 : 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
     ctx.scale(u.facing, 1);
     const s = u.hero ? 1.55 : 1.2;
     ctx.scale(s, s);
     if (img) {
-      const h = u.cat === 'otliq' ? 34 : 28;
+      const h = u.cat === 'otliq' ? 46 : 38;
       const w = (img.img.width / img.img.height) * h;
-      ctx.drawImage(img.img, -w / 2, -h, w, h);
+      const bob = Math.abs(Math.sin(u.walk * 1.2)) * 1.5;
+      const lunge = u.attackAnim > 0 ? Math.sin((u.attackAnim / 0.3) * Math.PI) * 3 : 0;
+      ctx.drawImage(img.img, -w / 2 + lunge, -h - bob, w, h);
     } else if (u.cat === 'otliq') this.drawRider(ctx, u, color, tier);
     else this.drawFoot(ctx, u, color, tier);
     if (u.hitFlash > 0) {

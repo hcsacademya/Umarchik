@@ -16,9 +16,11 @@ npm run build      # tayyor sayt dist/ papkasida
 
 ## Hozir o'yinda nima bor
 
-- **Xarita**: 40×40 romb plita, 12 viloyat (oltin nuqtali chegaralar). Shimolda qorli tog'lar va
-  kumush konlari, markazdan daryo o'tib janubi-g'arbdagi katta ko'lga quyiladi, g'arbda o'rmon,
-  sharqda yaylov, janubi-sharqda cho'l. Markazda ikki imperiya (Rumiya, Parsiya — vaqtinchalik nomlar).
+- **Xarita**: umumiy xarita rasmi o'yin xaritasi sifatida ishlatiladi. Rasm ustiga romb plitalar
+  to'ri (60×60, shundan ~1450 tasi quruqlik) qo'yilgan; relyef (tog', qor, o'rmon, daryo, ko'l, cho'l,
+  ekinzor) va 16 viloyat (rasmdagi oltin nuqtali chegaralar bo'yicha) rasmdan aniqlangan.
+  Rasmdagi qal'alarda AI davlatlar, markazdagi ikki shaharda imperiyalar (Rumiya, Parsiya —
+  vaqtinchalik nomlar) joylashgan.
 - **Boshlanish**: chet viloyatni tanlaysiz; tosh qal'acha-uycha, 3 dehqon, 2 cho'pon, 4 konchi,
   4 piyoda va Amir. Yonida kichik kon, ekin yeri va yaylov bor. Dastlabki 5 kun himoya.
 - **Yer**: faqat tutash va o'sha viloyatdagi yer sotib olinadi; boshqa viloyatga faqat jang orqali.
@@ -47,9 +49,14 @@ askar kuchi, jang vaqti, egallash taymeri va hokazo.
 
 ## Rasmlar
 
-Hozircha binolar, askarlar va relyefni o'yin kod bilan chizadi. Tayyor rasmlar (qal'a, uy, askar,
-amir, qo'mondon, sarkarda, dehqon…) `public/assets/` papkasiga qo'yiladi va `manifest.json` da
-kalitga bog'lanadi — kod o'zgarmaydi. Kalitlar ro'yxati: [`public/assets/README.md`](public/assets/README.md).
+Asl rasmlar `art/` papkasida (umumiy xarita, ikki imperiya poytaxti, qarorgohning 4 bosqichi,
+Amir, qo'mondon, sarkardalar, piyoda, kamonchi, nayzachi, otliq, dehqon, cho'pon, konchi —
+har biri 4 bosqichda). `python tools/prepare_assets.py` ularni o'yin uchun tayyorlaydi
+(fonni olib tashlash, bo'lish, WebP) va `public/assets/` ga yozadi.
+Yangi rasm qo'shish yoki almashtirish: [`public/assets/README.md`](public/assets/README.md).
+
+Hali rasmi yo'q narsalar (ekinzor, yaylov, kon) kod bilan chiziladi; devor-qal'a va kuzatuv
+minorasi uchun hozircha qarorgoh rasmlari ishlatiladi.
 
 ## Kod tuzilmasi
 
@@ -57,7 +64,7 @@ kalitga bog'lanadi — kod o'zgarmaydi. Kalitlar ro'yxati: [`public/assets/READM
 src/
   config.ts          balans va nomlar
   types.ts           o'yin holati turlari
-  world/mapgen.ts    xarita generatori (relyef, viloyatlar)
+  world/mapgen.ts    xarita (mapData.json dan: relyef, viloyatlar, qal'alar)
   game/state.ts      yangi o'yin, AI davlatlar va imperiyalarni joylash
   game/economy.ts    ishlab chiqarish, bozor, qurilish, yollash, kuchaytirish
   game/sim.ts        vaqt, qo'shin yurishi, AI xatti-harakati, egallash
@@ -65,6 +72,9 @@ src/
   game/battle.ts     taktik jang simulyatsiyasi
   render/            xarita (izometrik), binolar, jang maydoni, rasm slotlari
   ui/                panellar, boshlash ekrani, jang interfeysi
+tools/
+  prepare_assets.py  art/ dagi rasmlarni o'yinga tayyorlash
+  build_map.py       umumiy xarita rasmidan mapData.json yasash
 ```
 
 O'yin mantig'i (`game/`, `world/`) grafikadan alohida — keyinchalik jang sahnasini 3D ga
@@ -72,7 +82,7 @@ O'yin mantig'i (`game/`, `world/`) grafikadan alohida — keyinchalik jang sahna
 
 ## Keyingi qadamlar (rejada)
 
-- Tayyor rasmlarni ulash (zip kelgach).
+- Ekinzor, yaylov, kon, minora, devor uchun alohida rasmlar.
 - Telegram mini app, keyin mobil ilova (Capacitor orqali shu kod bilan).
 - Jang sahnasi 3D, xarita 2D qoladi.
 - Onlayn o'yinchilar, klanlar, olamlar (300 o'yinchi).

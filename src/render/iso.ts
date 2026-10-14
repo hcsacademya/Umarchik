@@ -1,4 +1,5 @@
 import { GAME } from '../config';
+import { MAP } from '../world/mapgen';
 
 export const TW = 96;
 export const TH = 48;
@@ -19,6 +20,12 @@ export function worldToTile(wx: number, wy: number): { x: number; y: number } {
   const a = (wx - ORIGIN_X) / (TW / 2);
   const b = (wy - ORIGIN_Y - TH / 2) / (TH / 2);
   return { x: Math.round((a + b) / 2), y: Math.round((b - a) / 2) };
+}
+
+/** Umumiy xarita rasmining dunyo koordinatalaridagi o'rni. */
+export function mapImageRect(): { x: number; y: number; w: number; h: number } {
+  const S = TW / MAP.grid.tw;
+  return { x: ORIGIN_X - MAP.grid.cx * S, y: ORIGIN_Y - MAP.grid.top * S, w: MAP.image.w * S, h: MAP.image.h * S };
 }
 
 export function diamondPath(ctx: CanvasRenderingContext2D, cx: number, cy: number, w = TW, h = TH): void {

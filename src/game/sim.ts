@@ -1,4 +1,4 @@
-import { GAME, UNITS, ZONE_INFO } from '../config';
+import { GAME, UNITS, ZONE_INFO, impassable } from '../config';
 import type { Army, Faction, GameState, MarchPurpose, MarchingArmy, PendingBattle, Tile, UnitType, WorkerType } from '../types';
 import { armyAdd, armyCount, armyEmpty, armyEntries, clamp, fmt } from '../util';
 import { DIRS4, neighbors4, tileAt } from '../world/mapgen';
@@ -34,6 +34,7 @@ function emit(e: SimEvent): void {
 function moveCost(t: Tile): number {
   switch (t.terrain) {
     case 'kol':
+    case 'tashqi':
       return Infinity;
     case 'daryo':
       return 2;
@@ -56,34 +57,54 @@ export function findPath(s: GameState, from: Tile, to: Tile): { x: number; y: nu
   const start = from.y * W + from.x;
   const goal = to.y * W + to.x;
   dist[start] = 0;
-  // Kichik to'r uchun oddiy ochiq ro'yxat yetarli.
-  const open: number[] = [start];
-  const inOpen = new Uint8Array(N);
-  inOpen[start] = 1;
-  while (open.length) {
-    let bi = 0;
-    for (let i = 1; i < open.length; i++) if (dist[open[i]] < dist[open[bi]]) bi = i;
-    const cur = open[bi];
-    open[bi] = open[open.length - 1];
-    open.pop();
-    inOpen[cur] = 0;
+  // Ikkilik uyum (binary heap): [masofa, indeks]
+  const heap: [number, number][] = [[0, start]];
+  const push = (item: [number, number]) => {
+    heap.push(item);
+    let i = heap.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (heap[p][0] <= heap[i][0]) break;
+      [heap[p], heap[i]] = [heap[i], heap[p]];
+      i = p;
+    }
+  };
+  const pop = (): [number, number] => {
+    const top = heap[0];
+    const last = heap.pop()!;
+    if (heap.length) {
+      heap[0] = last;
+      let i = 0;
+      for (;;) {
+        const l = i * 2 + 1;
+        const r = l + 1;
+        let m = i;
+        if (l < heap.length && heap[l][0] < heap[m][0]) m = l;
+        if (r < heap.length && heap[r][0] < heap[m][0]) m = r;
+        if (m === i) break;
+        [heap[m], heap[i]] = [heap[i], heap[m]];
+        i = m;
+      }
+    }
+    return top;
+  };
+  while (heap.length) {
+    const [d, cur] = pop();
+    if (d > dist[cur]) continue;
     if (cur === goal) break;
     const cx = cur % W;
     const cy = (cur - cx) / W;
     for (const [dx, dy] of DIRS4) {
       const n = tileAt(s.tiles, cx + dx, cy + dy);
       if (!n) continue;
-      const c = moveCost(n);
+      const c = n === to ? 1 : moveCost(n);
       if (!isFinite(c)) continue;
       const ni = n.y * W + n.x;
-      const nd = dist[cur] + c;
+      const nd = d + c;
       if (nd < dist[ni]) {
         dist[ni] = nd;
         prev[ni] = cur;
-        if (!inOpen[ni]) {
-          open.push(ni);
-          inOpen[ni] = 1;
-        }
+        push([nd, ni]);
       }
     }
   }
@@ -563,7 +584,7 @@ function aiGrow(s: GameState, f: Faction): void {
   const cand: Tile[] = [];
   for (const t of own)
     for (const n of neighbors4(s.tiles, t))
-      if (n.owner === -1 && n.province === t.province && n.terrain !== 'kol') cand.push(n);
+      if (n.owner === -1 && n.province === t.province && !impassable(n)) cand.push(n);
   if (cand.length === 0) return;
   const t = cand[Math.floor(R() * cand.length)];
   t.owner = f.id;
@@ -630,7 +651,7 @@ export function canAttack(s: GameState, target: Tile): { ok: boolean; msg: strin
   const enemy = target.capture ? target.capture.by : target.owner;
   if (enemy === p.id && !target.capture) return { ok: false, msg: 'Bu sizning yeringiz' };
   if (enemy < 0) return { ok: false, msg: 'Egasiz yerga hujum qilinmaydi — qo\'shni bo\'lsa sotib oling' };
-  if (target.terrain === 'kol') return { ok: false, msg: 'Ko\'l' };
+  if (impassable(target)) return { ok: false, msg: 'Bu yerga borib bo\'lmaydi' };
   return { ok: true, msg: '' };
 }
 

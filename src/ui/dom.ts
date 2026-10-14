@@ -1,3 +1,4 @@
+import { visualTier } from '../config';
 import { getAsset } from '../render/assets';
 import type { UnitType, WorkerType } from '../types';
 
@@ -59,18 +60,21 @@ const UNIT_EMOJI: Record<UnitType, string> = {
 
 const WORKER_EMOJI: Record<WorkerType, string> = { dehqon: '👨‍🌾', chopon: '🐑', konchi: '⛏️' };
 
-export function unitIcon(k: UnitType): HTMLElement {
-  const a = getAsset(`portrait_${k}`) ?? getAsset(`unit_${k}`);
-  if (a) return h('span', { class: 'portrait' }, h('img', { src: a.img.src, alt: k }));
-  return h('span', { class: 'portrait' }, UNIT_EMOJI[k]);
+/** Portret: daraja bo'yicha ko'rinish bosqichi (1-3, 4-6, 7-9, 10). */
+export function unitIcon(k: UnitType, level = 1, cls = ''): HTMLElement {
+  const t = visualTier(level);
+  const a = getAsset(`portrait_${k}_${t}`) ?? getAsset(`portrait_${k}`) ?? getAsset(`unit_${k}`);
+  if (a) return h('span', { class: `portrait ${cls}` }, h('img', { src: a.img.src, alt: k }));
+  return h('span', { class: `portrait ${cls}` }, UNIT_EMOJI[k]);
 }
 
 export function unitEmoji(k: UnitType): string {
   return UNIT_EMOJI[k];
 }
 
-export function workerIcon(w: WorkerType): HTMLElement {
-  const a = getAsset(`portrait_${w}`) ?? getAsset(`worker_${w}`);
+export function workerIcon(w: WorkerType, level = 1): HTMLElement {
+  const t = visualTier(level);
+  const a = getAsset(`portrait_${w}_${t}`) ?? getAsset(`portrait_${w}`) ?? getAsset(`worker_${w}`);
   if (a) return h('span', { class: 'portrait' }, h('img', { src: a.img.src, alt: w }));
   return h('span', { class: 'portrait' }, WORKER_EMOJI[w]);
 }

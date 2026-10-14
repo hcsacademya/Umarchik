@@ -1,6 +1,17 @@
 # Rasmlar (assets)
 
-O'yin rasm topilmagan joylarni o'zi (kod bilan) chizadi. Tayyor rasmlarni ishlatish uchun:
+Bu papkadagi rasmlar `art/` dagi asl rasmlardan avtomatik tayyorlangan:
+
+```bash
+pip install rembg onnxruntime scipy pillow numpy
+python tools/prepare_assets.py
+```
+
+Skript kulrang fonni olib tashlaydi, 4 bosqichli varaqlarni alohida figuralarga bo'ladi,
+portretlarni qirqadi, WebP qilib shu yerga yozadi va `manifest.json` ni yangilaydi.
+Umumiy xaritadan `src/world/mapData.json` (relyef, viloyatlar, qal'alar) ham yasaladi.
+
+Rasm topilmagan joylarni o'yin o'zi (kod bilan) chizadi. Qo'lda rasm qo'shish uchun:
 
 1. Rasm faylini shu papkaga (`public/assets/`) qo'ying — PNG (shaffof fon) yoki WebP.
 2. `manifest.json` ga kalit va fayl nomini yozing.
@@ -38,9 +49,12 @@ Kengaytirilgan yozuv ham mumkin (o'lcham va joylashuvni sozlash uchun):
 | `mine` | Kon |
 | `tower` | Kuzatuv minorasi |
 | `fort` | Devor va qal'a |
-| `map_background` | Butun xarita foni (ixtiyoriy; xarita generatori bilan mos bo'lishi kerak) |
+| `map_background` | Umumiy xarita (o'yin xaritasi shu rasm; to'r va viloyatlar `tools/build_map.py` bilan yasaladi) |
 
-### Jang maydonidagi askarlar (yon tomondan, o'ngga qaragan)
+### Jang maydonidagi askarlar
+
+Har bir askar uchun 4 ko'rinish bosqichi: `unit_<tur>_1` … `unit_<tur>_4`
+(daraja 1-3, 4-6, 7-9, 10). Bosqichli rasm bo'lmasa `unit_<tur>` ishlatiladi.
 
 `unit_piyoda`, `unit_kamonchi`, `unit_nayzachi`, `unit_otliq`, `unit_zirhli_otliq`, `unit_zirhli_nayzachi`,
 `unit_amir`, `unit_qomondon`, `unit_sarkarda_otliq`, `unit_sarkarda_nayzachi`, `unit_sarkarda_kamonchi`, `unit_sarkarda_piyoda`
@@ -48,5 +62,5 @@ Kengaytirilgan yozuv ham mumkin (o'lcham va joylashuvni sozlash uchun):
 ### Panellardagi portretlar (kvadrat)
 
 `portrait_<askar turi>` (masalan `portrait_amir`, `portrait_qomondon`) va
-`portrait_dehqon`, `portrait_chopon`, `portrait_konchi`.
+`portrait_dehqon`, `portrait_chopon`, `portrait_konchi`; bosqichlilari `portrait_<tur>_<1..4>`.
 Portret berilmasa `unit_…` rasmi, u ham bo'lmasa emoji ishlatiladi.

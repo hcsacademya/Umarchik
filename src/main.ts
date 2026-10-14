@@ -119,7 +119,7 @@ async function main(): Promise<void> {
     ui = new UI(mapLayer, app);
     setScene('map');
     const core = s.factions[s.playerId];
-    requestAnimationFrame(() => map.centerOn(core.coreX, core.coreY, 1));
+    requestAnimationFrame(() => map.centerOn(core.coreX, core.coreY, 0.8));
     if (firstTime) ui.openModal('help');
     ui.refresh();
   };

@@ -8,7 +8,9 @@ export type Terrain =
   | 'qorli_tog'
   | 'chol'
   | 'daryo'
-  | 'kol';
+  | 'kol'
+  /** Xarita tashqarisi (jarlik, bo'shliq) — o'ynalmaydi. */
+  | 'tashqi';
 
 export type Zone = 'chet' | 'orta' | 'markaz';
 
@@ -66,6 +68,8 @@ export interface Tile {
   store: number;
   garrison: Army;
   capture: Capture | null;
+  /** Bino umumiy xarita rasmida chizilgan — ustidan sprite chizilmaydi. */
+  painted?: boolean;
 }
 
 export interface Province {

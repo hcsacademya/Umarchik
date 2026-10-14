@@ -6,6 +6,7 @@ import {
   NAMES,
   START,
   ZONE_INFO,
+  impassable,
   workersCapacity,
 } from '../config';
 import type {
@@ -21,11 +22,11 @@ import type {
   WorkerType,
 } from '../types';
 import { armyCount, makeRng, shuffle } from '../util';
-import { generateMap, neighbors4, screenNorm, tileAt } from '../world/mapgen';
+import { MAP, generateMap, neighbors4, tileAt } from '../world/mapgen';
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
-const BUILDABLE: Terrain[] = ['tekislik', 'unumdor', 'vodiy', 'yaylov', 'chol', 'orman', 'tog'];
+const START_TERRAIN: Terrain[] = ['tekislik', 'unumdor', 'vodiy', 'yaylov', 'chol'];
 
 function emptyLevels(lvl = 1): Record<UnitType, number> {
   const o = {} as Record<UnitType, number>;
@@ -64,33 +65,34 @@ export function makeFaction(id: number, kind: FactionKind, name: string, color: 
   };
 }
 
-/** Viloyatdan qarorgoh uchun joy topadi. */
-function findStartTile(
-  s: GameState,
-  provinceId: number,
-  rnd: () => number,
-  preferOuter: boolean,
-): Tile | null {
+/** Viloyatdan qarorgoh uchun joy topadi: yonida kon, ekin yeri va yaylov bo'lgani afzal. */
+function findStartTile(s: GameState, provinceId: number, rnd: () => number, minCoreDist = 6): Tile | null {
   const cores = s.factions.filter((f) => f.coreX >= 0).map((f) => ({ x: f.coreX, y: f.coreY }));
   let best: Tile | null = null;
   let bestScore = -Infinity;
   for (const t of s.tiles) {
-    if (t.province !== provinceId || t.owner !== -1) continue;
-    if (!BUILDABLE.includes(t.terrain) || t.terrain === 'tog') continue;
-    // Kamida 2 plita viloyat ichida bo'lsin, chegaradan uzoqroq.
-    let inner = 0;
-    for (let dy = -2; dy <= 2; dy++)
-      for (let dx = -2; dx <= 2; dx++) {
-        const n = tileAt(s.tiles, t.x + dx, t.y + dy);
-        if (n && n.province === provinceId && n.owner === -1 && n.terrain !== 'kol') inner++;
-      }
-    if (inner < 18) continue;
+    if (t.province !== provinceId || t.owner !== -1 || t.painted) continue;
+    if (!START_TERRAIN.includes(t.terrain)) continue;
     let minCore = Infinity;
     for (const c of cores) minCore = Math.min(minCore, Math.abs(c.x - t.x) + Math.abs(c.y - t.y));
-    if (minCore < 7) continue;
-    const { sx, sy } = screenNorm(t.x, t.y);
-    const r = Math.abs(sx) + Math.abs(sy);
-    const score = (preferOuter ? r * 3 : 0) + inner * 0.05 + rnd() * 0.6;
+    if (minCore < minCoreDist) continue;
+    let inner = 0;
+    let mine = false;
+    let farm = false;
+    let pasture = false;
+    for (let dy = -3; dy <= 3; dy++)
+      for (let dx = -3; dx <= 3; dx++) {
+        const d = Math.abs(dx) + Math.abs(dy);
+        if (d > 3) continue;
+        const n = tileAt(s.tiles, t.x + dx, t.y + dy);
+        if (!n || n.province !== provinceId || n.owner !== -1 || impassable(n)) continue;
+        if (d <= 2) inner++;
+        if (n.terrain === 'tog' || n.terrain === 'qorli_tog' || n.deposit) mine = true;
+        if (d <= 1 && (n.terrain === 'unumdor' || n.terrain === 'tekislik' || n.terrain === 'vodiy')) farm = true;
+        if (d <= 2 && (n.terrain === 'yaylov' || n.terrain === 'tekislik' || n.terrain === 'vodiy')) pasture = true;
+      }
+    if (inner < 9) continue;
+    const score = (mine ? 2 : 0) + (farm ? 1.5 : 0) + (pasture ? 1 : 0) + inner * 0.06 + rnd() * 0.5;
     if (score > bestScore) {
       bestScore = score;
       best = t;
@@ -99,42 +101,20 @@ function findStartTile(
   return best;
 }
 
-/** Har boshlang'ich zonada kichik kon, ekin yeri va yaylov bo'lishini ta'minlaydi. */
-function ensureStartZone(s: GameState, core: Tile, rnd: () => number): void {
+/** Har boshlang'ich zonada kichik kon bo'lsin: yaqinda tog' bo'lmasa, 2 qadam narida kon joyi ochiladi. */
+function ensureMineNear(s: GameState, core: Tile, rnd: () => number): void {
   const near: Tile[] = [];
-  for (let dy = -3; dy <= 3; dy++)
-    for (let dx = -3; dx <= 3; dx++) {
+  for (let dy = -2; dy <= 2; dy++)
+    for (let dx = -2; dx <= 2; dx++) {
       const d = Math.abs(dx) + Math.abs(dy);
-      if (d === 0 || d > 3) continue;
+      if (d === 0 || d > 2) continue;
       const n = tileAt(s.tiles, core.x + dx, core.y + dy);
-      if (n && n.province === core.province && n.owner === -1 && n.terrain !== 'kol' && n.terrain !== 'daryo') near.push(n);
+      if (n && n.province === core.province && n.owner === -1 && !impassable(n) && n.terrain !== 'daryo') near.push(n);
     }
-  const dist = (t: Tile) => Math.abs(t.x - core.x) + Math.abs(t.y - core.y);
-  const has = (maxD: number, f: (t: Tile) => boolean) => near.some((t) => dist(t) <= maxD && f(t));
-  const pick = (d: number): Tile | null => {
-    const c = near.filter((t) => dist(t) === d && t.terrain !== 'tog' && t.terrain !== 'qorli_tog');
-    if (c.length === 0) return null;
-    return c[Math.floor(rnd() * c.length)];
-  };
-  // Kichik kon: 2 qadam narida.
-  if (!has(2, (t) => t.terrain === 'tog' || t.terrain === 'qorli_tog')) {
-    const t = pick(2);
-    if (t) {
-      t.terrain = 'tog';
-      t.deposit = true;
-    }
-  }
-  // Ekin yeri: yonma-yon.
-  if (!has(1, (t) => t.terrain === 'unumdor' || t.terrain === 'tekislik' || t.terrain === 'vodiy')) {
-    const t = pick(1);
-    if (t) t.terrain = 'unumdor';
-  }
-  // Yaylov: 2 qadam ichida.
-  if (!has(2, (t) => t.terrain === 'yaylov')) {
-    const t = near.find((n) => dist(n) <= 2 && n.terrain !== 'tog' && n.terrain !== 'qorli_tog' && n.terrain !== 'unumdor') ?? pick(2);
-    if (t) t.terrain = 'yaylov';
-  }
-  if (core.terrain === 'orman' || core.terrain === 'chol') core.terrain = 'tekislik';
+  if (near.some((t) => t.terrain === 'tog' || t.terrain === 'qorli_tog' || t.deposit)) return;
+  const far = near.filter((t) => Math.abs(t.x - core.x) + Math.abs(t.y - core.y) === 2);
+  const pool = far.length ? far : near;
+  if (pool.length) pool[Math.floor(rnd() * pool.length)].deposit = true;
 }
 
 function bestBuildingFor(t: Tile, spec: Specialty | null, rnd: () => number): Tile['building'] {
@@ -181,14 +161,14 @@ export function garrisonTarget(s: GameState, f: Faction, t: Tile): number {
   return Math.max(1, Math.round(base));
 }
 
-function setupAiState(s: GameState, f: Faction, core: Tile, rnd: () => number, startSize: number): void {
+function setupAiState(s: GameState, f: Faction, core: Tile, rnd: () => number, startSize: number, painted: boolean): void {
   f.coreX = core.x;
   f.coreY = core.y;
   const around: Tile[] = [];
   for (let dy = -2; dy <= 2; dy++)
     for (let dx = -2; dx <= 2; dx++) {
       const n = tileAt(s.tiles, core.x + dx, core.y + dy);
-      if (!n || n.owner !== -1 || n.province !== core.province || n.terrain === 'kol') continue;
+      if (!n || n.owner !== -1 || n.province !== core.province || impassable(n)) continue;
       around.push(n);
     }
   // Ixtisos: atrofdagi yerga qarab.
@@ -203,6 +183,7 @@ function setupAiState(s: GameState, f: Faction, core: Tile, rnd: () => number, s
   f.specialty = mt >= fa && mt >= pa && mt > 0 ? 'kon' : pa > fa ? 'chorva' : 'dehqon';
   core.owner = f.id;
   core.building = 'core';
+  core.painted = painted;
   core.level = s.provinces[core.province].zone === 'orta' ? 2 : 1;
   f.coreLevel = core.level;
   around.sort((a, b) => Math.abs(a.x - core.x) + Math.abs(a.y - core.y) - (Math.abs(b.x - core.x) + Math.abs(b.y - core.y)));
@@ -213,6 +194,7 @@ function setupAiState(s: GameState, f: Faction, core: Tile, rnd: () => number, s
     t.level = t.building === 'none' ? 0 : 1;
     t.crop = t.terrain === 'chol' ? 'arpa' : 'bugdoy';
     t.workers = t.building === 'farm' || t.building === 'pasture' || t.building === 'mine' ? 2 + Math.floor(rnd() * 2) : 0;
+    t.painted = painted;
   }
   // Bitta qal'a chegarada.
   const edge = take.filter((t) => t.building === 'none' || t.building === 'tower');
@@ -228,39 +210,35 @@ function setupAiState(s: GameState, f: Faction, core: Tile, rnd: () => number, s
 }
 
 function setupEmpire(s: GameState, f: Faction, provId: number, rnd: () => number): void {
-  const prov = s.provinces[provId];
-  const own = s.tiles.filter((t) => t.province === provId && t.terrain !== 'kol');
+  const own = s.tiles.filter((t) => t.province === provId && !impassable(t));
   for (const t of own) t.owner = f.id;
-  const capital = tileAt(s.tiles, prov.cx, prov.cy)!;
+  const castle = MAP.castles.find((c) => c.province === provId)!;
+  const capital = tileAt(s.tiles, castle.x, castle.y)!;
   capital.building = 'core';
   capital.level = 4;
-  if (capital.terrain === 'daryo') capital.terrain = 'unumdor';
+  capital.painted = true;
   f.coreX = capital.x;
   f.coreY = capital.y;
   f.coreLevel = 4;
-  const cand = shuffle(
-    own.filter((t) => t !== capital && t.terrain !== 'daryo'),
-    rnd,
-  );
-  let cities = 0;
-  for (const t of cand) {
-    if (cities >= 3) break;
-    if (Math.abs(t.x - capital.x) + Math.abs(t.y - capital.y) < 3) continue;
-    if (s.tiles.some((o) => o.owner === f.id && o.building === 'city' && Math.abs(o.x - t.x) + Math.abs(o.y - t.y) < 3)) continue;
+  // Rasmdagi poytaxt shahri.
+  for (const [x, y] of MAP.cities) {
+    const t = tileAt(s.tiles, x, y)!;
+    if (t.owner !== f.id || t === capital) continue;
     t.building = 'city';
     t.level = 3;
-    cities++;
+    t.painted = true;
   }
   for (const t of own) {
     if (t.building !== 'none') continue;
-    const frontier = neighbors4(s.tiles, t).some((n) => n.province !== provId);
-    if (frontier && rnd() < 0.3 && t.terrain !== 'daryo') {
+    const frontier = neighbors4(s.tiles, t).some((n) => n.province !== provId && !impassable(n));
+    if (frontier && rnd() < 0.1 && t.terrain !== 'daryo') {
       t.building = 'fort';
       t.level = 2 + Math.floor(rnd() * 2);
     } else if (t.terrain !== 'daryo') {
       t.building = bestBuildingFor(t, f.style === 'fors' ? 'chorva' : 'dehqon', rnd);
       t.level = t.building === 'none' ? 0 : 2;
       t.workers = t.building === 'farm' || t.building === 'pasture' || t.building === 'mine' ? 3 : 0;
+      t.painted = true;
     }
   }
   for (const k of ALL_UNITS) f.unitLevels[k] = 5;
@@ -315,9 +293,21 @@ export function newGame(seed: number, startProvince: number): GameState {
   setupEmpire(s, empA, 0, rnd);
   setupEmpire(s, empB, 1, rnd);
 
-  // O'yinchi qarorgohi.
-  const core = findStartTile(s, startProvince, rnd, true)!;
-  ensureStartZone(s, core, rnd);
+  // AI davlatchalar rasmdagi qal'alarda (avval ular, keyin o'yinchi joy tanlaydi).
+  let nameIdx = 0;
+  for (const c of MAP.castles.filter((c) => c.kind === 'ai')) {
+    if (s.factions.length - 3 >= GAME.maxAiStates) break;
+    const id = s.factions.length;
+    const f = makeFaction(id, 'ai', NAMES.aiStates[nameIdx % NAMES.aiStates.length], FACTION_COLORS.ai[nameIdx % FACTION_COLORS.ai.length]);
+    nameIdx++;
+    s.factions.push(f);
+    setupAiState(s, f, tileAt(s.tiles, c.x, c.y)!, rnd, provinces[c.province].zone === 'orta' ? 8 : 6, true);
+  }
+  s.aiSpawnCounter = nameIdx;
+
+  // O'yinchi qarorgohi (o'z viloyatidagi qal'adan uzoqroqda).
+  const core = findStartTile(s, startProvince, rnd, 6) ?? findStartTile(s, startProvince, rnd, 3)!;
+  ensureMineNear(s, core, rnd);
   core.owner = 0;
   core.building = 'core';
   core.level = 1;
@@ -325,22 +315,12 @@ export function newGame(seed: number, startProvince: number): GameState {
   player.coreX = core.x;
   player.coreY = core.y;
 
-  // AI davlatchalar: o'yinchinikidan tashqari chet viloyatlarda va o'rta viloyatlarda.
-  const provOrder = [6, 7, 8, 9, 10, 11, 2, 3, 4, 5].filter((p) => p !== startProvince);
-  let nameIdx = 0;
-  for (const pid of provOrder) {
-    if (s.factions.length - 3 >= GAME.maxAiStates) break;
-    const id = s.factions.length;
-    const f = makeFaction(id, 'ai', NAMES.aiStates[nameIdx % NAMES.aiStates.length], FACTION_COLORS.ai[nameIdx % FACTION_COLORS.ai.length]);
-    nameIdx++;
-    const t = findStartTile(s, pid, rnd, provinces[pid].zone === 'chet');
-    if (!t) continue;
-    ensureStartZone(s, t, rnd);
-    f.strength = aiStrengthFor(s, t);
-    s.factions.push(f);
-    setupAiState(s, f, t, rnd, provinces[pid].zone === 'orta' ? 9 : 6);
+  // Yaqin zaif, uzoq kuchli — kuch o'yinchi joyiga qarab belgilanadi.
+  for (const f of s.factions) {
+    if (f.kind !== 'ai') continue;
+    f.strength = aiStrengthFor(s, coreTile(s, f));
+    for (const t of s.tiles) if (t.owner === f.id) t.garrison = makeGarrison(f, garrisonTarget(s, f, t), rnd);
   }
-  s.aiSpawnCounter = nameIdx;
 
   addLog(s, 'Qarorgohingiz qurildi. Yoniga yer sotib olib, ekinzor, yaylov va kon quring.', 'info');
   addLog(s, `Dastlabki ${GAME.protectionDays} kun hech kim sizga hujum qilmaydi.`, 'good');
@@ -359,9 +339,12 @@ export function aiStrengthFor(s: GameState, t: Tile): number {
 export function spawnAiState(s: GameState, rnd: () => number): Faction | null {
   const alive = s.factions.filter((f) => f.kind === 'ai' && f.alive).length;
   if (alive >= GAME.maxAiStates) return null;
-  const provs = shuffle([6, 7, 8, 9, 10, 11, 2, 3, 4, 5], rnd);
+  const provs = shuffle(
+    s.provinces.filter((p) => p.zone !== 'markaz').map((p) => p.id),
+    rnd,
+  );
   for (const pid of provs) {
-    const t = findStartTile(s, pid, rnd, false);
+    const t = findStartTile(s, pid, rnd, 7);
     if (!t) continue;
     const idx = s.aiSpawnCounter++;
     const id = s.factions.length;
@@ -373,7 +356,7 @@ export function spawnAiState(s: GameState, rnd: () => number): Faction | null {
     );
     f.strength = aiStrengthFor(s, t);
     s.factions.push(f);
-    setupAiState(s, f, t, rnd, 4);
+    setupAiState(s, f, t, rnd, 4, false);
     s.ownerVersion++;
     return f;
   }

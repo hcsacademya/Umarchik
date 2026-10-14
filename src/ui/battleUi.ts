@@ -1,6 +1,6 @@
 import { GAME, TERRAIN_INFO, UNITS } from '../config';
 import type { Battle } from '../game/battle';
-import { btn, h, unitEmoji } from './dom';
+import { btn, h, unitIcon } from './dom';
 
 /** Taktik jang ekranidagi tugmalar va ma'lumotlar. */
 export class BattleUI {
@@ -129,7 +129,7 @@ export class BattleUI {
                 this.onSelect(this.selected === g.id ? null : g.id);
               },
             },
-            unitEmoji(g.type),
+            unitIcon(g.type, (ps === 0 ? b.setup.attacker : b.setup.defender).unitLevels[g.type], 'sm'),
             h('span', null, `${UNITS[g.type].name} ${n}`),
             h('span', { class: 'o' }, ord),
           ),

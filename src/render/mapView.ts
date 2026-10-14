@@ -1,12 +1,12 @@
-import { GAME } from '../config';
+import { GAME, UNITS, impassable, visualTier } from '../config';
 import { tileGoods, storeCap } from '../game/economy';
 import { coreInfo } from '../game/state';
 import { armyPos } from '../game/sim';
-import type { GameState, Tile } from '../types';
-import { armyCount, clamp } from '../util';
-import { neighbors4, tileAt } from '../world/mapgen';
+import type { GameState, Tile, UnitType } from '../types';
+import { armyCount, armyEntries, clamp } from '../util';
+import { MAP, neighbors4, tileAt } from '../world/mapgen';
 import { getAsset } from './assets';
-import { Camera, diamondPath, tileCenter, TH, TW, withAlpha, worldToTile, WORLD_H, WORLD_W } from './iso';
+import { Camera, diamondPath, mapImageRect, tileCenter, TH, TW, withAlpha, worldToTile, WORLD_H, WORLD_W } from './iso';
 import {
   capitalSprite,
   citySprite,
@@ -72,16 +72,27 @@ export class MapView {
     this.clampCam();
   }
 
+  /** Kamera chegarasi: xarita rasmi bo'lsa — rasm, aks holda butun romb. */
+  private bounds(): { x: number; y: number; w: number; h: number } {
+    return getAsset('map_background') ? mapImageRect() : { x: 0, y: 0, w: WORLD_W, h: WORLD_H };
+  }
+
   private minZoom(): number {
     const w = this.canvas.width / this.dpr;
     const h = this.canvas.height / this.dpr;
-    return Math.max(0.25, Math.min(w / WORLD_W, h / WORLD_H) * 0.95);
+    const b = this.bounds();
+    return Math.max(0.2, Math.min(w / b.w, h / b.h) * 0.95);
   }
 
   private clampCam(): void {
-    this.cam.zoom = clamp(this.cam.zoom, this.minZoom(), 2.2);
-    this.cam.x = clamp(this.cam.x, 0, WORLD_W);
-    this.cam.y = clamp(this.cam.y, 0, WORLD_H);
+    const b = this.bounds();
+    this.cam.zoom = clamp(this.cam.zoom, this.minZoom(), 1.8);
+    // Xarita ekrandan chiqib ketmasin: ko'rinish kattaroq bo'lsa — markazda.
+    const hw = this.canvas.width / this.dpr / 2 / this.cam.zoom;
+    const hh = this.canvas.height / this.dpr / 2 / this.cam.zoom;
+    const axis = (c: number, lo: number, size: number, half: number) => (size <= half * 2 ? lo + size / 2 : clamp(c, lo + half, lo + size - half));
+    this.cam.x = axis(this.cam.x, b.x, b.w, hw);
+    this.cam.y = axis(this.cam.y, b.y - 60, b.h + 120, hh);
   }
 
   screenToWorld(sx: number, sy: number): { x: number; y: number } {
@@ -135,7 +146,8 @@ export class MapView {
       if (!this.moved && this.pointers.size === 0 && performance.now() - p.t < 600) {
         const w = this.screenToWorld(p.x, p.y);
         const tp = this.pickTile(w.x, w.y);
-        if (tp) this.handlers.onTileTap(tp);
+        if (tp && !impassable(tp)) this.handlers.onTileTap(tp);
+        else if (tp?.terrain === 'kol') this.handlers.onTileTap(tp);
       }
       if (this.pointers.size < 2) this.pinchDist = 0;
     };
@@ -181,7 +193,8 @@ export class MapView {
     if (!this.visible) return;
     this.time += dt;
     const s = this.getState();
-    if (!this.terrain || this.terrainSeed !== s.seed) {
+    const bg = getAsset('map_background');
+    if (!bg && (!this.terrain || this.terrainSeed !== s.seed)) {
       this.terrain = renderTerrainLayer(s);
       this.terrainSeed = s.seed;
     }
@@ -194,7 +207,13 @@ export class MapView {
     const z = this.cam.zoom * this.dpr;
     ctx.setTransform(z, 0, 0, z, W / 2 - this.cam.x * z, H / 2 - this.cam.y * z);
     ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(this.terrain, 0, 0);
+    ctx.imageSmoothingQuality = 'high';
+    if (bg) {
+      const r = mapImageRect();
+      ctx.drawImage(bg.img, r.x, r.y, r.w, r.h);
+    } else if (this.terrain) {
+      ctx.drawImage(this.terrain, 0, 0, WORLD_W, WORLD_H);
+    }
 
     const view = this.viewRect();
     const vis = (t: Tile) => {
@@ -348,13 +367,54 @@ export class MapView {
         const t = s.tiles[(sum - x) * W + x];
         if (!vis(t)) continue;
         const { x: cx, y: cy } = tileCenter(t.x, t.y);
-        if (t.building !== 'none') {
+        if (t.building !== 'none' && !t.painted) {
           const im = this.buildingImage(s, t);
           if (im) ctx.drawImage(im.img, cx - im.ax, cy - im.ay, im.w, im.h);
+        } else if (t.painted && t.owner >= 0 && CASTLE_TILES.has(t.y * W + t.x)) {
+          this.drawCastleFlag(s, t, cx, cy);
         }
         if (t.owner === s.playerId) this.drawTileBadges(s, t, cx, cy);
         if (t.capture) this.drawCapture(s, t, cx, cy);
       }
+    }
+  }
+
+  /** Rasmda chizilgan qal'a ustida egasining bayrog'i. */
+  private drawCastleFlag(s: GameState, t: Tile, cx: number, cy: number): void {
+    const ctx = this.ctx;
+    const f = s.factions[t.owner];
+    const big = f.kind === 'empire';
+    const h = big ? 70 : 52;
+    const x = cx + 4;
+    const y = cy - (big ? 60 : 30);
+    const wave = Math.sin(this.time * 3 + t.x) * 3;
+    ctx.strokeStyle = '#2b1d10';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y - h);
+    ctx.stroke();
+    ctx.fillStyle = f.color;
+    ctx.beginPath();
+    ctx.moveTo(x, y - h);
+    ctx.quadraticCurveTo(x + 18, y - h - 4 + wave, x + 34, y - h + 2 + wave);
+    ctx.lineTo(x + 32, y - h + 22 + wave);
+    ctx.quadraticCurveTo(x + 16, y - h + 18, x, y - h + 22);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    if (this.cam.zoom > 0.45) {
+      ctx.font = `bold ${big ? 17 : 14}px system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+      const label = f.kind === 'player' ? 'Sizning qal\'angiz' : f.name;
+      ctx.strokeText(label, cx, y + 14);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(label, cx, y + 14);
     }
   }
 
@@ -442,8 +502,51 @@ export class MapView {
         ctx.restore();
       }
       const count = mine ? String(armyCount(a.units)) : a.warned ? `~${a.shownCount}` : String(armyCount(a.units));
-      drawArmyMarker(ctx, c.x, c.y - 6, f.color, count, !mine, this.time + a.id);
+      // Qo'shindagi eng ko'p askar turining rasmi.
+      let main: UnitType | null = null;
+      for (const [k, n] of armyEntries(a.units)) if (!UNITS[k].hero && (!main || n > (a.units[main] ?? 0))) main = k;
+      const tier = main ? visualTier(f.unitLevels[main]) : 1;
+      const img = main ? getAsset(`unit_${main}_${tier}`) ?? getAsset(`unit_${main}`) : null;
+      if (img) this.drawArmyImage(img.img, c.x, c.y - 6, f.color, count, !mine, a.path[Math.min(a.path.length - 1, Math.ceil(a.pos))].x - pos.x - (a.path[Math.min(a.path.length - 1, Math.ceil(a.pos))].y - pos.y));
+      else drawArmyMarker(ctx, c.x, c.y - 6, f.color, count, !mine, this.time + a.id);
     }
+  }
+
+  private drawArmyImage(img: HTMLImageElement, x: number, y: number, color: string, count: string, enemy: boolean, dir: number): void {
+    const ctx = this.ctx;
+    const h = 62;
+    const w = (img.width / img.height) * h;
+    const bob = Math.sin(this.time * 7) * 1.5;
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 2, w * 0.5, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // bayroq
+    ctx.strokeStyle = '#2b1d10';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x - w * 0.45, y);
+    ctx.lineTo(x - w * 0.45, y - h - 12);
+    ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.fillRect(x - w * 0.45, y - h - 12, 18, 12);
+    ctx.save();
+    ctx.translate(x, y + bob);
+    if (dir < 0) ctx.scale(-1, 1);
+    ctx.drawImage(img, -w / 2, -h, w, h);
+    ctx.restore();
+    ctx.font = 'bold 13px system-ui, sans-serif';
+    const tw = ctx.measureText(count).width + 12;
+    ctx.fillStyle = enemy ? 'rgba(150,20,20,0.92)' : 'rgba(20,40,80,0.92)';
+    roundRect(ctx, x - tw / 2, y + 6, tw, 18, 7);
+    ctx.fill();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(count, x, y + 15.5);
   }
 
   private drawProvinceLabels(s: GameState): void {
@@ -454,16 +557,21 @@ export class MapView {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     for (const p of s.provinces) {
+      // Imperiya nomi poytaxt bayrog'ida yozilgan.
+      if (p.zone === 'markaz') continue;
       const c = tileCenter(p.cx, p.cy);
       const y = c.y - 34;
       ctx.lineWidth = Math.max(3, size / 5);
       ctx.strokeStyle = 'rgba(30,20,5,0.75)';
       ctx.strokeText(p.name, c.x, y);
-      ctx.fillStyle = p.zone === 'markaz' ? '#ffd970' : '#fff4d6';
+      ctx.fillStyle = '#fff4d6';
       ctx.fillText(p.name, c.x, y);
     }
   }
 }
+
+/** Rasmda chizilgan qal'alar (ustiga egasining bayrog'i qo'yiladi). */
+const CASTLE_TILES = new Set(MAP.castles.map((c) => c.y * GAME.mapW + c.x));
 
 function targetsPlayer(s: GameState, x: number, y: number): boolean {
   const t = tileAt(s.tiles, x, y);
@@ -480,7 +588,7 @@ function buyableTiles(s: GameState): Tile[] {
   for (const t of s.tiles) {
     if (t.owner !== p.id || t.capture) continue;
     for (const n of neighbors4(s.tiles, t)) {
-      if (n.owner === -1 && n.province === t.province && n.terrain !== 'kol') out.add(n);
+      if (n.owner === -1 && n.province === t.province && !impassable(n)) out.add(n);
     }
   }
   return [...out];

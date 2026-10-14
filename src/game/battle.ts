@@ -228,7 +228,7 @@ export class Battle {
     const g: BGroup = { id: this.groups.length, side, type, order: { kind: 'hold' }, anchorX: cx, anchorY: cy, units: [] };
     const cols = Math.max(1, Math.ceil(Math.sqrt(ents / 2)));
     const rows = Math.ceil(ents / cols);
-    const sp = d.cat === 'otliq' ? 24 : 18;
+    const sp = d.cat === 'otliq' ? 28 : 20;
     for (let i = 0; i < ents; i++) {
       const c = Math.floor(i / rows);
       const r = i % rows;

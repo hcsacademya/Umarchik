@@ -1,3 +1,4 @@
+import mapData from './world/mapData.json';
 import type { BuildingType, Goods, ResKey, Resources, Terrain, UnitCat, UnitType, WorkerType, Zone } from './types';
 
 /**
@@ -5,8 +6,9 @@ import type { BuildingType, Goods, ResKey, Resources, Terrain, UnitCat, UnitType
  * shuning uchun bular boshlang'ich taxminlar — bemalol o'zgartiring.
  */
 export const GAME = {
-  mapW: 40,
-  mapH: 40,
+  /** Xarita to'ri umumiy xarita rasmidan yasalgan (tools/build_map.py). */
+  mapW: mapData.grid.n,
+  mapH: mapData.grid.n,
   /** 1x tezlikda bir o'yin kuni necha soniya. */
   dayLengthSec: 60,
   /** Yangi o'yinchi dastlabki kunlari hujumdan himoyalangan. */
@@ -22,7 +24,7 @@ export const GAME = {
   /** G'olib oladigan resurs ulushi. */
   lootMin: 0.2,
   lootMax: 0.3,
-  maxAiStates: 9,
+  maxAiStates: 11,
   autosaveDays: 1,
 };
 
@@ -35,14 +37,6 @@ export const START = {
 export const NAMES = {
   empireA: 'Rumiya',
   empireB: 'Parsiya',
-  provinces: {
-    empireA: 'Rumiya',
-    empireB: 'Parsiya',
-    /** Tartib: sharq, janub, g'arb, shimol. */
-    middle: ['Oltinvodiy', 'Qorabog\'', 'Daryobo\'yi', 'Kumushsoy'],
-    /** Tartib: shimol, shimoli-sharq, janubi-sharq, janub, janubi-g'arb, shimoli-g'arb. */
-    edge: ['Qorli tog\'lar', 'Yaylovobod', 'Qumlik', 'Janubiy dasht', 'Ko\'lbo\'yi', 'Qalin o\'rmon'],
-  },
   aiStates: [
     'Oqtepa', 'Qorasuv', 'Ko\'ksaroy', 'Bo\'ztepa', 'Sayxun', 'Olmazor',
     'Yashilobod', 'Tillako\'l', 'Qumtepa', 'Shamolsoy', 'Toshqo\'rg\'on', 'Arpaobod',
@@ -67,7 +61,12 @@ export const TERRAIN_INFO: Record<Terrain, { name: string; color: string; passab
   chol: { name: 'Cho\'l', color: '#dcc58a', passable: true, desc: 'Kambag\'al yer, arpa o\'sadi' },
   daryo: { name: 'Daryo', color: '#4e8fc4', passable: true, desc: 'Kechuv: qo\'shin sekinlashadi' },
   kol: { name: 'Ko\'l', color: '#3a73aa', passable: false, desc: 'O\'tib bo\'lmaydi' },
+  tashqi: { name: 'Jarlik', color: '#3b3127', passable: false, desc: 'Xarita chegarasi' },
 };
+
+export function impassable(t: { terrain: Terrain }): boolean {
+  return !TERRAIN_INFO[t.terrain].passable;
+}
 
 export const ZONE_INFO: Record<Zone, { name: string; landPrice: number; garrison: number }> = {
   chet: { name: 'Chet', landPrice: 40, garrison: 6 },

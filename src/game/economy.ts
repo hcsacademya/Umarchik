@@ -12,6 +12,7 @@ import {
   WORKER_INFO,
   ZONE_INFO,
   buildingUpgradeCost,
+  impassable,
   levelMult,
   omborProtect,
   upgradeCost,
@@ -246,7 +247,7 @@ export function landPrice(s: GameState, t: Tile): number {
 export function canBuyTile(s: GameState, t: Tile): ActionResult {
   const f = s.factions[s.playerId];
   if (t.owner !== -1) return fail('Bu yerning egasi bor');
-  if (t.terrain === 'kol') return fail('Ko\'lni sotib bo\'lmaydi');
+  if (impassable(t)) return fail(t.terrain === 'kol' ? 'Ko\'lni sotib bo\'lmaydi' : 'Bu yer o\'yin maydonidan tashqarida');
   const adj = neighbors4(s.tiles, t).some((n) => n.owner === f.id && n.province === t.province && !n.capture);
   if (!adj) {
     const anyAdj = neighbors4(s.tiles, t).some((n) => n.owner === f.id);
@@ -272,6 +273,7 @@ export function buyTile(s: GameState, t: Tile): ActionResult {
 
 export function buildOptions(t: Tile): (keyof typeof BUILDINGS)[] {
   const out: (keyof typeof BUILDINGS)[] = [];
+  if (impassable(t)) return out;
   for (const k of Object.keys(BUILDINGS) as (keyof typeof BUILDINGS)[]) {
     const d = BUILDINGS[k];
     if (k === 'mine') {
@@ -295,6 +297,7 @@ export function build(s: GameState, t: Tile, b: keyof typeof BUILDINGS): ActionR
   f.res.kumush -= cost;
   t.building = b as BuildingType;
   t.level = 1;
+  t.painted = false;
   t.crop = t.terrain === 'chol' ? 'arpa' : 'bugdoy';
   autoAssignWorkers(s, f);
   return ok(`${BUILDINGS[b].name} qurildi`);
@@ -322,6 +325,7 @@ export function demolish(s: GameState, t: Tile): ActionResult {
   t.level = 0;
   t.workers = 0;
   t.store = 0;
+  t.painted = false;
   autoAssignWorkers(s, f);
   return ok('Bino buzildi');
 }
