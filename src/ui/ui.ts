@@ -989,11 +989,11 @@ export class UI {
             el.requestFullscreen?.().then(() => (screen.orientation as unknown as { lock?: (o: string) => Promise<void> })?.lock?.('landscape').catch(() => {})).catch(() => {});
           } else document.exitFullscreen?.();
         }),
-        btn('🗺 Yangi o\'yin', () => {
-          if (confirm('Joriy o\'yin o\'chib ketadi. Yangi o\'yin boshlansinmi?')) {
-            this.closeModal();
-            this.app.newGame();
-          }
+        btn('🗺 Bosh menyu', () => {
+          // Joriy o'yin saqlanadi; bosh menyuda "Davom etish" yoki yangi o'yin tanlanadi.
+          this.app.save();
+          this.closeModal();
+          this.app.newGame();
         }, 'red'),
       ),
       h('div', { class: 'note', style: 'margin-top:10px' }, 'O\'yin avtomatik ravishda har kuni saqlanadi (brauzer xotirasida).'),
