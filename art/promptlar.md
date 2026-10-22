@@ -9,7 +9,7 @@ Follow the fixed concept and sprite sheet rules from my first message exactly.
 ```
 
 - **Burchak haqida:** hamma narsa **yon tomondan** chiziladi (Grow Empire: Rome o'yinidagidek). Qasr darvozasi **o'ngga**, jang maydoniga qaraydi. Dushman qasrini kod o'zi ko'zgudek aylantiradi.
-- **Tartib:** 1 → 2 → 3 → 4 → 5–8 → 9–16. 1-rasm natijasini saqlab qo'ying, keyingi qasr, kon va fon promptlarida uni uslub uchun biriktirasiz.
+- **Tartib:** 1 → 2 → 3 → 4 → 5–8 → 9–12. Jami 12 ta rasm. 1-rasm natijasini saqlab qo'ying, keyingi qasr, kon va fon promptlarida uni uslub uchun biriktirasiz.
 - **Ko'k rang qoidasi:** dushman qasrlari va dushman jangchilarida mato qismlari **toza ko'k** bo'ladi. Kod har jangda shu ko'kni boshqa rangga (qizil, sariq, yashil va hokazo) almashtiradi. Shuning uchun boshqa joyda ko'k bo'lmasligi kerak.
 
 ---
@@ -91,69 +91,51 @@ Bottom panorama: the outskirts of a great city: domes and towers small and very 
 
 ---
 
-## 9–16. Dushman xalqlari
-Rasm biriktirish: **HA**, **bizning o'sha jangchimizning varag'i** (masalan, qilichli uchun qilichli varag'i). U faqat poza, o'lcham va uslub uchun kerak, personaj boshqa bo'ladi.
+## 9–12. Dushman xalqlari (har rasmda ikkala xalq)
+Har bir rasmda **tepada Ko'chmanchi** (yengil, tez), **pastda Sovutli** (og'ir zirhli) chiziladi. Jami 4 ta rasm.
 
-### 1-xalq: Ko'chmanchilar (yengil, tez)
-
-**9. Ko'chmanchi qilichli**
+### 9. Qilichli
+Rasm biriktirish: **HA**, bizning qilichli varag'imiz (faqat poza, o'lcham va uslub uchun).
 ```
-Use the attached sprite sheet ONLY as a reference for the poses, size, layout and art style. Draw a DIFFERENT character: a light steppe nomad warrior with a fur-trimmed pointed felt cap, long braided hair, a quilted kaftan with a leather lamellar vest, leather boots and a lean agile build. Weapon: a curved sabre and a small round shield. 4 poses in one row, equal cells: 1) idle 2) walking, left leg forward 3) walking, right leg forward 4) attack, diagonal sabre slash.
-COLOR RULE: all fabric parts (kaftan, sash, cloak) and the shield face are ONE solid ROYAL BLUE color; nothing else in the image is blue.
-Same character, same outfit and proportions in all poses. Pure side profile, facing RIGHT, same height, feet on the same baseline.
-```
-
-**10. Ko'chmanchi nayzachi**
-```
-Use the attached sprite sheet ONLY as a reference for the poses, size, layout and art style. Draw a DIFFERENT character: a light steppe nomad warrior with a fur-trimmed pointed felt cap, long braided hair, a quilted kaftan with a leather lamellar vest, leather boots and a lean agile build. Weapon: a spear with a horsetail tuft and a small round shield. 4 poses in one row, equal cells: 1) idle, spear upright 2) walking, left leg forward 3) walking, right leg forward 4) attack, thrusting the spear forward.
-COLOR RULE: all fabric parts (kaftan, sash, cloak) and the shield face are ONE solid ROYAL BLUE color; nothing else in the image is blue.
-Same character, same outfit and proportions in all poses. Pure side profile, facing RIGHT, same height, feet on the same baseline. The spear stays fully inside its cell.
+Use the attached sprite sheet ONLY as a reference for the poses, size and art style. Draw TWO DIFFERENT enemy characters on ONE sheet: 2 rows x 4 equal cells (8 cells in total).
+TOP ROW: a light steppe nomad warrior: fur-trimmed pointed felt cap, long braided hair, a quilted kaftan with a leather lamellar vest, leather boots, lean agile build. Weapon: a curved sabre and a small round shield.
+BOTTOM ROW: a heavily armored soldier: full chain mail hauberk, steel plate shoulder guards and breastplate, a closed steel helmet with a face guard and mail aventail, armored gloves and boots, a sleeveless tabard over the armor, sturdy build. Weapon: a straight long sword and a large oval shield.
+In each row the same 4 poses: 1) idle 2) walking, left leg forward 3) walking, right leg forward 4) attack, diagonal sword slash.
+COLOR RULE: in both rows all fabric parts (kaftan, tabard, sash, cloak) and the shield faces are ONE solid ROYAL BLUE color; nothing else in the image is blue.
+Within a row: the same character, same outfit and proportions in all four poses. Both characters the same height. Pure side profile, facing RIGHT, feet on the same baseline in each row, wide empty gaps between the rows and between the cells.
 ```
 
-**11. Ko'chmanchi kamonchi**
+### 10. Nayzachi
+Rasm biriktirish: **HA**, bizning nayzachi varag'imiz (faqat poza, o'lcham va uslub uchun).
 ```
-Use the attached sprite sheet ONLY as a reference for the poses, size, layout and art style. Draw a DIFFERENT character: a light steppe nomad archer with a fur-trimmed pointed felt cap, long braided hair, a quilted kaftan with a leather lamellar vest, leather boots and a lean agile build. Weapon: a short composite recurve bow, a quiver at the hip. 4 poses in one row, equal cells: 1) idle, bow lowered 2) walking, left leg forward 3) walking, right leg forward 4) shooting, bow fully drawn with an arrow nocked.
-COLOR RULE: all fabric parts (kaftan, sash, cloak) are ONE solid ROYAL BLUE color; nothing else in the image is blue.
-Same character, same outfit and proportions in all poses. Pure side profile, facing RIGHT, same height, feet on the same baseline.
-```
-
-**12. Ko'chmanchi otliq**
-Rasm biriktirish: bizning otliq rasmi hali yo'q, shuning uchun **qilichli varag'ini** (faqat uslub uchun) biriktiring.
-```
-Use the attached sprite sheet ONLY as a reference for the art style. Draw a light steppe nomad horseman: fur-trimmed pointed felt cap, quilted kaftan with a leather lamellar vest, a spear and a small round shield, riding a small sturdy steppe horse with a saddle cloth. 4 poses in a 2x2 grid, equal large cells: 1) horse standing, spear upright 2) horse walking, front leg raised 3) horse walking, the other front leg raised 4) charging, rider leaning forward with the spear lowered ahead.
-COLOR RULE: the rider's fabric parts, the shield face and the horse's saddle cloth are ONE solid ROYAL BLUE color; nothing else in the image is blue.
-Same rider and horse in all poses. Pure side profile, facing RIGHT, same size, hooves on the same baseline. The spear stays fully inside its cell.
+Use the attached sprite sheet ONLY as a reference for the poses, size and art style. Draw TWO DIFFERENT enemy characters on ONE sheet: 2 rows x 4 equal cells (8 cells in total).
+TOP ROW: a light steppe nomad warrior: fur-trimmed pointed felt cap, long braided hair, a quilted kaftan with a leather lamellar vest, leather boots, lean agile build. Weapon: a spear with a horsetail tuft and a small round shield.
+BOTTOM ROW: a heavily armored soldier: full chain mail hauberk, steel plate shoulder guards and breastplate, a closed steel helmet with a face guard and mail aventail, armored gloves and boots, a sleeveless tabard over the armor, sturdy build. Weapon: a long spear and a large oval shield.
+In each row the same 4 poses: 1) idle, spear upright 2) walking, left leg forward 3) walking, right leg forward 4) attack, thrusting the spear forward.
+COLOR RULE: in both rows all fabric parts (kaftan, tabard, sash, cloak) and the shield faces are ONE solid ROYAL BLUE color; nothing else in the image is blue.
+Within a row: the same character, same outfit and proportions in all four poses. Both characters the same height. Pure side profile, facing RIGHT, feet on the same baseline in each row, wide empty gaps between the rows and between the cells. The spears stay fully inside their cells.
 ```
 
-### 2-xalq: Sovutlilar (og'ir, chidamli; o'z davri uchun zamonaviy)
-
-**13. Sovutli qilichli**
+### 11. Kamonchi
+Rasm biriktirish: **HA**, bizning kamonchi varag'imiz (faqat poza, o'lcham va uslub uchun).
 ```
-Use the attached sprite sheet ONLY as a reference for the poses, size, layout and art style. Draw a DIFFERENT character: a heavily armored soldier in a full chain mail hauberk, steel plate shoulder guards and breastplate, a closed steel helmet with a face guard and mail aventail, armored gloves and boots, a sleeveless tabard over the armor, sturdy build. Weapon: a straight long sword and a large oval shield. 4 poses in one row, equal cells: 1) idle 2) walking, left leg forward 3) walking, right leg forward 4) attack, diagonal sword slash.
-COLOR RULE: the tabard, any cloth and the shield face are ONE solid ROYAL BLUE color; nothing else in the image is blue.
-Same character, same outfit and proportions in all poses. Pure side profile, facing RIGHT, same height, feet on the same baseline.
-```
-
-**14. Sovutli nayzachi**
-```
-Use the attached sprite sheet ONLY as a reference for the poses, size, layout and art style. Draw a DIFFERENT character: a heavily armored soldier in a full chain mail hauberk, steel plate shoulder guards and breastplate, a closed steel helmet with a face guard and mail aventail, armored gloves and boots, a sleeveless tabard over the armor, sturdy build. Weapon: a long spear and a large oval shield. 4 poses in one row, equal cells: 1) idle, spear upright 2) walking, left leg forward 3) walking, right leg forward 4) attack, thrusting the spear forward.
-COLOR RULE: the tabard, any cloth and the shield face are ONE solid ROYAL BLUE color; nothing else in the image is blue.
-Same character, same outfit and proportions in all poses. Pure side profile, facing RIGHT, same height, feet on the same baseline. The spear stays fully inside its cell.
+Use the attached sprite sheet ONLY as a reference for the poses, size and art style. Draw TWO DIFFERENT enemy characters on ONE sheet: 2 rows x 4 equal cells (8 cells in total).
+TOP ROW: a light steppe nomad warrior: fur-trimmed pointed felt cap, long braided hair, a quilted kaftan with a leather lamellar vest, leather boots, lean agile build. Weapon: a short composite recurve bow, a quiver at the hip (no shield).
+BOTTOM ROW: a heavily armored soldier: full chain mail hauberk, steel plate shoulder guards and breastplate, a closed steel helmet with a face guard and mail aventail, armored gloves and boots, a sleeveless tabard over the armor, sturdy build. Weapon: a tall longbow, a quiver on the back (no shield).
+In each row the same 4 poses: 1) idle, bow lowered 2) walking, left leg forward 3) walking, right leg forward 4) shooting, bow fully drawn with an arrow nocked.
+COLOR RULE: in both rows all fabric parts (kaftan, tabard, sash, cloak) and the shield faces are ONE solid ROYAL BLUE color; nothing else in the image is blue.
+Within a row: the same character, same outfit and proportions in all four poses. Both characters the same height. Pure side profile, facing RIGHT, feet on the same baseline in each row, wide empty gaps between the rows and between the cells.
 ```
 
-**15. Sovutli kamonchi**
+### 12. Otliq
+Rasm biriktirish: **HA**, bizning qilichli varag'imiz (faqat uslub uchun, bizning otliq rasmi hali yo'q).
 ```
-Use the attached sprite sheet ONLY as a reference for the poses, size, layout and art style. Draw a DIFFERENT character: an armored archer in a chain mail shirt, a steel helmet with a nose guard and mail aventail, leather bracers and boots, a sleeveless tabard over the mail. Weapon: a tall longbow, a quiver on the back. 4 poses in one row, equal cells: 1) idle, bow lowered 2) walking, left leg forward 3) walking, right leg forward 4) shooting, bow fully drawn with an arrow nocked.
-COLOR RULE: the tabard and any cloth are ONE solid ROYAL BLUE color; nothing else in the image is blue.
-Same character, same outfit and proportions in all poses. Pure side profile, facing RIGHT, same height, feet on the same baseline.
-```
-
-**16. Sovutli otliq**
-Rasm biriktirish: **qilichli varag'ini** (faqat uslub uchun).
-```
-Use the attached sprite sheet ONLY as a reference for the art style. Draw a heavily armored knight: chain mail and steel plates, a closed steel helmet, a long lance and a large shield, riding a big warhorse covered with a cloth caparison and a steel head plate. 4 poses in a 2x2 grid, equal large cells: 1) horse standing, lance upright 2) horse walking, front leg raised 3) horse walking, the other front leg raised 4) charging, the lance lowered and pointing ahead.
-COLOR RULE: the knight's tabard, the shield face and the horse's caparison are ONE solid ROYAL BLUE color; nothing else in the image is blue.
-Same rider and horse in all poses. Pure side profile, facing RIGHT, same size, hooves on the same baseline. The lance stays fully inside its cell.
+Use the attached sprite sheet ONLY as a reference for the art style. Draw TWO DIFFERENT enemy horsemen on ONE sheet: 2 rows x 4 equal cells (8 cells in total).
+TOP ROW: a light steppe nomad horseman: fur-trimmed pointed felt cap, a quilted kaftan with a leather lamellar vest, a spear and a small round shield, riding a small sturdy steppe horse with a saddle cloth.
+BOTTOM ROW: a heavily armored knight: chain mail and steel plates, a closed steel helmet, a long lance and a large shield, riding a big warhorse covered with a cloth caparison and a steel head plate.
+In each row the same 4 poses: 1) horse standing, weapon upright 2) horse walking, front leg raised 3) horse walking, the other front leg raised 4) charging, rider leaning forward with the spear or lance lowered and pointing ahead.
+COLOR RULE: in both rows the riders' fabric parts, the shield faces, the saddle cloth and the caparison are ONE solid ROYAL BLUE color; nothing else in the image is blue.
+Within a row: the same rider and horse in all four poses. Both horsemen the same size. Pure side profile, facing RIGHT, hooves on the same baseline in each row, wide empty gaps between the rows and between the cells. Spears and lances stay fully inside their cells.
 ```
 
 ---
