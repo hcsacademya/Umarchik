@@ -16,7 +16,7 @@ Follow the fixed concept and sprite sheet rules from my first message exactly.
 
 | # | Nima | Rasm soni |
 |---|---|---|
-| 1 | Bizning tayanch: qasr + kon, butun | 1 |
+| 1 | Bizning tayanch: qasr + kon, butun (chiqmasa — 1-B: 2 ta oddiyroq rasm) | 1 |
 | 2 | Bizning tayanch: vayron | 1 |
 | 3 | Yopiq darvoza | 1 |
 | 4 | Amir: ikki qilich, 24 kadr | 1 |
@@ -55,6 +55,19 @@ FROM LEFT TO RIGHT:
 GROUND: everything stands on ONE straight horizontal base line at the very bottom of the image. Do NOT draw a ground patch, grass island, road or terrain under or around the buildings — the bottom edge of the buildings and the hill is a clean straight line.
 SCALE: the gate opening is about 30% of the image height; the towers reach about 85% of the image height; the mine entrance is about 25% of the image height.
 NO people, NO animals, NO text. Plain flat light-gray background (#D8D8D8) above and around the buildings.
+```
+
+## 1-B. Zaxira variant: 1-rasm chiqmasa (2 ta oddiyroq rasm)
+Bitta keng rasm o'rniga qasr va kon alohida chiziladi. Kod ularni bir-biriga yopishtirib qo'yadi.
+
+**1-B (a) Qasr.** Biriktiring: `qasr_biz.webp`
+```
+Using the same sandstone material, art style and blue-and-gold banners as the attached castle, draw ONE fortress gatehouse for a side-scrolling game: a strong gatehouse with two round towers and a large arched gate at ground level, gate OPEN with a dark passage inside, facing RIGHT and turned about 30 degrees toward the viewer. On the left a short piece of city wall that ends at the LEFT edge of the image; city roofs visible behind the wall. An EMPTY wall-walk behind the crenellations on top. Everything stands on one clean straight bottom line — NO ground patch, grass or terrain under it. The gatehouse fills most of the image. NO people, NO text. Plain flat light-gray background (#D8D8D8).
+```
+
+**1-B (b) Kon.** Biriktiring: 1-B (a) natijasi
+```
+Using the same art style as the attached gatehouse, draw ONE rocky hill with a timber-framed silver mine entrance at ground level. The dark tunnel opening faces the viewer and the LEFT, clearly visible, with a hanging lantern, shiny veins of raw silver in the rock, a small ore cart and a pile of silver ore BESIDE (not in front of) the entrance. The hill is about half as tall as the gatehouse in the attached image. It stands on one clean straight bottom line — NO ground patch, grass or terrain under it. NO people, NO text. Plain flat light-gray background (#D8D8D8).
 ```
 
 ## 2. Bizning tayanch: vayron
@@ -273,56 +286,110 @@ RULES: Frames 3, 7, 11 and 15 MUST show the legs close together (one leg passing
 
 ---
 
-## 9–16. Dushman tayanchlari (har biri alohida rasm)
-**Biriktiring:** 1-promptning natijasi (bizning tayanch). O'yin dushman tayanchini ko'zgudek aylantirib, o'ng chetga qo'yadi.
+## 9–16. Dushman tayanchlari
+Har biri alohida rasm. Hammasiga bitta narsa biriktiriladi: **1-promptning natijasi** (bizning yangi tayanch).
+O'yin dushman tayanchini o'zi ko'zgudek aylantirib, o'ng chetga qo'yadi.
 
-Har biriga shu umumiy matn, oxiriga o'sha joyning qatori qo'shiladi:
+### 9. Dushman tayanchi: o'rmon
+**Biriktiring:** 1-promptning natijasi
 ```
-Using EXACTLY the same composition, camera angle, scale and art style as the attached base (a long city wall going off the LEFT edge of the image, a gatehouse with two towers and an OPEN arched gate facing right in the center, an EMPTY wall-walk on top, a rocky hill with a timber-framed mine entrance on the right, everything standing on one clean straight bottom line, no ground patch), draw an ENEMY base with this style:
-STYLE: <shu yerga pastdagi qatorlardan birini qo'ying>
-All banners and flags are plain solid ROYAL BLUE without emblems; nothing else in the image is blue. NO people, NO text. Plain flat light-gray background (#D8D8D8).
+Using EXACTLY the same composition, camera angle, scale and art style as the attached base (a long city wall going off the LEFT edge of the image, a gatehouse with two towers and an OPEN arched gate facing right in the center, an EMPTY wall-walk on top, a rocky hill with a timber-framed mine entrance on the right, everything standing on one clean straight bottom line, no ground patch), draw an ENEMY base: dark mossy stone walls with a log palisade, pine trees behind the wall, a forested rocky hill with the mine. All banners and flags are plain solid ROYAL BLUE without emblems; nothing else in the image is blue. NO people, NO text. Plain flat light-gray background (#D8D8D8).
 ```
-STYLE qatorlari:
-- **9. O'rmon:** `dark mossy stone walls with a log palisade, pine trees behind the wall, a forested rocky hill with the mine`
-- **10. Ko'l bo'yi:** `white limestone walls, a small wooden pier and moored boat beside the gate on green-grey water (not blue), a pale rocky hill with the mine`
-- **11. Ekinzor:** `brick walls and towers with red clay-tile roofs, hay stacks and a farm cart beside the wall, a grassy hill with the mine`
-- **12. Tog':** `grey granite walls on rocks, snow on all roofs and battlements, snowy pines, a snowy rocky mountain slope with the mine`
-- **13. Dasht:** `timber walls and felt-roofed wooden towers, horse skulls above the gate, yurts behind the wall, a dry grassy hill with the mine`
-- **14. Cho'l:** `sun-baked mud-brick walls with palm trees, clay pots, a red sandstone rock with the mine`
 
-**15–16. Poytaxtlar** — ko'k rang qoidasi BU YERDA YO'Q, o'z ranglarida:
+### 10. Dushman tayanchi: ko'l bo'yi
+**Biriktiring:** 1-promptning natijasi
 ```
-Using EXACTLY the same composition, camera angle and art style as the attached base, but about 1.4 times taller and grander, draw a huge enemy CAPITAL CITY base: <STYLE>. A rocky hill with a mine entrance on the right as in the attached image. NO people, NO text. Plain flat light-gray background (#D8D8D8).
+Using EXACTLY the same composition, camera angle, scale and art style as the attached base (a long city wall going off the LEFT edge of the image, a gatehouse with two towers and an OPEN arched gate facing right in the center, an EMPTY wall-walk on top, a rocky hill with a timber-framed mine entrance on the right, everything standing on one clean straight bottom line, no ground patch), draw an ENEMY base: white limestone walls, a small wooden pier and a moored boat beside the gate on green-grey water (not blue), a pale rocky hill with the mine. All banners and flags are plain solid ROYAL BLUE without emblems; nothing else in the image is blue. NO people, NO text. Plain flat light-gray background (#D8D8D8).
 ```
-- **15. Rim uslubi:** `grey stone city walls and a massive gatehouse, red tile roofs and a round amphitheater rising behind the wall, RED banners with golden laurel emblems`
-- **16. Fors uslubi:** `blue-and-white tiled city walls, a grand gatehouse with a pointed arch, blue domes and minarets rising behind the wall, BLUE-and-GOLD banners`
+
+### 11. Dushman tayanchi: ekinzor
+**Biriktiring:** 1-promptning natijasi
+```
+Using EXACTLY the same composition, camera angle, scale and art style as the attached base (a long city wall going off the LEFT edge of the image, a gatehouse with two towers and an OPEN arched gate facing right in the center, an EMPTY wall-walk on top, a rocky hill with a timber-framed mine entrance on the right, everything standing on one clean straight bottom line, no ground patch), draw an ENEMY base: brick walls and towers with red clay-tile roofs, hay stacks and a farm cart beside the wall, a grassy hill with the mine. All banners and flags are plain solid ROYAL BLUE without emblems; nothing else in the image is blue. NO people, NO text. Plain flat light-gray background (#D8D8D8).
+```
+
+### 12. Dushman tayanchi: tog'
+**Biriktiring:** 1-promptning natijasi
+```
+Using EXACTLY the same composition, camera angle, scale and art style as the attached base (a long city wall going off the LEFT edge of the image, a gatehouse with two towers and an OPEN arched gate facing right in the center, an EMPTY wall-walk on top, a rocky hill with a timber-framed mine entrance on the right, everything standing on one clean straight bottom line, no ground patch), draw an ENEMY base: grey granite walls on rocks, snow on all roofs and battlements, snowy pines, a snowy rocky mountain slope with the mine. All banners and flags are plain solid ROYAL BLUE without emblems; nothing else in the image is blue. NO people, NO text. Plain flat light-gray background (#D8D8D8).
+```
+
+### 13. Dushman tayanchi: dasht
+**Biriktiring:** 1-promptning natijasi
+```
+Using EXACTLY the same composition, camera angle, scale and art style as the attached base (a long city wall going off the LEFT edge of the image, a gatehouse with two towers and an OPEN arched gate facing right in the center, an EMPTY wall-walk on top, a rocky hill with a timber-framed mine entrance on the right, everything standing on one clean straight bottom line, no ground patch), draw an ENEMY base: timber walls and felt-roofed wooden towers, horse skulls above the gate, yurts behind the wall, a dry grassy hill with the mine. All banners and flags are plain solid ROYAL BLUE without emblems; nothing else in the image is blue. NO people, NO text. Plain flat light-gray background (#D8D8D8).
+```
+
+### 14. Dushman tayanchi: cho'l
+**Biriktiring:** 1-promptning natijasi
+```
+Using EXACTLY the same composition, camera angle, scale and art style as the attached base (a long city wall going off the LEFT edge of the image, a gatehouse with two towers and an OPEN arched gate facing right in the center, an EMPTY wall-walk on top, a rocky hill with a timber-framed mine entrance on the right, everything standing on one clean straight bottom line, no ground patch), draw an ENEMY base: sun-baked mud-brick walls with palm trees and clay pots, a red sandstone rock with the mine. All banners and flags are plain solid ROYAL BLUE without emblems; nothing else in the image is blue. NO people, NO text. Plain flat light-gray background (#D8D8D8).
+```
+
+### 15. Poytaxt: Rim uslubi
+**Biriktiring:** 1-promptning natijasi
+```
+Using EXACTLY the same composition, camera angle and art style as the attached base, but about 1.4 times taller and grander, draw a huge enemy CAPITAL CITY base: grey stone city walls and a massive gatehouse, red tile roofs and a round amphitheater rising behind the wall, RED banners with golden laurel emblems. A rocky hill with a timber-framed mine entrance on the right, as in the attached image. Everything stands on one clean straight bottom line, no ground patch. NO people, NO text. Plain flat light-gray background (#D8D8D8).
+```
+
+### 16. Poytaxt: Fors uslubi
+**Biriktiring:** 1-promptning natijasi
+```
+Using EXACTLY the same composition, camera angle and art style as the attached base, but about 1.4 times taller and grander, draw a huge enemy CAPITAL CITY base: blue-and-white tiled city walls, a grand gatehouse with a pointed arch, blue domes and minarets rising behind the wall, BLUE-and-GOLD banners. A rocky hill with a timber-framed mine entrance on the right, as in the attached image. Everything stands on one clean straight bottom line, no ground patch. NO people, NO text. Plain flat light-gray background (#D8D8D8).
+```
 
 ---
 
 ## 17–22. Dushman askarlari: 24 kadr
-Har bir rasmda **bitta xalqning bitta askari**.
-**Biriktiring:** 2 ta rasm:
-- **(a)** bizning o'sha turdagi yangi 24 kadrli varaq (5, 6 yoki 7-prompt natijasi). U pozalar uchun kerak.
-- **(b)** `dushman_qilichli.webp` / `dushman_nayzachi.webp` / `dushman_kamonchi.webp`. U personajning ko'rinishi uchun kerak.
+Har bir rasmda bitta xalqning bitta askari. Har biriga **2 ta rasm** biriktiriladi: birinchisi pozalar uchun, ikkinchisi ko'rinish uchun. Tartibi muhim: avval birinchisini, keyin ikkinchisini qo'shing.
 
+### 17. Dushman qilichli: ko'chmanchi
+**Biriktiring:** 1) 5-promptning natijasi (bizning yangi 24 kadrli qilichli); 2) `dushman_qilichli.webp`
 ```
-Use the FIRST attached sprite sheet ONLY as the reference for the 24 poses, their order, the layout (6 columns x 4 rows, 1536x1024) and the figure size. Use the SECOND attached image ONLY as the reference for the character's look: draw the <TOP ROW / BOTTOM ROW> character from it — <XALQ>.
-Draw this character in exactly the same 24 poses as the first sheet, with his own weapons from the second image.
+Use the FIRST attached sprite sheet ONLY as the reference for the 24 poses, their order, the layout (6 columns x 4 rows of equal cells, image 1536x1024) and the figure size. Use the SECOND attached image ONLY as the reference for the character's look: draw the TOP ROW character from it — the light steppe nomad with the fur-trimmed pointed felt cap, braided hair, quilted kaftan and leather lamellar vest. Draw this character in exactly the same 24 poses as the first sheet, holding his own weapons from the second image in every frame (only in the death frames do the weapons fall).
 COLOR RULE: all fabric parts (kaftan, tabard, sash, cloak) and the shield faces are ONE solid ROYAL BLUE color; nothing else in the image is blue.
-Same character, same outfit and proportions in all 24 frames. Pure side profile, facing RIGHT, feet on the same baseline in every cell. NO numbers, text, lines or borders. Plain flat light-gray background (#D8D8D8), no shadows, no ground.
+Same character, same outfit and proportions in all 24 frames. Pure side profile view (90 degrees), facing RIGHT, feet on the same baseline in every cell. NO numbers, NO text, NO lines or borders. Plain flat light-gray background (#D8D8D8), no shadows, no ground.
 ```
-`<TOP ROW / BOTTOM ROW>` va `<XALQ>` o'rniga:
-- **Ko'chmanchi:** `TOP ROW` — `the light steppe nomad with the fur-trimmed pointed felt cap`
-- **Sovutli:** `BOTTOM ROW` — `the heavily armored soldier in chain mail and a closed steel helmet`
 
-| # | Tur | Xalq | (a) | (b) |
-|---|---|---|---|---|
-| 17 | Qilichli | Ko'chmanchi | 5-natija | dushman_qilichli |
-| 18 | Qilichli | Sovutli | 5-natija | dushman_qilichli |
-| 19 | Nayzachi | Ko'chmanchi | 6-natija | dushman_nayzachi |
-| 20 | Nayzachi | Sovutli | 6-natija | dushman_nayzachi |
-| 21 | Kamonchi | Ko'chmanchi | 7-natija | dushman_kamonchi |
-| 22 | Kamonchi | Sovutli | 7-natija | dushman_kamonchi |
+### 18. Dushman qilichli: sovutli
+**Biriktiring:** 1) 5-promptning natijasi (bizning yangi 24 kadrli qilichli); 2) `dushman_qilichli.webp`
+```
+Use the FIRST attached sprite sheet ONLY as the reference for the 24 poses, their order, the layout (6 columns x 4 rows of equal cells, image 1536x1024) and the figure size. Use the SECOND attached image ONLY as the reference for the character's look: draw the BOTTOM ROW character from it — the heavily armored soldier in a chain mail hauberk, steel plates, a closed steel helmet and a tabard. Draw this character in exactly the same 24 poses as the first sheet, holding his own weapons from the second image in every frame (only in the death frames do the weapons fall).
+COLOR RULE: all fabric parts (kaftan, tabard, sash, cloak) and the shield faces are ONE solid ROYAL BLUE color; nothing else in the image is blue.
+Same character, same outfit and proportions in all 24 frames. Pure side profile view (90 degrees), facing RIGHT, feet on the same baseline in every cell. NO numbers, NO text, NO lines or borders. Plain flat light-gray background (#D8D8D8), no shadows, no ground.
+```
+
+### 19. Dushman nayzachi: ko'chmanchi
+**Biriktiring:** 1) 6-promptning natijasi (bizning yangi 24 kadrli nayzachi); 2) `dushman_nayzachi.webp`
+```
+Use the FIRST attached sprite sheet ONLY as the reference for the 24 poses, their order, the layout (6 columns x 4 rows of equal cells, image 1536x1024) and the figure size. Use the SECOND attached image ONLY as the reference for the character's look: draw the TOP ROW character from it — the light steppe nomad with the fur-trimmed pointed felt cap, braided hair, quilted kaftan and leather lamellar vest. Draw this character in exactly the same 24 poses as the first sheet, holding his own weapons from the second image in every frame (only in the death frames do the weapons fall).
+COLOR RULE: all fabric parts (kaftan, tabard, sash, cloak) and the shield faces are ONE solid ROYAL BLUE color; nothing else in the image is blue.
+Same character, same outfit and proportions in all 24 frames. Pure side profile view (90 degrees), facing RIGHT, feet on the same baseline in every cell. NO numbers, NO text, NO lines or borders. The spear always stays fully inside its own cell. Plain flat light-gray background (#D8D8D8), no shadows, no ground.
+```
+
+### 20. Dushman nayzachi: sovutli
+**Biriktiring:** 1) 6-promptning natijasi (bizning yangi 24 kadrli nayzachi); 2) `dushman_nayzachi.webp`
+```
+Use the FIRST attached sprite sheet ONLY as the reference for the 24 poses, their order, the layout (6 columns x 4 rows of equal cells, image 1536x1024) and the figure size. Use the SECOND attached image ONLY as the reference for the character's look: draw the BOTTOM ROW character from it — the heavily armored soldier in a chain mail hauberk, steel plates, a closed steel helmet and a tabard. Draw this character in exactly the same 24 poses as the first sheet, holding his own weapons from the second image in every frame (only in the death frames do the weapons fall).
+COLOR RULE: all fabric parts (kaftan, tabard, sash, cloak) and the shield faces are ONE solid ROYAL BLUE color; nothing else in the image is blue.
+Same character, same outfit and proportions in all 24 frames. Pure side profile view (90 degrees), facing RIGHT, feet on the same baseline in every cell. NO numbers, NO text, NO lines or borders. The spear always stays fully inside its own cell. Plain flat light-gray background (#D8D8D8), no shadows, no ground.
+```
+
+### 21. Dushman kamonchi: ko'chmanchi
+**Biriktiring:** 1) 7-promptning natijasi (bizning yangi 24 kadrli kamonchi); 2) `dushman_kamonchi.webp`
+```
+Use the FIRST attached sprite sheet ONLY as the reference for the 24 poses, their order, the layout (6 columns x 4 rows of equal cells, image 1536x1024) and the figure size. Use the SECOND attached image ONLY as the reference for the character's look: draw the TOP ROW character from it — the light steppe nomad with the fur-trimmed pointed felt cap, braided hair, quilted kaftan and leather lamellar vest. Draw this character in exactly the same 24 poses as the first sheet, holding his own weapons from the second image in every frame (only in the death frames do the weapons fall).
+COLOR RULE: all fabric parts (kaftan, tabard, sash, cloak) and the shield faces are ONE solid ROYAL BLUE color; nothing else in the image is blue.
+Same character, same outfit and proportions in all 24 frames. Pure side profile view (90 degrees), facing RIGHT, feet on the same baseline in every cell. NO numbers, NO text, NO lines or borders. NO flying arrows anywhere in the image. Plain flat light-gray background (#D8D8D8), no shadows, no ground.
+```
+
+### 22. Dushman kamonchi: sovutli
+**Biriktiring:** 1) 7-promptning natijasi (bizning yangi 24 kadrli kamonchi); 2) `dushman_kamonchi.webp`
+```
+Use the FIRST attached sprite sheet ONLY as the reference for the 24 poses, their order, the layout (6 columns x 4 rows of equal cells, image 1536x1024) and the figure size. Use the SECOND attached image ONLY as the reference for the character's look: draw the BOTTOM ROW character from it — the heavily armored soldier in a chain mail hauberk, steel plates, a closed steel helmet and a tabard. Draw this character in exactly the same 24 poses as the first sheet, holding his own weapons from the second image in every frame (only in the death frames do the weapons fall).
+COLOR RULE: all fabric parts (kaftan, tabard, sash, cloak) and the shield faces are ONE solid ROYAL BLUE color; nothing else in the image is blue.
+Same character, same outfit and proportions in all 24 frames. Pure side profile view (90 degrees), facing RIGHT, feet on the same baseline in every cell. NO numbers, NO text, NO lines or borders. NO flying arrows anywhere in the image. Plain flat light-gray background (#D8D8D8), no shadows, no ground.
+```
 
 ---
 
