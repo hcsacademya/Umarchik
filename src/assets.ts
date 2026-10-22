@@ -36,7 +36,6 @@ function frames(list: FrameMeta[]): Frame[] {
 }
 
 const unitMeta = meta.units as Record<Kind, FrameMeta[]>;
-const buildingMeta = meta.buildings as Record<string, FrameMeta[]>;
 // Dushman xalqlari: mato qismlari toza ko'k rangda chizilgan (rang almashtirish uchun)
 const factionMeta = (meta as { factions?: Record<string, Record<string, FrameMeta[]>> }).factions ?? {};
 
@@ -50,13 +49,62 @@ for (const [fac, kinds] of Object.entries(factionMeta)) {
   FACTION_FRAMES[fac as FactionId] = out;
 }
 
-export const BUILDINGS: Record<string, Frame[]> = {};
-for (const k of Object.keys(buildingMeta)) BUILDINGS[k] = frames(buildingMeta[k]);
+// ---------- Yaxlit tayanch: qal'a devori, darvoza va kon bitta rasmda ----------
+// Teshiklar [x0, x1, y0, y1] — rasm kengligi/balandligiga nisbatan, y pastdan. Ular orqali askarlar ichkariga kirib ketadi
+export interface Base extends Frame {
+  gate: [number, number, number, number];
+  mine: [number, number, number, number];
+  mineDx: number; // darvozadan kon og'zigacha (o'yin birligida)
+  wzGate: number; // darvoza ustidagi devor yo'lagi balandligi
+}
 
-// "qasr_dushman:2" -> kadr
-export function building(ref: string): Frame {
-  const [key, idx] = ref.split(':');
-  return BUILDINGS[key][Number(idx)];
+interface BaseMeta extends FrameMeta {
+  gate: [number, number, number, number];
+  mine: [number, number, number, number];
+  mineDx: number;
+  wzGate: number;
+}
+
+const baseMeta = (meta as unknown as { bases: Record<string, BaseMeta> }).bases;
+export const BASES: Record<string, Base> = {};
+for (const [k, m] of Object.entries(baseMeta)) {
+  BASES[k] = { img: image(m.f), w: m.w, h: m.h, ax: m.ax, gate: m.gate, mine: m.mine, mineDx: m.mineDx, wzGate: m.wzGate };
+}
+
+// Ustki qatlam: tayanch rasmining o'zi, faqat darvoza va kon teshiklari o'yib olingan.
+// Askar teshik ichiga kirganda devor va ramka uning ustidan chiziladi — haqiqatan ichkariga kirib ketgandek
+const fronts = new Map<Frame['img'], HTMLCanvasElement>();
+
+export function baseFront(b: Base, img: Frame['img'] = b.img): HTMLCanvasElement | null {
+  if (!ready(img)) return null;
+  let c = fronts.get(img);
+  if (!c) {
+    c = document.createElement('canvas');
+    const W = img instanceof HTMLImageElement ? img.naturalWidth : img.width;
+    const H = img instanceof HTMLImageElement ? img.naturalHeight : img.height;
+    c.width = W;
+    c.height = H;
+    const g = c.getContext('2d')!;
+    g.drawImage(img, 0, 0);
+    g.globalCompositeOperation = 'destination-out';
+    for (const [x0, x1, y0, y1] of [b.gate, b.mine]) {
+      const l = x0 * W;
+      const r = x1 * W;
+      const top = H - y1 * H;
+      const bot = H - y0 * H;
+      const rad = (r - l) / 2;
+      // ravoqsimon teshik: tepasi yarim doira
+      g.beginPath();
+      g.moveTo(l, bot + 2);
+      g.lineTo(l, top + rad * 0.6);
+      g.ellipse(l + rad, top + rad * 0.6, rad, rad * 0.6, 0, Math.PI, 0);
+      g.lineTo(r, bot + 2);
+      g.closePath();
+      g.fill();
+    }
+    fronts.set(img, c);
+  }
+  return c;
 }
 
 export const MAP_IMAGE = meta.map.f;
@@ -137,13 +185,13 @@ function recolorImage(img: HTMLImageElement, hex: string, key: boolean): HTMLCan
 
 const tinted = new Map<string, Frame[]>();
 
-// Dushman qasri bayroqlari (toza ko'k) jang rangiga bo'yaladi
-export function tintedBuilding(ref: string, hex: string): Frame {
-  const k = `b:${ref}:${hex}`;
-  let out = tinted.get(k);
+// Dushman tayanchining bayroqlari (toza ko'k) jang rangiga bo'yaladi
+export function tintedBase(key: string, hex: string): Base {
+  const k = `b:${key}:${hex}`;
+  let out = tinted.get(k) as Base[] | undefined;
   if (!out) {
-    const f = building(ref);
-    out = [{ ...f, img: ready(f.img) && f.img instanceof HTMLImageElement ? recolorImage(f.img, hex, true) : f.img }];
+    const b = BASES[key];
+    out = [{ ...b, img: ready(b.img) && b.img instanceof HTMLImageElement ? recolorImage(b.img, hex, true) : b.img }];
     tinted.set(k, out);
   }
   return out[0];

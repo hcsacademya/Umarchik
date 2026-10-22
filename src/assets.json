@@ -4,491 +4,731 @@
   "amir": [
    {
     "f": "assets/units/amir_0.webp",
-    "w": 52.7,
-    "h": 74.1,
-    "ax": 0.566
+    "w": 64.1,
+    "h": 73.2,
+    "ax": 0.476
    },
    {
     "f": "assets/units/amir_1.webp",
-    "w": 46.8,
-    "h": 71.4,
-    "ax": 0.579
+    "w": 59.5,
+    "h": 65.5,
+    "ax": 0.493
    },
    {
     "f": "assets/units/amir_2.webp",
-    "w": 45.9,
-    "h": 73.2,
-    "ax": 0.648
+    "w": 54.1,
+    "h": 76.8,
+    "ax": 0.39
    },
    {
     "f": "assets/units/amir_3.webp",
-    "w": 52.3,
-    "h": 73.2,
-    "ax": 0.575
+    "w": 61.4,
+    "h": 78.2,
+    "ax": 0.477
    },
    {
     "f": "assets/units/amir_4.webp",
-    "w": 50.0,
-    "h": 72.7,
-    "ax": 0.554
+    "w": 67.3,
+    "h": 71.4,
+    "ax": 0.503
    },
    {
     "f": "assets/units/amir_5.webp",
-    "w": 46.8,
-    "h": 73.6,
-    "ax": 0.587
+    "w": 62.3,
+    "h": 70.0,
+    "ax": 0.464
    },
    {
     "f": "assets/units/amir_6.webp",
-    "w": 34.5,
-    "h": 78.6,
-    "ax": 0.543
+    "w": 46.8,
+    "h": 74.5,
+    "ax": 0.516
    },
    {
     "f": "assets/units/amir_7.webp",
-    "w": 37.7,
-    "h": 77.3,
-    "ax": 0.573
+    "w": 59.5,
+    "h": 73.2,
+    "ax": 0.455
    },
    {
     "f": "assets/units/amir_8.webp",
-    "w": 58.2,
-    "h": 75.5,
-    "ax": 0.461
+    "w": 43.2,
+    "h": 77.7,
+    "ax": 0.477
    },
    {
     "f": "assets/units/amir_9.webp",
-    "w": 97.3,
-    "h": 64.1,
-    "ax": 0.393
+    "w": 43.6,
+    "h": 78.6,
+    "ax": 0.467
    },
    {
     "f": "assets/units/amir_10.webp",
-    "w": 93.6,
-    "h": 59.5,
-    "ax": 0.416
+    "w": 45.0,
+    "h": 68.6,
+    "ax": 0.277
    },
    {
     "f": "assets/units/amir_11.webp",
-    "w": 79.1,
-    "h": 66.4,
-    "ax": 0.373
+    "w": 60.0,
+    "h": 75.9,
+    "ax": 0.446
    },
    {
     "f": "assets/units/amir_12.webp",
-    "w": 56.4,
-    "h": 70.0,
-    "ax": 0.35
+    "w": 64.1,
+    "h": 76.8,
+    "ax": 0.416
    },
    {
     "f": "assets/units/amir_13.webp",
-    "w": 93.2,
-    "h": 50.5,
-    "ax": 0.37
+    "w": 75.0,
+    "h": 60.5,
+    "ax": 0.432
    },
    {
     "f": "assets/units/amir_14.webp",
-    "w": 81.4,
-    "h": 43.6,
-    "ax": 0.531
+    "w": 75.9,
+    "h": 56.4,
+    "ax": 0.441
    },
    {
     "f": "assets/units/amir_15.webp",
-    "w": 110.0,
+    "w": 68.6,
+    "h": 65.0,
+    "ax": 0.403
+   },
+   {
+    "f": "assets/units/amir_16.webp",
+    "w": 49.5,
+    "h": 78.2,
+    "ax": 0.596
+   },
+   {
+    "f": "assets/units/amir_17.webp",
+    "w": 67.7,
+    "h": 57.7,
+    "ax": 0.488
+   },
+   {
+    "f": "assets/units/amir_18.webp",
+    "w": 90.9,
+    "h": 58.2,
+    "ax": 0.363
+   },
+   {
+    "f": "assets/units/amir_19.webp",
+    "w": 46.4,
+    "h": 65.5,
+    "ax": 0.481
+   },
+   {
+    "f": "assets/units/amir_20.webp",
+    "w": 61.8,
+    "h": 60.5,
+    "ax": 0.377
+   },
+   {
+    "f": "assets/units/amir_21.webp",
+    "w": 63.2,
+    "h": 49.1,
+    "ax": 0.485
+   },
+   {
+    "f": "assets/units/amir_22.webp",
+    "w": 73.6,
+    "h": 42.3,
+    "ax": 0.519
+   },
+   {
+    "f": "assets/units/amir_23.webp",
+    "w": 91.8,
     "h": 27.7,
-    "ax": 0.475
+    "ax": 0.49
    }
   ],
   "qilichli": [
    {
     "f": "assets/units/qilichli_0.webp",
-    "w": 60.5,
-    "h": 71.8,
-    "ax": 0.593
+    "w": 59.1,
+    "h": 70.5,
+    "ax": 0.623
    },
    {
     "f": "assets/units/qilichli_1.webp",
-    "w": 43.6,
-    "h": 68.2,
-    "ax": 0.602
+    "w": 51.4,
+    "h": 64.5,
+    "ax": 0.684
    },
    {
     "f": "assets/units/qilichli_2.webp",
-    "w": 28.2,
-    "h": 72.3,
-    "ax": 0.532
+    "w": 29.5,
+    "h": 73.2,
+    "ax": 0.488
    },
    {
     "f": "assets/units/qilichli_3.webp",
-    "w": 54.5,
-    "h": 71.4,
-    "ax": 0.56
+    "w": 42.7,
+    "h": 76.4,
+    "ax": 0.627
    },
    {
     "f": "assets/units/qilichli_4.webp",
-    "w": 47.7,
-    "h": 70.5,
-    "ax": 0.668
+    "w": 57.7,
+    "h": 69.1,
+    "ax": 0.606
    },
    {
     "f": "assets/units/qilichli_5.webp",
-    "w": 31.4,
-    "h": 73.2,
-    "ax": 0.528
+    "w": 53.6,
+    "h": 68.2,
+    "ax": 0.628
    },
    {
     "f": "assets/units/qilichli_6.webp",
-    "w": 32.3,
-    "h": 76.4,
-    "ax": 0.49
+    "w": 34.5,
+    "h": 75.9,
+    "ax": 0.557
    },
    {
     "f": "assets/units/qilichli_7.webp",
-    "w": 34.5,
-    "h": 77.7,
-    "ax": 0.499
+    "w": 40.0,
+    "h": 74.5,
+    "ax": 0.615
    },
    {
     "f": "assets/units/qilichli_8.webp",
-    "w": 59.1,
-    "h": 78.2,
-    "ax": 0.548
+    "w": 31.4,
+    "h": 76.4,
+    "ax": 0.495
    },
    {
     "f": "assets/units/qilichli_9.webp",
-    "w": 94.5,
-    "h": 61.8,
-    "ax": 0.515
+    "w": 31.8,
+    "h": 76.4,
+    "ax": 0.496
    },
    {
     "f": "assets/units/qilichli_10.webp",
-    "w": 80.5,
-    "h": 58.2,
-    "ax": 0.491
+    "w": 45.0,
+    "h": 70.5,
+    "ax": 0.351
    },
    {
     "f": "assets/units/qilichli_11.webp",
-    "w": 72.3,
-    "h": 64.5,
-    "ax": 0.486
+    "w": 45.9,
+    "h": 70.9,
+    "ax": 0.548
    },
    {
     "f": "assets/units/qilichli_12.webp",
-    "w": 52.7,
-    "h": 65.5,
-    "ax": 0.348
+    "w": 57.3,
+    "h": 80.5,
+    "ax": 0.59
    },
    {
     "f": "assets/units/qilichli_13.webp",
-    "w": 87.7,
-    "h": 51.8,
-    "ax": 0.387
+    "w": 90.9,
+    "h": 61.4,
+    "ax": 0.484
    },
    {
     "f": "assets/units/qilichli_14.webp",
-    "w": 89.5,
-    "h": 41.8,
-    "ax": 0.471
+    "w": 76.8,
+    "h": 56.4,
+    "ax": 0.459
    },
    {
     "f": "assets/units/qilichli_15.webp",
-    "w": 116.8,
-    "h": 25.5,
-    "ax": 0.457
+    "w": 57.3,
+    "h": 67.7,
+    "ax": 0.653
+   },
+   {
+    "f": "assets/units/qilichli_16.webp",
+    "w": 64.5,
+    "h": 65.5,
+    "ax": 0.676
+   },
+   {
+    "f": "assets/units/qilichli_17.webp",
+    "w": 55.9,
+    "h": 60.5,
+    "ax": 0.619
+   },
+   {
+    "f": "assets/units/qilichli_18.webp",
+    "w": 89.1,
+    "h": 63.6,
+    "ax": 0.419
+   },
+   {
+    "f": "assets/units/qilichli_19.webp",
+    "w": 48.6,
+    "h": 63.2,
+    "ax": 0.565
+   },
+   {
+    "f": "assets/units/qilichli_20.webp",
+    "w": 63.6,
+    "h": 59.5,
+    "ax": 0.408
+   },
+   {
+    "f": "assets/units/qilichli_21.webp",
+    "w": 64.5,
+    "h": 45.0,
+    "ax": 0.532
+   },
+   {
+    "f": "assets/units/qilichli_22.webp",
+    "w": 72.3,
+    "h": 40.0,
+    "ax": 0.545
+   },
+   {
+    "f": "assets/units/qilichli_23.webp",
+    "w": 100.0,
+    "h": 25.0,
+    "ax": 0.453
    }
   ],
   "nayzachi": [
    {
     "f": "assets/units/nayzachi_0.webp",
-    "w": 65.5,
-    "h": 79.5,
-    "ax": 0.617
+    "w": 62.7,
+    "h": 82.3,
+    "ax": 0.601
    },
    {
     "f": "assets/units/nayzachi_1.webp",
-    "w": 54.5,
-    "h": 75.9,
-    "ax": 0.623
+    "w": 57.3,
+    "h": 77.7,
+    "ax": 0.601
    },
    {
     "f": "assets/units/nayzachi_2.webp",
-    "w": 31.4,
+    "w": 36.4,
     "h": 80.9,
-    "ax": 0.443
+    "ax": 0.408
    },
    {
     "f": "assets/units/nayzachi_3.webp",
-    "w": 60.5,
-    "h": 77.7,
-    "ax": 0.602
+    "w": 53.2,
+    "h": 82.3,
+    "ax": 0.535
    },
    {
     "f": "assets/units/nayzachi_4.webp",
-    "w": 60.0,
-    "h": 77.3,
-    "ax": 0.617
+    "w": 63.6,
+    "h": 79.5,
+    "ax": 0.58
    },
    {
     "f": "assets/units/nayzachi_5.webp",
-    "w": 37.7,
-    "h": 77.3,
-    "ax": 0.481
+    "w": 59.1,
+    "h": 78.6,
+    "ax": 0.587
    },
    {
     "f": "assets/units/nayzachi_6.webp",
-    "w": 35.0,
-    "h": 83.2,
-    "ax": 0.492
+    "w": 38.6,
+    "h": 76.4,
+    "ax": 0.496
    },
    {
     "f": "assets/units/nayzachi_7.webp",
-    "w": 33.6,
-    "h": 84.5,
-    "ax": 0.479
+    "w": 41.8,
+    "h": 75.0,
+    "ax": 0.546
    },
    {
     "f": "assets/units/nayzachi_8.webp",
-    "w": 67.3,
-    "h": 66.8,
-    "ax": 0.635
+    "w": 30.5,
+    "h": 76.8,
+    "ax": 0.46
    },
    {
     "f": "assets/units/nayzachi_9.webp",
-    "w": 115.0,
-    "h": 63.2,
-    "ax": 0.438
+    "w": 32.7,
+    "h": 76.8,
+    "ax": 0.48
    },
    {
     "f": "assets/units/nayzachi_10.webp",
-    "w": 111.4,
-    "h": 61.8,
-    "ax": 0.435
+    "w": 44.1,
+    "h": 66.8,
+    "ax": 0.354
    },
    {
     "f": "assets/units/nayzachi_11.webp",
-    "w": 81.8,
-    "h": 66.4,
-    "ax": 0.451
+    "w": 47.7,
+    "h": 73.2,
+    "ax": 0.535
    },
    {
     "f": "assets/units/nayzachi_12.webp",
-    "w": 57.7,
-    "h": 67.7,
-    "ax": 0.32
+    "w": 55.0,
+    "h": 75.5,
+    "ax": 0.588
    },
    {
     "f": "assets/units/nayzachi_13.webp",
-    "w": 103.6,
-    "h": 52.3,
-    "ax": 0.359
+    "w": 95.0,
+    "h": 62.7,
+    "ax": 0.419
    },
    {
     "f": "assets/units/nayzachi_14.webp",
-    "w": 90.9,
-    "h": 40.5,
-    "ax": 0.487
+    "w": 104.1,
+    "h": 60.0,
+    "ax": 0.446
    },
    {
     "f": "assets/units/nayzachi_15.webp",
-    "w": 122.7,
-    "h": 24.5,
-    "ax": 0.444
+    "w": 66.4,
+    "h": 64.1,
+    "ax": 0.558
+   },
+   {
+    "f": "assets/units/nayzachi_16.webp",
+    "w": 58.2,
+    "h": 80.5,
+    "ax": 0.704
+   },
+   {
+    "f": "assets/units/nayzachi_17.webp",
+    "w": 76.4,
+    "h": 59.5,
+    "ax": 0.523
+   },
+   {
+    "f": "assets/units/nayzachi_18.webp",
+    "w": 88.6,
+    "h": 61.4,
+    "ax": 0.424
+   },
+   {
+    "f": "assets/units/nayzachi_19.webp",
+    "w": 44.5,
+    "h": 70.9,
+    "ax": 0.51
+   },
+   {
+    "f": "assets/units/nayzachi_20.webp",
+    "w": 55.0,
+    "h": 59.5,
+    "ax": 0.28
+   },
+   {
+    "f": "assets/units/nayzachi_21.webp",
+    "w": 69.5,
+    "h": 46.8,
+    "ax": 0.586
+   },
+   {
+    "f": "assets/units/nayzachi_22.webp",
+    "w": 82.7,
+    "h": 37.3,
+    "ax": 0.457
+   },
+   {
+    "f": "assets/units/nayzachi_23.webp",
+    "w": 95.0,
+    "h": 25.9,
+    "ax": 0.454
    }
   ],
   "kamonchi": [
    {
     "f": "assets/units/kamonchi_0.webp",
-    "w": 56.4,
-    "h": 71.8,
-    "ax": 0.511
+    "w": 58.6,
+    "h": 75.5,
+    "ax": 0.541
    },
    {
     "f": "assets/units/kamonchi_1.webp",
-    "w": 51.8,
-    "h": 70.9,
-    "ax": 0.509
+    "w": 55.0,
+    "h": 70.5,
+    "ax": 0.544
    },
    {
     "f": "assets/units/kamonchi_2.webp",
-    "w": 34.5,
-    "h": 71.8,
-    "ax": 0.359
+    "w": 40.0,
+    "h": 74.5,
+    "ax": 0.349
    },
    {
     "f": "assets/units/kamonchi_3.webp",
-    "w": 56.8,
-    "h": 72.7,
-    "ax": 0.528
+    "w": 51.8,
+    "h": 76.4,
+    "ax": 0.509
    },
    {
     "f": "assets/units/kamonchi_4.webp",
-    "w": 51.4,
-    "h": 72.7,
-    "ax": 0.557
+    "w": 55.9,
+    "h": 71.8,
+    "ax": 0.512
    },
    {
     "f": "assets/units/kamonchi_5.webp",
-    "w": 38.2,
-    "h": 73.2,
-    "ax": 0.354
+    "w": 54.1,
+    "h": 69.5,
+    "ax": 0.529
    },
    {
     "f": "assets/units/kamonchi_6.webp",
-    "w": 36.4,
-    "h": 74.1,
-    "ax": 0.36
+    "w": 47.3,
+    "h": 73.2,
+    "ax": 0.468
    },
    {
     "f": "assets/units/kamonchi_7.webp",
-    "w": 35.5,
-    "h": 75.0,
-    "ax": 0.338
+    "w": 40.5,
+    "h": 73.2,
+    "ax": 0.408
    },
    {
     "f": "assets/units/kamonchi_8.webp",
-    "w": 55.5,
+    "w": 37.7,
     "h": 74.5,
-    "ax": 0.378
+    "ax": 0.352
    },
    {
     "f": "assets/units/kamonchi_9.webp",
-    "w": 55.5,
-    "h": 76.4,
-    "ax": 0.446
+    "w": 37.3,
+    "h": 74.5,
+    "ax": 0.353
    },
    {
     "f": "assets/units/kamonchi_10.webp",
-    "w": 62.7,
-    "h": 80.5,
-    "ax": 0.443
+    "w": 51.8,
+    "h": 66.4,
+    "ax": 0.312
    },
    {
     "f": "assets/units/kamonchi_11.webp",
-    "w": 56.8,
-    "h": 80.0,
-    "ax": 0.445
+    "w": 42.3,
+    "h": 67.7,
+    "ax": 0.407
    },
    {
     "f": "assets/units/kamonchi_12.webp",
-    "w": 57.3,
-    "h": 60.5,
-    "ax": 0.318
+    "w": 51.4,
+    "h": 74.1,
+    "ax": 0.413
    },
    {
     "f": "assets/units/kamonchi_13.webp",
-    "w": 80.5,
-    "h": 49.1,
-    "ax": 0.374
+    "w": 52.3,
+    "h": 74.1,
+    "ax": 0.466
    },
    {
     "f": "assets/units/kamonchi_14.webp",
-    "w": 89.5,
-    "h": 41.8,
-    "ax": 0.502
+    "w": 55.5,
+    "h": 76.8,
+    "ax": 0.433
    },
    {
     "f": "assets/units/kamonchi_15.webp",
-    "w": 110.9,
-    "h": 28.6,
-    "ax": 0.459
+    "w": 54.1,
+    "h": 74.5,
+    "ax": 0.434
+   },
+   {
+    "f": "assets/units/kamonchi_16.webp",
+    "w": 49.1,
+    "h": 82.3,
+    "ax": 0.381
+   },
+   {
+    "f": "assets/units/kamonchi_17.webp",
+    "w": 52.7,
+    "h": 81.4,
+    "ax": 0.416
+   },
+   {
+    "f": "assets/units/kamonchi_18.webp",
+    "w": 54.1,
+    "h": 66.8,
+    "ax": 0.3
+   },
+   {
+    "f": "assets/units/kamonchi_19.webp",
+    "w": 45.9,
+    "h": 62.7,
+    "ax": 0.493
+   },
+   {
+    "f": "assets/units/kamonchi_20.webp",
+    "w": 53.6,
+    "h": 60.0,
+    "ax": 0.251
+   },
+   {
+    "f": "assets/units/kamonchi_21.webp",
+    "w": 70.5,
+    "h": 47.7,
+    "ax": 0.553
+   },
+   {
+    "f": "assets/units/kamonchi_22.webp",
+    "w": 78.6,
+    "h": 35.5,
+    "ax": 0.506
+   },
+   {
+    "f": "assets/units/kamonchi_23.webp",
+    "w": 88.2,
+    "h": 25.5,
+    "ax": 0.449
    }
   ],
   "konchi": [
    {
     "f": "assets/units/konchi_0.webp",
     "w": 58.2,
-    "h": 74.1,
-    "ax": 0.535
+    "h": 72.7,
+    "ax": 0.582
    },
    {
     "f": "assets/units/konchi_1.webp",
-    "w": 48.6,
-    "h": 72.3,
-    "ax": 0.584
+    "w": 51.8,
+    "h": 66.8,
+    "ax": 0.678
    },
    {
     "f": "assets/units/konchi_2.webp",
-    "w": 32.3,
-    "h": 75.5,
-    "ax": 0.45
+    "w": 31.4,
+    "h": 71.4,
+    "ax": 0.493
    },
    {
     "f": "assets/units/konchi_3.webp",
-    "w": 57.3,
-    "h": 74.5,
-    "ax": 0.534
+    "w": 35.0,
+    "h": 75.5,
+    "ax": 0.456
    },
    {
     "f": "assets/units/konchi_4.webp",
-    "w": 50.9,
-    "h": 74.5,
-    "ax": 0.565
+    "w": 57.3,
+    "h": 68.6,
+    "ax": 0.608
    },
    {
     "f": "assets/units/konchi_5.webp",
-    "w": 33.6,
-    "h": 75.9,
-    "ax": 0.488
+    "w": 51.4,
+    "h": 66.4,
+    "ax": 0.656
    },
    {
     "f": "assets/units/konchi_6.webp",
-    "w": 38.6,
-    "h": 80.0,
-    "ax": 0.638
+    "w": 32.7,
+    "h": 72.7,
+    "ax": 0.526
    },
    {
     "f": "assets/units/konchi_7.webp",
-    "w": 67.3,
-    "h": 58.2,
-    "ax": 0.434
+    "w": 35.9,
+    "h": 71.4,
+    "ax": 0.567
    },
    {
     "f": "assets/units/konchi_8.webp",
-    "w": 55.0,
-    "h": 73.2,
-    "ax": 0.471
+    "w": 37.7,
+    "h": 69.5,
+    "ax": 0.422
    },
    {
     "f": "assets/units/konchi_9.webp",
-    "w": 51.4,
-    "h": 74.1,
-    "ax": 0.448
+    "w": 39.5,
+    "h": 69.1,
+    "ax": 0.371
    },
    {
     "f": "assets/units/konchi_10.webp",
-    "w": 53.2,
-    "h": 72.3,
-    "ax": 0.467
+    "w": 42.7,
+    "h": 68.2,
+    "ax": 0.443
    },
    {
     "f": "assets/units/konchi_11.webp",
-    "w": 50.5,
-    "h": 73.2,
-    "ax": 0.455
+    "w": 47.7,
+    "h": 66.8,
+    "ax": 0.414
    },
    {
     "f": "assets/units/konchi_12.webp",
-    "w": 36.4,
+    "w": 54.1,
     "h": 70.5,
-    "ax": 0.357
+    "ax": 0.438
    },
    {
     "f": "assets/units/konchi_13.webp",
-    "w": 50.5,
-    "h": 61.4,
-    "ax": 0.297
+    "w": 55.0,
+    "h": 64.5,
+    "ax": 0.481
    },
    {
     "f": "assets/units/konchi_14.webp",
-    "w": 78.6,
-    "h": 48.2,
-    "ax": 0.445
+    "w": 38.2,
+    "h": 65.0,
+    "ax": 0.394
    },
    {
     "f": "assets/units/konchi_15.webp",
-    "w": 112.3,
-    "h": 30.5,
-    "ax": 0.506
+    "w": 47.3,
+    "h": 66.8,
+    "ax": 0.45
+   },
+   {
+    "f": "assets/units/konchi_16.webp",
+    "w": 30.9,
+    "h": 71.4,
+    "ax": 0.456
+   },
+   {
+    "f": "assets/units/konchi_17.webp",
+    "w": 29.1,
+    "h": 70.5,
+    "ax": 0.459
+   },
+   {
+    "f": "assets/units/konchi_18.webp",
+    "w": 52.3,
+    "h": 63.2,
+    "ax": 0.284
+   },
+   {
+    "f": "assets/units/konchi_19.webp",
+    "w": 46.4,
+    "h": 55.9,
+    "ax": 0.541
+   },
+   {
+    "f": "assets/units/konchi_20.webp",
+    "w": 48.6,
+    "h": 52.3,
+    "ax": 0.244
+   },
+   {
+    "f": "assets/units/konchi_21.webp",
+    "w": 65.5,
+    "h": 40.0,
+    "ax": 0.526
+   },
+   {
+    "f": "assets/units/konchi_22.webp",
+    "w": 71.4,
+    "h": 32.7,
+    "ax": 0.55
+   },
+   {
+    "f": "assets/units/konchi_23.webp",
+    "w": 81.8,
+    "h": 25.5,
+    "ax": 0.471
    }
   ],
   "otliq": [
@@ -505,79 +745,439 @@
    "qilichli": [
     {
      "f": "assets/units/kochmanchi_qilichli_0.webp",
-     "w": 33.2,
-     "h": 78.6,
-     "ax": 0.452
+     "w": 59.5,
+     "h": 74.1,
+     "ax": 0.57
     },
     {
      "f": "assets/units/kochmanchi_qilichli_1.webp",
-     "w": 46.8,
-     "h": 77.3,
-     "ax": 0.534
+     "w": 54.1,
+     "h": 69.5,
+     "ax": 0.655
     },
     {
      "f": "assets/units/kochmanchi_qilichli_2.webp",
-     "w": 45.0,
-     "h": 77.7,
-     "ax": 0.547
+     "w": 33.2,
+     "h": 75.0,
+     "ax": 0.432
     },
     {
      "f": "assets/units/kochmanchi_qilichli_3.webp",
-     "w": 62.3,
-     "h": 72.7,
+     "w": 48.2,
+     "h": 74.1,
+     "ax": 0.575
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_4.webp",
+     "w": 56.4,
+     "h": 71.8,
+     "ax": 0.57
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_5.webp",
+     "w": 54.1,
+     "h": 71.4,
+     "ax": 0.594
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_6.webp",
+     "w": 37.3,
+     "h": 76.8,
      "ax": 0.553
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_7.webp",
+     "w": 40.5,
+     "h": 75.9,
+     "ax": 0.595
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_8.webp",
+     "w": 29.5,
+     "h": 76.4,
+     "ax": 0.523
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_9.webp",
+     "w": 33.2,
+     "h": 77.3,
+     "ax": 0.509
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_10.webp",
+     "w": 46.8,
+     "h": 69.1,
+     "ax": 0.376
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_11.webp",
+     "w": 49.1,
+     "h": 73.2,
+     "ax": 0.553
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_12.webp",
+     "w": 58.2,
+     "h": 81.8,
+     "ax": 0.618
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_13.webp",
+     "w": 91.8,
+     "h": 65.0,
+     "ax": 0.481
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_14.webp",
+     "w": 83.2,
+     "h": 57.7,
+     "ax": 0.464
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_15.webp",
+     "w": 56.8,
+     "h": 68.6,
+     "ax": 0.658
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_16.webp",
+     "w": 63.2,
+     "h": 67.7,
+     "ax": 0.672
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_17.webp",
+     "w": 56.4,
+     "h": 64.1,
+     "ax": 0.626
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_18.webp",
+     "w": 93.6,
+     "h": 65.5,
+     "ax": 0.403
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_19.webp",
+     "w": 51.8,
+     "h": 65.5,
+     "ax": 0.535
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_20.webp",
+     "w": 62.7,
+     "h": 60.9,
+     "ax": 0.406
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_21.webp",
+     "w": 67.7,
+     "h": 44.5,
+     "ax": 0.509
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_22.webp",
+     "w": 75.0,
+     "h": 38.2,
+     "ax": 0.513
+    },
+    {
+     "f": "assets/units/kochmanchi_qilichli_23.webp",
+     "w": 100.5,
+     "h": 23.6,
+     "ax": 0.449
     }
    ],
    "nayzachi": [
     {
      "f": "assets/units/kochmanchi_nayzachi_0.webp",
-     "w": 29.5,
-     "h": 86.8,
-     "ax": 0.482
+     "w": 60.9,
+     "h": 81.8,
+     "ax": 0.557
     },
     {
      "f": "assets/units/kochmanchi_nayzachi_1.webp",
-     "w": 47.7,
-     "h": 85.0,
-     "ax": 0.543
+     "w": 54.1,
+     "h": 77.7,
+     "ax": 0.577
     },
     {
      "f": "assets/units/kochmanchi_nayzachi_2.webp",
-     "w": 45.9,
-     "h": 84.1,
-     "ax": 0.534
+     "w": 40.0,
+     "h": 81.8,
+     "ax": 0.475
     },
     {
      "f": "assets/units/kochmanchi_nayzachi_3.webp",
-     "w": 85.0,
+     "w": 54.1,
+     "h": 83.6,
+     "ax": 0.535
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_4.webp",
+     "w": 60.5,
+     "h": 79.5,
+     "ax": 0.556
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_5.webp",
+     "w": 53.2,
+     "h": 80.9,
+     "ax": 0.581
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_6.webp",
+     "w": 37.7,
+     "h": 78.6,
+     "ax": 0.527
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_7.webp",
+     "w": 39.5,
+     "h": 75.5,
+     "ax": 0.552
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_8.webp",
+     "w": 31.8,
+     "h": 78.6,
+     "ax": 0.503
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_9.webp",
+     "w": 33.2,
+     "h": 78.2,
+     "ax": 0.502
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_10.webp",
+     "w": 45.9,
+     "h": 67.3,
+     "ax": 0.335
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_11.webp",
+     "w": 47.7,
+     "h": 72.3,
+     "ax": 0.562
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_12.webp",
+     "w": 58.6,
+     "h": 81.4,
+     "ax": 0.568
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_13.webp",
+     "w": 91.8,
+     "h": 65.5,
+     "ax": 0.448
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_14.webp",
+     "w": 101.4,
+     "h": 63.2,
+     "ax": 0.425
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_15.webp",
+     "w": 66.4,
+     "h": 66.8,
+     "ax": 0.548
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_16.webp",
+     "w": 59.5,
+     "h": 80.0,
+     "ax": 0.709
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_17.webp",
+     "w": 70.5,
+     "h": 64.1,
+     "ax": 0.49
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_18.webp",
+     "w": 92.7,
      "h": 68.6,
-     "ax": 0.385
+     "ax": 0.372
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_19.webp",
+     "w": 50.0,
+     "h": 72.7,
+     "ax": 0.521
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_20.webp",
+     "w": 63.2,
+     "h": 59.5,
+     "ax": 0.363
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_21.webp",
+     "w": 65.9,
+     "h": 46.8,
+     "ax": 0.553
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_22.webp",
+     "w": 76.4,
+     "h": 37.7,
+     "ax": 0.484
+    },
+    {
+     "f": "assets/units/kochmanchi_nayzachi_23.webp",
+     "w": 94.5,
+     "h": 23.6,
+     "ax": 0.455
     }
    ],
    "kamonchi": [
     {
      "f": "assets/units/kochmanchi_kamonchi_0.webp",
-     "w": 32.3,
-     "h": 76.8,
-     "ax": 0.404
+     "w": 60.0,
+     "h": 80.9,
+     "ax": 0.508
     },
     {
      "f": "assets/units/kochmanchi_kamonchi_1.webp",
-     "w": 46.8,
-     "h": 75.5,
-     "ax": 0.482
+     "w": 56.8,
+     "h": 73.6,
+     "ax": 0.553
     },
     {
      "f": "assets/units/kochmanchi_kamonchi_2.webp",
-     "w": 45.9,
-     "h": 74.5,
-     "ax": 0.492
+     "w": 43.2,
+     "h": 77.3,
+     "ax": 0.4
     },
     {
      "f": "assets/units/kochmanchi_kamonchi_3.webp",
-     "w": 64.5,
-     "h": 80.5,
-     "ax": 0.402
+     "w": 53.6,
+     "h": 79.5,
+     "ax": 0.502
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_4.webp",
+     "w": 57.7,
+     "h": 74.5,
+     "ax": 0.523
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_5.webp",
+     "w": 55.0,
+     "h": 74.1,
+     "ax": 0.524
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_6.webp",
+     "w": 49.5,
+     "h": 75.9,
+     "ax": 0.463
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_7.webp",
+     "w": 45.9,
+     "h": 74.5,
+     "ax": 0.433
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_8.webp",
+     "w": 39.5,
+     "h": 75.5,
+     "ax": 0.349
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_9.webp",
+     "w": 38.2,
+     "h": 75.9,
+     "ax": 0.359
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_10.webp",
+     "w": 49.1,
+     "h": 64.1,
+     "ax": 0.314
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_11.webp",
+     "w": 44.5,
+     "h": 65.5,
+     "ax": 0.382
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_12.webp",
+     "w": 52.7,
+     "h": 74.5,
+     "ax": 0.441
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_13.webp",
+     "w": 70.5,
+     "h": 71.8,
+     "ax": 0.466
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_14.webp",
+     "w": 59.1,
+     "h": 77.3,
+     "ax": 0.473
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_15.webp",
+     "w": 56.4,
+     "h": 76.4,
+     "ax": 0.452
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_16.webp",
+     "w": 54.5,
+     "h": 82.3,
+     "ax": 0.572
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_17.webp",
+     "w": 56.4,
+     "h": 83.6,
+     "ax": 0.455
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_18.webp",
+     "w": 56.4,
+     "h": 65.0,
+     "ax": 0.337
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_19.webp",
+     "w": 49.1,
+     "h": 64.5,
+     "ax": 0.495
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_20.webp",
+     "w": 57.7,
+     "h": 58.6,
+     "ax": 0.27
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_21.webp",
+     "w": 66.4,
+     "h": 40.9,
+     "ax": 0.586
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_22.webp",
+     "w": 71.8,
+     "h": 34.1,
+     "ax": 0.529
+    },
+    {
+     "f": "assets/units/kochmanchi_kamonchi_23.webp",
+     "w": 91.8,
+     "h": 28.6,
+     "ax": 0.444
     }
    ]
   },
@@ -662,123 +1262,133 @@
    ]
   }
  },
- "buildings": {
-  "qasr_biz": [
-   {
-    "f": "assets/qasr_biz_0.webp",
-    "w": 224.1,
-    "h": 240.6,
-    "ax": 0.537,
-    "wz": 163.4
-   },
-   {
-    "f": "assets/qasr_biz_1.webp",
-    "w": 223.5,
-    "h": 238.9,
-    "ax": 0.538,
-    "wz": 160.6
-   },
-   {
-    "f": "assets/qasr_biz_2.webp",
-    "w": 232.6,
-    "h": 233.2,
-    "ax": 0.517,
-    "wz": 154.3
-   },
-   {
-    "f": "assets/qasr_biz_3.webp",
-    "w": 242.3,
-    "h": 178.7,
-    "ax": 0.496,
-    "wz": 102.7
-   }
-  ],
-  "kon": [
-   {
-    "f": "assets/kon_0.webp",
-    "w": 211.4,
-    "h": 130.9,
-    "ax": 0.474
-   },
-   {
-    "f": "assets/kon_1.webp",
-    "w": 205.0,
-    "h": 140.0,
-    "ax": 0.42
-   },
-   {
-    "f": "assets/kon_2.webp",
-    "w": 212.3,
-    "h": 137.7,
-    "ax": 0.478
-   },
-   {
-    "f": "assets/kon_3.webp",
-    "w": 208.6,
-    "h": 139.5,
-    "ax": 0.426
-   }
-  ],
-  "qasr_dushman": [
-   {
-    "f": "assets/qasr_dushman_0.webp",
-    "w": 242.8,
-    "h": 227.6,
-    "ax": 0.495,
-    "wz": 160.3
-   },
-   {
-    "f": "assets/qasr_dushman_1.webp",
-    "w": 244.9,
-    "h": 264.9,
-    "ax": 0.491,
-    "wz": 180.3
-   },
-   {
-    "f": "assets/qasr_dushman_2.webp",
-    "w": 239.7,
-    "h": 221.8,
-    "ax": 0.502,
-    "wz": 144.0
-   },
-   {
-    "f": "assets/qasr_dushman_3.webp",
-    "w": 237.6,
-    "h": 221.3,
-    "ax": 0.5,
-    "wz": 134.0
-   },
-   {
-    "f": "assets/qasr_dushman_4.webp",
-    "w": 218.7,
-    "h": 226.0,
-    "ax": 0.55,
-    "wz": 134.5
-   },
-   {
-    "f": "assets/qasr_dushman_5.webp",
-    "w": 235.0,
-    "h": 227.6,
-    "ax": 0.518,
-    "wz": 157.7
-   }
-  ],
-  "shahar": [
-   {
-    "f": "assets/shahar_0.webp",
-    "w": 289.2,
-    "h": 380.8,
-    "ax": 0.615,
-    "wz": 305.8
-   },
-   {
-    "f": "assets/shahar_1.webp",
-    "w": 362.5,
-    "h": 384.2,
-    "ax": 0.501,
-    "wz": 241.7
-   }
-  ]
+ "bases": {
+  "biz": {
+   "f": "assets/baza_biz.webp",
+   "w": 697.7,
+   "h": 302.7,
+   "ax": 0.5638,
+   "gate": [
+    0.5295,
+    0.5982,
+    0.0121,
+    0.3424
+   ],
+   "mine": [
+    0.8037,
+    0.8881,
+    -0.003,
+    0.2383
+   ],
+   "mineDx": 196.8,
+   "wzGate": 184.0,
+   "wzWall": 192.7
+  },
+  "biz_vayron": {
+   "f": "assets/baza_biz_vayron.webp",
+   "w": 698.2,
+   "h": 286.8,
+   "ax": 0.5634,
+   "gate": [
+    0.5291,
+    0.5978,
+    0.0127,
+    0.3615
+   ],
+   "mine": [
+    0.8031,
+    0.8875,
+    -0.0032,
+    0.2516
+   ],
+   "mineDx": 196.8,
+   "wzGate": 143.4,
+   "wzWall": 182.2
+  },
+  "ormon": {
+   "f": "assets/baza_ormon.webp",
+   "w": 701.4,
+   "h": 313.7,
+   "ax": 0.5622,
+   "gate": [
+    0.5267,
+    0.5977,
+    0.0116,
+    0.3392
+   ],
+   "mine": [
+    0.7975,
+    0.8854,
+    0.0029,
+    0.2445
+   ],
+   "mineDx": 195.9,
+   "wzGate": 195.0,
+   "wzWall": 210.0
+  },
+  "dasht": {
+   "f": "assets/baza_dasht.webp",
+   "w": 701.4,
+   "h": 329.7,
+   "ax": 0.5706,
+   "gate": [
+    0.5254,
+    0.6159,
+    0.0111,
+    0.3809
+   ],
+   "mine": [
+    0.7988,
+    0.8893,
+    0.0097,
+    0.2299
+   ],
+   "mineDx": 191.8,
+   "wzGate": 196.8,
+   "wzWall": 190.0
+  },
+  "ekinzor": {
+   "f": "assets/baza_ekinzor.webp",
+   "w": 701.4,
+   "h": 316.9,
+   "ax": 0.5612,
+   "gate": [
+    0.5273,
+    0.5951,
+    0.0115,
+    0.3228
+   ],
+   "mine": [
+    0.804,
+    0.8874,
+    0.0072,
+    0.232
+   ],
+   "mineDx": 199.5,
+   "wzGate": 188.1,
+   "wzWall": 201.8
+  },
+  "kol": {
+   "f": "assets/baza_kol.webp",
+   "w": 701.4,
+   "h": 310.0,
+   "ax": 0.5602,
+   "gate": [
+    0.528,
+    0.5924,
+    0.0118,
+    0.3122
+   ],
+   "mine": [
+    0.8164,
+    0.8887,
+    -0.0353,
+    0.2077
+   ],
+   "mineDx": 205.0,
+   "wzGate": 180.8,
+   "wzWall": 173.1
+  }
  },
  "backgrounds": {
   "ormon": {

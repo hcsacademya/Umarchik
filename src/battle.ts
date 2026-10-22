@@ -1,10 +1,9 @@
 // Jang simulyatsiyasi: grafikasiz, faqat mantiq. Har qadam step(dt) bilan yuradi.
 import {
-  AMIR_RESPAWN, BATTLES, BOOST_EFFECT, CASTLE_CD, CASTLE_DEPTH, CASTLE_DMG, CASTLE_FRONT, CASTLE_HP, CASTLE_RANGE, CASTLE_X,
-  DEAD_LINGER, DEPTH, FACTIONS, FIRE_MULT, FORMATION_FRONT, HEAL_RATE, MAX_MINERS, MINE_OFFSET, MINE_TIME, MINER_LOAD,
-  MINER_UP, QUEUE_MAX, WALL_SPOTS,
-  RANK, ROW_GAP, ROW_SIZE, START_SILVER, STATS, STOCK_CAP, UNIT_UP_STEP, enemyCastleHp, enemyIncome, enemyStats,
-  itemOf, popCap, vsMult,
+  AMIR_RESPAWN, BATTLES, BLOCK_GAP, BOOST_EFFECT, CARRY_SLOW, CASTLE_CD, CASTLE_DEPTH, CASTLE_DMG, CASTLE_FRONT, CASTLE_HP,
+  CASTLE_RANGE, CASTLE_X, COL_GAP, DEAD_LINGER, DEPTH, DIG_UP, DOOR_TIME, FACTIONS, FIRE_MULT, FORMATION_FRONT, HEAL_RATE,
+  MAX_MINERS, MINE_OFFSET, MINE_TIME, MINER_LOAD, MINER_UP, QUEUE_MAX, RANK, ROW_SIZE, START_SILVER, STATS, UNIT_UP_STEP,
+  WALL_SPOTS, enemyCastleHp, enemyIncome, enemyStats, enemyTrain, itemOf, popCap, vsMult,
 } from './config.ts';
 import type { BoostId, Item, ItemId, Kind, Rank, Side, Stance } from './config.ts';
 import { itemsFor, startForce, stepFor } from './campaign.ts';
@@ -12,7 +11,8 @@ import type { Save } from './campaign.ts';
 import { EnemyAI } from './ai.ts';
 
 export type Anim = 'idle' | 'walk' | 'attack' | 'carry';
-type Task = 'toMine' | 'inMine' | 'toCastle' | 'unload' | 'wait';
+// Konchi: konga boradi → kirib qazadi → savat bilan chiqib qasrga boradi → darvozaga kirib topshiradi → chiqadi
+type Task = 'toMine' | 'inMine' | 'toCastle' | 'unload';
 
 // Zarba: SWING — butun harakat davomiyligi, HIT — zarba (yoki o'q) aynan qaysi lahzada tegadi
 const SWING = 0.45;
@@ -42,9 +42,14 @@ export interface Unit {
   swingDone: boolean;
   swingTarget: number; // zarba kimga (askar id) yoki -1
   swingCastle: Side | -1; // yoki qaysi qasrga
+  swingAlt: boolean; // ikki xil zarba navbatma-navbat
   hitT: number;
+  promoteT: number; // yangi Amir bo'lganda oltin chaqnash
   garrison: boolean;
   inside: boolean; // kon yoki qasr ichida (ko'rinmaydi, unga hujum qilib bo'lmaydi)
+  door: number; // 0 — tashqarida, 1 — darvoza/kon ichida; oraliqda — kirib yoki chiqib kelmoqda
+  doorDir: 0 | 1 | -1; // 1 kirmoqda, -1 chiqmoqda
+  toGarrison: boolean; // kirgach qasrda qoladi (Chekinish)
   dead: boolean;
   deadT: number;
   reach: number; // jangovar masofaga kichik farq: hammasi bir nuqtaga yig'ilmasin
@@ -92,9 +97,8 @@ export interface Particle {
 
 export interface SideState {
   silver: number;
-  stock: number; // qasr yonida yig'ilgan, hali olinmagan kumush (faqat o'yinchida)
-  stockCap: number;
   stance: Stance;
+  front: number; // "Joyida tur" safining oldingi chizig'i darvozadan (dushman himoyada uni qasrga yaqinlashtiradi)
   castleHp: number;
   castleMax: number;
   castleDmg: number;
@@ -111,6 +115,7 @@ export interface SideState {
   trainSpeed: number; // navbat tezligi
   minerSpeed: number;
   minerLoad: number;
+  mineTime: number; // konchi kon ichida qancha turadi
   arrowTaken: number;
   income: number;
   amirDead: boolean;
@@ -120,7 +125,15 @@ export interface SideState {
 export interface BattleEvent {
   text: string;
   good: boolean;
-  amir?: 'dead' | 'back'; // Amir halok bo'ldi / qaytdi (UI buni alohida yozuv bilan ko'rsatadi)
+  amir?: 'dead' | 'heir' | 'back'; // Amir halok bo'ldi / o'rniga askar Amir bo'ldi / qasrdan yangisi chiqdi
+}
+
+// Qasr ustida ko'tarilib yo'qoladigan yozuv (masalan, "+30" kumush)
+export interface Popup {
+  x: number;
+  z: number;
+  text: string;
+  t: number;
 }
 
 export type BuyError = 'kumush' | 'joy' | 'navbat' | 'konchi' | 'bor' | 'yopiq';
@@ -138,6 +151,11 @@ export function swingPhase(u: Unit): number {
   if (u.swingT < 0) return -1;
   const dur = Math.min(u.kind === 'kamonchi' ? SHOOT : SWING, u.cd * 0.95);
   return Math.min(0.999, u.swingT / dur);
+}
+
+// Askarga hujum qilsa bo'ladimi: tirik, tashqarida (darvoza yoki kon ichiga kirib ulgurmagan)
+export function targetable(u: Unit): boolean {
+  return !u.dead && !u.garrison && !u.inside && u.door < 0.5;
 }
 
 export function itemPop(it: Item): number {
@@ -160,6 +178,7 @@ export class Battle {
   units: Unit[] = [];
   shots: Shot[] = [];
   particles: Particle[] = [];
+  popups: Popup[] = [];
   sides: [SideState, SideState];
   winner: Side | null = null;
   overT = 0;
@@ -180,9 +199,8 @@ export class Battle {
     this.sides = [
       {
         silver: START_SILVER + 50 * up.kumush,
-        stock: 0,
-        stockCap: STOCK_CAP + 100 * up.ombor,
         stance: 'tur',
+        front: FORMATION_FRONT,
         castleHp: CASTLE_HP + 500 * up.qasr,
         castleMax: CASTLE_HP + 500 * up.qasr,
         castleDmg: CASTLE_DMG * (1 + 0.2 * up.otish),
@@ -199,6 +217,7 @@ export class Battle {
         trainSpeed: 1 / (1 - (has('tez_yollash') ? BOOST_EFFECT.tez_yollash : 0)),
         minerSpeed: (1 + MINER_UP.speed * up.konchi) * (1 + (has('tez_konchi') ? BOOST_EFFECT.tez_konchi : 0)),
         minerLoad: MINER_LOAD + MINER_UP.load * up.konchi,
+        mineTime: MINE_TIME * (1 - DIG_UP * (up.qazish ?? 0)),
         arrowTaken: 1,
         income: 1,
         amirDead: false,
@@ -206,9 +225,8 @@ export class Battle {
       },
       {
         silver: START_SILVER,
-        stock: 0,
-        stockCap: Infinity,
         stance: 'tur',
+        front: FORMATION_FRONT,
         castleHp: enemyCastleHp(level),
         castleMax: enemyCastleHp(level),
         castleDmg: CASTLE_DMG * eMult,
@@ -222,9 +240,10 @@ export class Battle {
         dmgMult: perKind(() => eMult),
         speedMult: fac.speed,
         attackSpeed: 1,
-        trainSpeed: 1,
+        trainSpeed: enemyTrain(level),
         minerSpeed: 1,
         minerLoad: MINER_LOAD,
+        mineTime: MINE_TIME,
         arrowTaken: fac.arrowTaken,
         income: enemyIncome(level),
         amirDead: false,
@@ -316,19 +335,8 @@ export class Battle {
     return true;
   }
 
-  // Qasr yonidagi kumushni olish (o'yinchi bosganda)
-  collect(): number {
-    const s = this.sides[0];
-    const got = s.stock;
-    s.silver += got;
-    s.stock = 0;
-    return got;
-  }
-
   setStance(side: Side, st: Stance): void {
-    const s = this.sides[side];
-    if (s.amirDead) return; // Amir qaytguncha qo'shin qasrda
-    s.stance = st;
+    this.sides[side].stance = st;
   }
 
   // ---------------- Yaratish ----------------
@@ -361,9 +369,14 @@ export class Battle {
       swingDone: false,
       swingTarget: -1,
       swingCastle: -1,
+      swingAlt: false,
       hitT: 0,
+      promoteT: 0,
       garrison: false,
       inside: false,
+      door: 0,
+      doorDir: 0,
+      toGarrison: false,
       dead: false,
       deadT: 0,
       reach: 0.75 + this.rand() * 0.25,
@@ -375,8 +388,17 @@ export class Battle {
       mineT: 0,
       mineSpot: (this.rand() - 0.5) * 16,
     };
-    if (kind === 'konchi' && initial) u.x = mineX(side) - dir * (40 + this.rand() * 120);
-    if (!initial && s.stance === 'chekinish') u.garrison = true;
+    if (kind === 'konchi' && initial) u.x = mineX(side) - dir * (30 + this.rand() * 110);
+    if (!initial) {
+      // yangi askar qasr darvozasidan chiqib keladi (Chekinishda esa ichkarida qoladi)
+      u.x = CASTLE_X[side];
+      u.y = 4;
+      u.door = 1;
+      if (s.stance === 'chekinish') {
+        u.garrison = true;
+        u.inside = true;
+      } else u.doorDir = -1;
+    }
     this.units.push(u);
     return u;
   }
@@ -388,6 +410,8 @@ export class Battle {
 
   // ---------------- Saf ("Joyida tur") ----------------
 
+  // Har tur alohida to'rtburchak blok: ustunda 4 tadan (chuqurlik bo'yicha), ustunlar orasida bo'sh joy,
+  // bloklar orasida kengroq oraliq. Oldinda sarkardalar va otliq, keyin qilichli, Amir, nayzachi, kamonchi
   private assignSlots(): void {
     for (const side of [0, 1] as Side[]) {
       const dir = dirOf(side);
@@ -395,31 +419,29 @@ export class Battle {
       for (const u of this.units) {
         if (u.side !== side || u.dead || u.kind === 'konchi') continue;
         let g: number;
-        if (u.rank !== 'oddiy') g = 0; // sarkardalar va qo'mondon Amirni oldinda himoya qiladi
+        if (u.rank !== 'oddiy') g = 0;
         else if (u.kind === 'otliq') g = 1;
-        else if (u.kind === 'amir') g = 2;
-        else if (u.kind === 'qilichli') g = 3;
+        else if (u.kind === 'qilichli') g = 2;
+        else if (u.kind === 'amir') g = 3;
         else if (u.kind === 'nayzachi') g = 4;
         else g = 5;
         groups[g].push(u);
       }
-      // Har tur o'z ustunida: ustun ichida qatorda 4 tadan (chuqurlik bo'yicha), turlar orasida bo'sh joy
-      let back = 0; // oldingi qatordan orqaga masofa
+      const step = (DEPTH - 8) / (ROW_SIZE - 1);
+      let back = 0; // safning oldingi chetidan orqaga masofa
       for (let g = 0; g < groups.length; g++) {
         const list = groups[g].sort((a, b) => a.id - b.id);
         if (!list.length) continue;
-        const gap = g <= 1 ? ROW_GAP * 1.6 : ROW_GAP;
-        for (let i = 0; i < list.length; i += ROW_SIZE) {
-          const row = list.slice(i, i + ROW_SIZE);
-          const step = (DEPTH - 8) / Math.max(1, ROW_SIZE - 1);
-          const off = ((ROW_SIZE - row.length) / 2) * step;
-          row.forEach((u, j) => {
-            u.slotX = CASTLE_X[side] + dir * (FORMATION_FRONT - back - (j % 2) * 4);
-            u.slotY = 4 + off + j * step;
-          });
-          back += gap;
-        }
-        back += ROW_GAP * 0.6; // turlar orasidagi oraliq
+        const gap = g <= 1 ? COL_GAP * 1.7 : COL_GAP;
+        const cols = Math.ceil(list.length / ROW_SIZE);
+        list.forEach((u, i) => {
+          const c = Math.floor(i / ROW_SIZE);
+          const r = i % ROW_SIZE;
+          const inCol = Math.min(ROW_SIZE, list.length - c * ROW_SIZE);
+          u.slotX = CASTLE_X[side] + dir * (this.sides[side].front - back - c * gap - r * 4); // qatorlar pog'onali
+          u.slotY = 4 + (r + (ROW_SIZE - inCol) / 2) * step;
+        });
+        back += (cols - 1) * gap + BLOCK_GAP + (g <= 1 ? 16 : 0);
       }
     }
   }
@@ -439,6 +461,8 @@ export class Battle {
     for (const side of [0, 1] as Side[]) this.castleShoot(side, dt);
     this.updateShots(dt);
     this.updateFx(dt);
+    for (const p of this.popups) p.t += dt;
+    this.popups = this.popups.filter((p) => p.t < 1.6);
     this.units = this.units.filter((u) => !u.dead || u.deadT < DEAD_LINGER + 1);
     this.ai.update(this, dt);
     for (const side of [0, 1] as Side[]) {
@@ -465,15 +489,14 @@ export class Battle {
       s.amirTimer -= dt;
       if (s.amirTimer <= 0) {
         s.amirDead = false;
-        s.stance = 'tur';
         this.spawn(side, 'amir', 'oddiy');
-        this.events.push({ text: 'Yangi Amir maydonga chiqdi!', good: true, amir: 'back' });
+        this.events.push({ text: 'Qasrdan yangi Amir chiqdi!', good: true, amir: 'back' });
       }
     }
   }
 
   private enemiesOf(side: Side): Unit[] {
-    return this.units.filter((e) => e.side !== side && !e.dead && !e.garrison && !e.inside);
+    return this.units.filter((e) => e.side !== side && targetable(e));
   }
 
   // Devor tepasidagi kamonchilar (ko'rsatish uchun): 1 ta qasrniki + qasrga kirgan kamonchilar
@@ -497,8 +520,7 @@ export class Battle {
   private wallPoint(side: Side, i: number): [number, number] {
     const [dx, z] = WALL_SPOTS[i % WALL_SPOTS.length];
     // poytaxt devori oddiy qasrnikidan ikki baravar baland
-    const tall = side === 1 && BATTLES[this.level].castle.startsWith('shahar') ? 2 : 1;
-    return [CASTLE_X[side] + dirOf(side) * dx, z * tall];
+    return [CASTLE_X[side] + dirOf(side) * dx, z];
   }
 
   private castleFront(side: Side): number {
@@ -516,7 +538,8 @@ export class Battle {
       u.x = x;
       return true;
     }
-    const step = Math.min(Math.abs(d), u.speed * dt);
+    const speed = u.speed * (u.kind === 'konchi' && u.load > 0 ? CARRY_SLOW : 1); // savat og'ir
+    const step = Math.min(Math.abs(d), speed * dt);
     u.x += Math.sign(d) * step;
     u.walkDist += step;
     u.facing = d > 0 ? 1 : -1;
@@ -532,21 +555,46 @@ export class Battle {
       return;
     }
     u.cdLeft -= dt;
+    u.promoteT -= dt;
     const s = this.sides[u.side];
     const gate = CASTLE_X[u.side];
 
+    if (u.doorDir !== 0) {
+      this.updateDoor(u, dt);
+      return;
+    }
     if (u.garrison) {
       u.hp = Math.min(u.maxHp, u.hp + u.maxHp * HEAL_RATE * dt); // qasr ichida tuzaladi
       if (s.stance === 'chekinish') return;
+      // Chekinish tugadi: darvozadan chiqadi
       u.garrison = false;
-      u.x = gate + dirOf(u.side) * 6;
+      u.x = gate;
+      u.facing = dirOf(u.side);
+      u.doorDir = -1;
+      if (u.kind === 'konchi') {
+        this.deliver(u);
+        u.task = 'toMine';
+      }
+      return;
     }
     if (u.swingT >= 0 && this.updateSwing(u, dt)) return;
     if (s.stance === 'chekinish') {
       u.raid = 0;
-      if (u.inside && u.task === 'inMine') u.x = mineX(u.side); // kondan chiqib qasrga yuguradi
-      u.inside = false;
-      if (this.moveTo(u, gate, dt)) u.garrison = true;
+      if (u.inside) {
+        if (u.task === 'inMine') {
+          // kondan chiqib qasrga yuguradi
+          u.inside = false;
+          u.task = 'toCastle';
+          u.facing = (-dirOf(u.side)) as 1 | -1;
+          u.doorDir = -1;
+        } else u.garrison = true; // darvoza ichida — shu yerda qoladi
+        return;
+      }
+      if (this.moveTo(u, gate, dt)) {
+        u.toGarrison = true;
+        u.facing = (-dirOf(u.side)) as 1 | -1;
+        u.doorDir = 1;
+      }
       return;
     }
     if (u.kind === 'konchi') {
@@ -565,7 +613,7 @@ export class Battle {
     let target: Unit | null = null;
     let best = Infinity;
     const aggro = s.stance === 'hujum' || raiding ? 320 : u.range + 240;
-    const zoneEdge = CASTLE_X[u.side] + dir * (FORMATION_FRONT + 220);
+    const zoneEdge = CASTLE_X[u.side] + dir * (s.front + 220);
     for (const e of enemies) {
       const d = Math.abs(e.x - u.x);
       if (d > aggro || d >= best) continue;
@@ -610,7 +658,7 @@ export class Battle {
       if (u.swingCastle !== -1) this.strikeCastle(u, u.swingCastle);
       else {
         const t = this.units.find((e) => e.id === u.swingTarget);
-        if (t && !t.dead && !t.garrison && !t.inside && (archer || Math.abs(t.x - u.x) <= u.range * 1.5)) this.strike(u, t);
+        if (t && targetable(t) && (archer || Math.abs(t.x - u.x) <= u.range * 1.5)) this.strike(u, t);
       }
     }
     if (u.swingT >= dur) {
@@ -636,6 +684,7 @@ export class Battle {
         u.swingDone = false;
         u.swingTarget = target;
         u.swingCastle = castle;
+        u.swingAlt = !u.swingAlt;
         u.anim = 'attack';
       }
     } else {
@@ -676,12 +725,39 @@ export class Battle {
     u.swingT = -1;
     for (let i = 0; i < 6; i++) this.particles.push(this.dust(u.x, u.y, 10 + this.rand() * 10, 'dust'));
     if (u.kind === 'amir') {
-      const s = this.sides[u.side];
-      s.amirDead = true;
-      s.amirTimer = AMIR_RESPAWN;
-      s.stance = 'chekinish';
-      this.events.push({ text: `Amir halok bo'ldi! Qo'shin qasrga chekinmoqda — ${AMIR_RESPAWN} soniyadan keyin yangi Amir chiqadi`, good: false, amir: 'dead' });
+      // Eng yaqin askar Amir bo'ladi; hech kim qolmagan bo'lsa — qasrdan yangisi chiqadi
+      let heir: Unit | null = null;
+      for (const h of this.units) {
+        if (h.side !== u.side || h.dead || h.kind === 'konchi' || h.kind === 'amir') continue;
+        const score = Math.abs(h.x - u.x) + (h.garrison ? 5000 : 0);
+        if (!heir || score < Math.abs(heir.x - u.x) + (heir.garrison ? 5000 : 0)) heir = h;
+      }
+      if (heir) {
+        const name = STATS[heir.kind].name;
+        this.promote(heir);
+        this.events.push({ text: `Amir halok bo'ldi — ${name} yangi Amir bo'ldi!`, good: false, amir: 'heir' });
+      } else {
+        const s = this.sides[u.side];
+        s.amirDead = true;
+        s.amirTimer = AMIR_RESPAWN;
+        this.events.push({ text: `Amir halok bo'ldi! ${AMIR_RESPAWN} soniyadan keyin qasrdan yangi Amir chiqadi`, good: false, amir: 'dead' });
+      }
     }
+  }
+
+  private promote(h: Unit): void {
+    const s = this.sides[h.side];
+    const st = STATS.amir;
+    h.kind = 'amir';
+    h.rank = 'oddiy';
+    h.maxHp = st.hp * s.hpMult.amir;
+    h.hp = h.maxHp;
+    h.dmg = st.dmg * s.dmgMult.amir;
+    h.range = st.range;
+    h.cd = st.cd / s.attackSpeed;
+    h.speed = st.speed * s.speedMult;
+    h.swingT = -1;
+    h.promoteT = 1.5;
   }
 
   private hurtCastle(side: Side, amount: number, fire: boolean): void {
@@ -689,66 +765,88 @@ export class Battle {
     s.castleHp -= amount * (fire ? FIRE_MULT : 1);
   }
 
-  // Konchi: kon og'ziga kirib ketadi, ichkarida qazib, savat bilan chiqadi va qasr darvozasiga olib boradi
+  // Konchi: kon og'ziga kirib ketadi, ichkarida qazib, savat bilan chiqadi, qasr darvozasiga kirib
+  // kumushni topshiradi (balansga o'zi qo'shiladi) va yana chiqib konga ketadi
   private updateMiner(u: Unit, dt: number): void {
-    const s = this.sides[u.side];
     const dir = dirOf(u.side);
-    const entrance = mineX(u.side) + u.mineSpot;
-    const gate = CASTLE_X[u.side] + dir * 4;
     switch (u.task) {
       case 'toMine':
-        if (this.moveTo(u, entrance, dt)) {
+        if (this.moveTo(u, mineX(u.side) + u.mineSpot, dt)) {
           u.task = 'inMine';
-          u.inside = true;
-          u.mineT = MINE_TIME / s.minerSpeed;
+          u.facing = dir;
+          u.doorDir = 1;
         }
         break;
       case 'inMine':
         u.mineT -= dt;
         if (u.mineT <= 0) {
-          u.inside = false;
-          u.load = s.minerLoad;
+          u.load = this.sides[u.side].minerLoad;
           u.task = 'toCastle';
+          u.inside = false;
+          u.facing = (-dir) as 1 | -1;
+          u.doorDir = -1;
         }
         break;
       case 'toCastle':
-        if (this.moveTo(u, gate, dt)) {
+        if (this.moveTo(u, CASTLE_X[u.side], dt)) {
           u.task = 'unload';
-          u.inside = true;
-          u.mineT = 0.5;
+          u.facing = (-dir) as 1 | -1;
+          u.doorDir = 1;
         }
         break;
       case 'unload':
         u.mineT -= dt;
-        if (u.mineT > 0) break;
-        if (u.side === 1) {
-          s.silver += u.load * s.income;
-          u.load = 0;
-        } else {
-          const put = Math.min(u.load, s.stockCap - s.stock);
-          s.stock += put;
-          u.load -= put;
+        if (u.mineT <= 0) {
+          u.task = 'toMine';
+          u.inside = false;
+          u.facing = dir;
+          u.doorDir = -1;
         }
-        u.inside = false;
-        u.task = u.load > 0 ? 'wait' : 'toMine';
         break;
-      case 'wait': {
-        // Ombor to'la: darvoza oldida savat bilan kutadi
-        u.anim = 'idle';
-        u.facing = dir;
-        if (u.side === 0 && s.stock < s.stockCap) {
-          const put = Math.min(u.load, s.stockCap - s.stock);
-          s.stock += put;
-          u.load -= put;
-          if (u.load <= 0) {
-            u.load = 0;
-            u.task = 'toMine';
+    }
+    if (u.doorDir === 0) this.drift(u, 16 + u.mineSpot, dt);
+  }
+
+  // Darvoza yoki konga kirib-chiqish: kirayotgan askar orqaga (devor tomonga) siljib qorong'ilikka singadi
+  private updateDoor(u: Unit, dt: number): void {
+    u.door += (u.doorDir * dt) / DOOR_TIME;
+    u.anim = u.kind === 'konchi' && u.load > 0 ? 'carry' : 'walk';
+    u.walkDist += u.speed * dt * 0.6;
+    if (u.doorDir > 0) {
+      u.y += (2 - u.y) * Math.min(1, dt * 8);
+      if (u.door >= 1) {
+        u.door = 1;
+        u.doorDir = 0;
+        u.inside = true;
+        if (u.toGarrison) {
+          u.toGarrison = false;
+          u.garrison = true;
+        } else if (u.kind === 'konchi') {
+          const s = this.sides[u.side];
+          if (u.task === 'inMine') u.mineT = s.mineTime / s.minerSpeed;
+          else if (u.task === 'unload') {
+            this.deliver(u);
+            u.mineT = 0.35;
           }
         }
-        break;
+      }
+    } else {
+      u.x += u.facing * u.speed * dt * 0.5;
+      if (u.door <= 0) {
+        u.door = 0;
+        u.doorDir = 0;
+        u.inside = false;
       }
     }
-    this.drift(u, 26 + u.mineSpot * 0.8, dt);
+  }
+
+  // Kumush balansga o'zi qo'shiladi; o'yinchida qasr ustida "+30" chiqadi
+  private deliver(u: Unit): void {
+    if (u.load <= 0) return;
+    const s = this.sides[u.side];
+    s.silver += u.load * s.income;
+    if (u.side === 0) this.popups.push({ x: CASTLE_X[0], z: 130, text: `+${Math.round(u.load)}`, t: 0 });
+    u.load = 0;
   }
 
   // ---------------- O'qlar ----------------
@@ -804,7 +902,7 @@ export class Battle {
       sh.t += dt;
       if (sh.target >= 0) {
         const t = byId.get(sh.target);
-        if (t && !t.dead && !t.garrison && !t.inside) {
+        if (t && targetable(t)) {
           sh.tx = t.x;
           sh.ty = t.y;
         }
@@ -823,7 +921,7 @@ export class Battle {
       if (p >= 1) {
         if (sh.target >= 0) {
           const t = byId.get(sh.target);
-          if (t && !t.dead && !t.garrison && !t.inside) {
+          if (t && targetable(t)) {
             const vs = sh.kind ? vsMult(sh.kind, t.kind) : 1;
             this.hurt(t, sh.dmg * vs * this.sides[t.side].arrowTaken);
           }

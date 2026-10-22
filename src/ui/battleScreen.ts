@@ -24,10 +24,10 @@ const BUY_ERR: Record<BuyError, string> = {
 };
 
 const HINTS = [
-  "Konchilar kondan kumush olib, qasr yoniga to'playdi. Qasr yonidagi <b>doirani bosing</b> — kumush sizniki. Maydonni barmoq bilan suring.",
+  "Konchilar konga kirib kumush qazib, qasrga olib kiradi — kumush <b>balansga o'zi qo'shiladi</b>. Maydonni barmoq bilan suring.",
   "Chap yuqoridagi tugmalardan <b>askar yollang</b>. Bir necha marta bossangiz navbatga turadi, × bilan bittasini olib tashlaysiz.",
   "Askarlar <b>Joyida tur</b> holatida qasr oldida saf tortadi. Kuchingiz yetganda <b>Hujum</b>ni bosing.",
-  "Qiyin bo'lsa <b>Chekinish</b>: hamma qasrga kiradi, ichkaridagi kamonchilar qasrdan otadi. Dushman qasrini yiqiting!",
+  "Qiyin bo'lsa <b>Chekinish</b>: hamma qasrga kiradi, tuzaladi, kamonchilar devordan otadi. Amir halok bo'lsa, eng yaqin askar yangi Amir bo'ladi.",
 ];
 
 export function startBattle(level: number, boosts: BoostId[] = []): void {
@@ -143,23 +143,10 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
   }
 
   function setStance(st: Stance): void {
-    if (b.sides[0].amirDead) {
-      toast("Amir qaytguncha qo'shin qasrda", 'bad');
-      return;
-    }
     b.setStance(0, st);
     if (hintStep === 2 && st === 'hujum') {
       hintStep = 3;
       hintT = 0;
-    }
-  }
-
-  function collect(): void {
-    const got = b.collect();
-    if (got > 0) {
-      toast(`+${Math.floor(got)} kumush`, 'good');
-      haptic('light');
-      if (hintStep === 0) hintStep = 1;
     }
   }
 
@@ -195,7 +182,7 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     resultShown = true;
     const side = b.sides[0];
     const won = b.winner === 0;
-    const silver = Math.floor(side.silver + side.stock);
+    const silver = Math.floor(side.silver);
     const save = state.save;
     const rw = finishBattle(save, level, won, silver);
     const body = el('div');
@@ -237,7 +224,6 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     else if (k === 'q') setStance('chekinish');
     else if (k === 'w') setStance('tur');
     else if (k === 'e') setStance('hujum');
-    else if (k === ' ') { e.preventDefault(); collect(); }
     else if (k === 'p' || k === 'escape') pause();
   }
   function onKeyUp(e: KeyboardEvent): void {
@@ -279,11 +265,7 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
       r.clampCam();
     }
   });
-  canvas.addEventListener('pointerup', (e) => {
-    if (drag && !drag.moved && !drag.mini) {
-      const bb = r.bubble;
-      if (bb && inRect(e.offsetX, e.offsetY, { x: bb.x - 12, y: bb.y - 12, w: bb.w + 24, h: bb.h + 24 })) collect();
-    }
+  canvas.addEventListener('pointerup', () => {
     drag = null;
   });
   canvas.addEventListener('wheel', (e) => {
@@ -321,11 +303,10 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     }
     for (const st of Object.keys(stanceBtns) as Stance[]) {
       stanceBtns[st].classList.toggle('on', side.stance === st);
-      stanceBtns[st].disabled = side.amirDead;
     }
     if (side.amirDead) {
       banner.classList.remove('hidden', 'calm');
-      banner.textContent = `Amir halok bo'ldi — qo'shin qasrda, yangi Amir ${Math.ceil(side.amirTimer)} soniyadan keyin`;
+      banner.textContent = `Amir halok bo'ldi — yangi Amir ${Math.ceil(side.amirTimer)} soniyadan keyin qasrdan chiqadi`;
     } else if (side.stance === 'chekinish') {
       // Chekinish: kim qasrda, darvoza yopiqmi, kamonchilar devordan otyaptimi — hammasi bir qatorda
       const n = b.garrisonCount(0);
@@ -343,6 +324,7 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     if (hintStep >= 0 && hintStep < HINTS.length) {
       hint.classList.remove('hidden');
       hint.innerHTML = HINTS[hintStep];
+      if (hintStep === 0 && b.time > 9) hintStep = 1;
       if (hintStep === 3) {
         hintT += dt;
         if (hintT > 12) hintStep = -1;

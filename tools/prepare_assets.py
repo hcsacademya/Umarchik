@@ -29,14 +29,21 @@ PPU = 2.2
 # Askarlarning bo'yi (o'yin birligida; ekran balandligi 560 birlik)
 UNIT_H = 72
 
-# 16 kadrli animatsiya varaqlari (4x4): (varaq, gavda balandligi, tik turish kadri — o'lcham shundan olinadi,
-# alohida uchib ketgan o'q kabi ingichka bo'laklar olib tashlanadigan kadrlar)
-ANIM16 = {
-    'amir': ('anim_amir.webp', 76, 6, ()),
-    'qilichli': ('anim_qilichli.webp', UNIT_H, 6, ()),
-    'nayzachi': ('anim_nayzachi.webp', UNIT_H, 6, ()),
-    'kamonchi': ('anim_kamonchi.webp', UNIT_H, 6, (11,)),
-    'konchi': ('anim_konchi.webp', 68, 12, ()),
+# 24 kadrli animatsiya varaqlari (6 ustun x 4 qator): (varaq, gavda balandligi, tik turish kadri — o'lcham shundan olinadi)
+# Askarlar: 0–7 yurish, 8–9 turish, 10–11 zarba yeyish, 12–15 1-zarba, 16–19 2-zarba, 20–23 o'lim.
+# Konchi: 0–7 bo'sh yurish, 8–15 savat bilan yurish, 16–17 turish, 18–19 zarba yeyish, 20–23 o'lim.
+ANIM24 = {
+    'amir': ('anim24_amir.webp', 76, 8),
+    'qilichli': ('anim24_qilichli.webp', UNIT_H, 8),
+    'nayzachi': ('anim24_nayzachi.webp', UNIT_H, 8),
+    'kamonchi': ('anim24_kamonchi.webp', UNIT_H, 8),
+    'konchi': ('anim24_konchi.webp', 68, 16),
+}
+# Dushman xalqlarining 24 kadrli varaqlari (bo'lmasa — eski 4 kadrli varaq ishlatiladi)
+FACTION_ANIM24 = {
+    ('kochmanchi', 'qilichli'): 'anim24_kochmanchi_qilichli.webp',
+    ('kochmanchi', 'nayzachi'): 'anim24_kochmanchi_nayzachi.webp',
+    ('kochmanchi', 'kamonchi'): 'anim24_kochmanchi_kamonchi.webp',
 }
 
 # Eski (kam kadrli) varaqlar: (varaq, qatorlar, ustunlar, gavda balandligi, ko'zgu)
@@ -54,13 +61,16 @@ FACTION_UNITS = {
     'kamonchi': ('dushman_kamonchi.webp', UNIT_H),
 }
 
-# Binolar (yon tomondan). Kenglik — o'yin birligida, kesilmagan to'liq rasm bo'yicha.
-CASTLE_W = 400  # bizning va dushman qasrlari
-CITY_W = 640  # poytaxtlar
-MINE_W = 210
-# Qasrdan faqat darvoza old qismi qoladi: darvozadan chapga shuncha (to'liq kenglikka nisbatan) qoldiriladi
-CASTLE_KEEP = 0.30
-CITY_KEEP = 0.28
+# Yaxlit tayanchlar: qal'a devori, darvoza va kon bitta rasmda. Darvoza teshigining balandligi (o'yin birligida)
+GATE_H = 100
+BASES = {
+    'biz': 'baza_biz.webp',
+    'biz_vayron': 'baza_biz_vayron.webp',
+    'ormon': 'baza_ormon.webp',
+    'dasht': 'baza_dasht.webp',
+    'ekinzor': 'baza_ekinzor.webp',
+    'kol': 'baza_kol.webp',
+}
 
 # Jang fonlari: (varaq, [tepadagi joy, pastdagi joy]) va har panoramada tekis yer boshlanadigan qator (ulushda)
 BACKGROUNDS = {
@@ -296,8 +306,8 @@ def save_frames(pieces, name, game_h, preview, ref=0, stable=False):
 
 def build_units(meta, preview):
     meta['units'] = {}
-    for kind, (src, game_h, ref, drop) in ANIM16.items():
-        pieces = grid_split(remove_bg(load(src)), 4, 4, drop)
+    for kind, (src, game_h, ref) in ANIM24.items():
+        pieces = grid_split(remove_bg(load(src)), 4, 6)
         meta['units'][kind] = save_frames(pieces, kind, game_h, preview, ref=ref, stable=True)
     for kind, (src, rows, cols, game_h, mirror) in UNITS.items():
         rgba = remove_bg(load(src))
@@ -321,94 +331,85 @@ def build_factions(meta, preview):
             continue
         pieces = split(remove_bg(load(src)), 2, 4)
         for r, fac in enumerate(FACTION_ROWS):
-            meta['factions'][fac][kind] = save_frames(pieces[r * 4:(r + 1) * 4], f'{fac}_{kind}', game_h, preview)
+            src24 = FACTION_ANIM24.get((fac, kind))
+            if src24 and os.path.exists(os.path.join(ART, src24)):
+                p24 = grid_split(remove_bg(load(src24)), 4, 6)
+                meta['factions'][fac][kind] = save_frames(p24, f'{fac}_{kind}', game_h, preview, ref=8, stable=True)
+            else:
+                meta['factions'][fac][kind] = save_frames(pieces[r * 4:(r + 1) * 4], f'{fac}_{kind}', game_h, preview)
 
 
-def gate_x(piece):
-    """Darvoza yoki kon kirish joyi: pastki qismdagi eng katta qorong'i joyning o'rtasi (kenglikka nisbatan)."""
-    a = piece[..., 3] > 200
-    lum = (piece[..., :3] * [0.299, 0.587, 0.114]).sum(axis=2)
-    h = piece.shape[0]
-    low = np.zeros_like(a)
-    low[int(h * 0.45):] = True
-    zone = a & low
-    thr = np.percentile(lum[zone], 7)
-    lab, n = ndi.label(zone & (lum <= thr))
-    if not n:
-        return 0.5
-    sizes = ndi.sum(np.ones_like(lum), lab, index=np.arange(1, n + 1))
-    ys, xs = np.nonzero(lab == int(np.argmax(sizes)) + 1)
-    return float(xs.mean()) / piece.shape[1]
+def dark_openings(rgba):
+    """Darvoza va kon og'zi: pastki yarmidagi eng katta ikki qorong'i joy (chapdagisi — darvoza)."""
+    a = rgba[..., 3] > 128
+    lum = (rgba[..., :3] * [0.299, 0.587, 0.114]).sum(axis=2)
+    H = a.shape[0]
+    dark = a & (lum < 55)
+    dark[:int(H * 0.45)] = False
+    dark = ndi.binary_opening(dark, np.ones((5, 5)))
+    lab, n = ndi.label(dark)
+    sizes = ndi.sum(dark, lab, range(1, n + 1))
+    boxes = []
+    for i in np.argsort(sizes)[::-1][:2]:
+        sl = ndi.find_objects((lab == i + 1).astype(int))[0]
+        boxes.append((sl[1].start, sl[1].stop, sl[0].start, sl[0].stop))
+    boxes.sort()
+    return boxes  # [darvoza, kon]: (x0, x1, y0, y1)
 
 
-def wall_top(im, ax, w_units, h_units):
-    """Darvoza ustidagi devor tepasining balandligi (o'yin birligida): devordagi kamonchilar shu yerda turadi."""
-    a = np.asarray(im)[..., 3] > 128
-    H, W = a.shape
-    gate = ax * W
-    tops = []
-    for dx in range(-35, 26, 5):
-        x = int(gate + dx * W / w_units)
-        if not 0 <= x < W:
+def full_row(a, x0, x1, y_from, y_to, fill=0.93):
+    """x0..x1 oralig'ida qator to'liq (tishlarsiz) devor bo'lgan eng yuqori qator — devor yo'lagi sathi."""
+    for y in range(y_from, y_to):
+        if a[y, x0:x1].mean() >= fill:
+            return y
+    return y_to
+
+
+def build_bases(meta, preview):
+    """Yaxlit tayanchlar: fon olib tashlanadi, pastki chet darvoza ostidan kesiladi (suv, yer dog'i ketadi).
+    Meta: darvoza markazi (ax), teshiklar (kirish qatlami uchun), devor yo'lagi balandliklari, kon og'zigacha masofa."""
+    meta['bases'] = {}
+    ref_k = None
+    gate_ref = None
+    for key, src in BASES.items():
+        if not os.path.exists(os.path.join(ART, src)):
             continue
-        col = a[:, x]
-        for y in np.nonzero(col)[0]:
-            if col[y:y + 12].all():
-                tops.append((H - y) / H * h_units)
-                break
-    return round(float(np.median(tops)), 1) if tops else round(h_units * 0.62, 1)
-
-
-def keep_front(piece, gate, keep_px):
-    """Qasrning faqat darvoza old qismini qoldiradi: darvozadan chapga keep_px piksel. Qaytaradi: (bo'lak, yangi ax)."""
-    gx = gate * piece.shape[1]
-    x0 = int(max(0, gx - keep_px))
-    p = piece[:, x0:]
-    ys, xs = np.nonzero(p[..., 3] > 8)
-    p = p[ys.min():ys.max() + 1, :xs.max() + 1]
-    return p, (gx - x0) / p.shape[1]
-
-
-def put_buildings(meta, preview, key, pieces, game_w, axes, full_w=None):
-    """Bir guruh binolarni bir xil masshtabda saqlaydi. axes — har biri uchun tayanch nuqta (darvoza).
-    full_w — kesilmagan rasmning kengligi (piksel): masshtab shundan olinadi."""
-    med_w = full_w or float(np.median([p.shape[1] for p in pieces]))
-    ppu = min(PPU, med_w / game_w)  # asl o'lchamdan kattalashtirmaymiz
-    scale = game_w * ppu / med_w
-    frames = []
-    for i, (p, ax) in enumerate(zip(pieces, axes)):
-        im = resize(p, scale)
-        fm = frame_meta(save(im, f'{key}_{i}.webp'), im, ax, ppu)
-        if key != 'kon':
-            fm['wz'] = wall_top(im, ax, fm['w'], fm['h'])
-        frames.append(fm)
-        preview.append((im, ax))
-    meta['buildings'][key] = frames
-    print(f'{key}: {len(pieces)} ta, kenglik ~{game_w} birlik, darvoza {[round(a, 2) for a in axes]}')
-
-
-def build_buildings(meta, preview):
-    meta['buildings'] = {}
-    # Bizning qasr: ochiq, yopiq, shikastlangan, vayron. Darvoza joyi — ochiq holatdan; to'rttasi bir xil kesiladi
-    ours = split(remove_bg(load('qasr_biz.webp')), 2, 2)
-    full = ours[0].shape[1]
-    gx = gate_x(ours[0])
-    cut = [keep_front(p, gx * full / p.shape[1], CASTLE_KEEP * full) for p in ours]
-    put_buildings(meta, preview, 'qasr_biz', [c[0] for c in cut], CASTLE_W, [c[1] for c in cut], full_w=full)
-    # Konlar: kirish joyi qasr tomonga (chapga) qaragan
-    mines = split(remove_bg(load('konlar.webp')), 2, 2)
-    put_buildings(meta, preview, 'kon', mines, MINE_W, [gate_x(m) for m in mines])
-    # Dushman qasrlari: o'rmon, ko'l, ekinzor, tog', dasht, cho'l; keyin ikki poytaxt
-    a = split(remove_bg(load('qasr_dushman_1.webp')), 2, 2)
-    b = split(remove_bg(load('qasr_dushman_2.webp')), 2, 2)
-    forts = a + b[:2]
-    full = float(np.median([f.shape[1] for f in forts]))
-    cut = [keep_front(f, gate_x(f), CASTLE_KEEP * f.shape[1]) for f in forts]
-    put_buildings(meta, preview, 'qasr_dushman', [c[0] for c in cut], CASTLE_W, [c[1] for c in cut], full_w=full)
-    cities = b[2:]
-    full = float(np.median([c.shape[1] for c in cities]))
-    cut = [keep_front(c, gate_x(c), CITY_KEEP * c.shape[1]) for c in cities]
-    put_buildings(meta, preview, 'shahar', [c[0] for c in cut], CITY_W, [c[1] for c in cut], full_w=full)
+        rgba = remove_bg(load(src))
+        a = rgba[..., 3] > 128
+        if key.endswith('_vayron'):
+            boxes = gate_ref  # vayron holat: tuzilishi asl rasm bilan bir xil
+        else:
+            boxes = dark_openings(rgba)
+        (gx0, gx1, gy0, gy1), (mx0, mx1, my0, my1) = boxes
+        if not key.endswith('_vayron'):
+            gate_ref = boxes
+        ground = gy1 + 6  # yer chizig'i: darvoza teshigining osti
+        k = ref_k or GATE_H / (gy1 - gy0)  # o'yin birligi / piksel (hamma tayanchlar bir xil masshtabda)
+        ref_k = k
+        gx = (gx0 + gx1) / 2
+        # devor yo'lagi: darvoza ustida va chap devorda
+        top = int(np.nonzero(a.any(axis=1))[0].min())
+        wz_gate = (ground - full_row(a, int(gx - 50), int(gx + 50), top, gy0)) * k
+        lx0, lx1 = int(gx - 640), int(gx - 360)
+        wz_wall = (ground - full_row(a, max(0, lx0), max(1, lx1), top, gy0)) * k
+        cut = rgba[top:ground + 2].copy()
+        ys, xs = np.nonzero(cut[..., 3] > 8)
+        cut = cut[:, :xs.max() + 1]
+        im = to_image(cut)
+        rel = save(im, f'baza_{key}.webp')
+        h_units = im.height * k
+        w_units = im.width * k
+        def hole(x0, x1, y0, y1):
+            # teshik: kenglikka va balandlikka nisbatan, y — pastdan
+            return [round(x0 / im.width, 4), round(x1 / im.width, 4), round((ground + 2 - y1) / im.height, 4), round((ground + 2 - y0) / im.height, 4)]
+        meta['bases'][key] = {
+            'f': rel, 'w': round(w_units, 1), 'h': round(h_units, 1), 'ax': round(gx / im.width, 4),
+            'gate': hole(gx0, gx1, gy0, gy1), 'mine': hole(mx0, mx1, my0, my1),
+            'mineDx': round(((mx0 + mx1) / 2 - gx) * k, 1),
+            'wzGate': round(wz_gate, 1), 'wzWall': round(wz_wall, 1),
+        }
+        preview.append((im.resize((im.width // 3, im.height // 3)), gx / im.width))
+        print(f"baza {key}: {w_units:.0f}x{h_units:.0f} birlik, kon {meta['bases'][key]['mineDx']}, devor {wz_gate:.0f}/{wz_wall:.0f}")
 
 
 def build_backgrounds(meta, preview):
@@ -472,7 +473,7 @@ def main():
     meta, preview = {'ppu': PPU}, []
     build_units(meta, preview)
     build_factions(meta, preview)
-    build_buildings(meta, preview)
+    build_bases(meta, preview)
     build_backgrounds(meta, preview)
     build_map(meta)
     with open(META, 'w', encoding='utf-8') as f:

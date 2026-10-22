@@ -1,7 +1,7 @@
 // Jang maydonini chizish (canvas). Mantiqqa tegmaydi — faqat Battle holatini o'qiydi.
-import { BACKGROUNDS, BUILDINGS, UNIT_FRAMES, building, enemyFrames, ready, tintedBuilding } from './assets.ts';
-import type { Background, Frame } from './assets.ts';
-import { mineX, swingPhase } from './battle.ts';
+import { BACKGROUNDS, BASES, UNIT_FRAMES, baseFront, enemyFrames, ready, tintedBase } from './assets.ts';
+import type { Background, Base, Frame } from './assets.ts';
+import { swingPhase } from './battle.ts';
 import type { Battle, Unit } from './battle.ts';
 import { BATTLES, CASTLE_X, COLORS, DEAD_LINGER, DEPTH, FORMATION_FRONT, RANK, WALL_SPOTS, WORLD_W } from './config.ts';
 import type { Kind, Side, Terrain } from './config.ts';
@@ -68,11 +68,10 @@ export class Renderer {
   W = 0;
   H = 0;
   dpr = 1;
-  bubble: Rect | null = null; // kumush pufagi (bosiladigan)
   minimap: Rect = { x: 0, y: 0, w: 0, h: 0 };
   safe = { left: 0, right: 0, top: 0 }; // tugmalar egallamagan joy (UI beradi)
   private enemy: Partial<Record<Kind, Frame[]>> = {};
-  private enemyCastle: Frame | null = null;
+  private enemyBase: Base | null = null;
   private flash = document.createElement('canvas'); // urilgan askarni qizartirish uchun
 
   constructor(canvas: HTMLCanvasElement) {
@@ -99,8 +98,8 @@ export class Renderer {
     const hex = COLORS[def.color].hex;
     this.enemy = {};
     for (const k of Object.keys(UNIT_FRAMES) as Kind[]) this.enemy[k] = enemyFrames(k, hex, def.faction);
-    // Poytaxtlar o'z rangida qoladi, qolgan qasrlarning bayrog'i jang rangiga bo'yaladi
-    this.enemyCastle = def.castle.startsWith('shahar') ? null : tintedBuilding(def.castle, hex);
+    // Dushman tayanchining bayroqlari jang rangiga bo'yaladi
+    this.enemyBase = tintedBase(def.castle, hex);
   }
 
   viewWidth(): number {
@@ -130,22 +129,27 @@ export class Renderer {
       this.drawSky(pal);
       this.drawGround(pal);
     }
+    // Qatlamlar: devordagi kamonchilar → tayanch → darvoza/konga kirayotganlar → teshigi o'yilgan ustki qatlam → maydondagilar
     for (const side of [0, 1] as Side[]) {
-      this.drawWallArchers(b, side); // qasr devori ularning oyog'ini yopadi
-      this.drawCastle(b, side);
-      this.drawMine(side, def.mine);
+      this.drawWallArchers(b, side); // devor ularning oyog'ini yopadi
+      this.drawBase(b, side);
     }
+    const doorway = b.units.filter((u) => !u.dead && u.door > 0 && !(u.inside && u.doorDir === 0));
+    for (const u of doorway) this.drawUnit(u, 1 - u.door * 0.85, u.y * (1 - u.door) - 7 * u.door);
+    for (const side of [0, 1] as Side[]) this.drawBaseFront(b, side);
     this.drawRallyFlag(b);
 
-    const list = b.units.filter((u) => !u.garrison && !u.inside).sort((a, c) => a.y - c.y || Number(c.dead) - Number(a.dead));
+    const list = b.units
+      .filter((u) => !u.garrison && !u.inside && (u.dead || u.door === 0))
+      .sort((a, c) => a.y - c.y || Number(c.dead) - Number(a.dead));
     for (const u of list) this.drawShadow(u);
     // avval o'liklar (yerda yotadi), keyin tiriklar
     for (const u of list) if (u.dead) this.drawUnit(u);
     for (const u of list) if (!u.dead) this.drawUnit(u);
     this.drawParticles(b);
     this.drawShots(b);
+    this.drawPopups(b);
     this.drawCastleBars(b);
-    this.drawBubble(b);
     this.drawMinimap(b);
   }
 
@@ -354,13 +358,6 @@ export class Renderer {
     ctx.restore();
   }
 
-  // Kon og'zi (tayanch nuqta) qasr tomonga qaragan; konchilar shu yerga kirib-chiqadi
-  private drawMine(side: Side, idx: number): void {
-    const f = BUILDINGS.kon[idx];
-    this.groundShadow(mineX(side) + (side === 0 ? 1 : -1) * (0.5 - f.ax) * f.w, -12, f.w * 0.5, 10);
-    this.drawSprite(f, mineX(side), -12, -2, side === 1);
-  }
-
   private groundShadow(x: number, y: number, rx: number, ry: number, alpha = 0.28): void {
     const { ctx } = this;
     ctx.fillStyle = `rgba(20,14,6,${alpha})`;
@@ -369,38 +366,88 @@ export class Renderer {
     ctx.fill();
   }
 
-  // Devor tepasidagi kamonchilar: qasrniki + Chekinishda qasrga kirgan kamonchilar
+  // Devor tepasidagi kamonchilar: qasrniki + Chekinishda qasrga kirgan kamonchilar.
+  // 0–2 darvoza ustida, 3–5 chap devorda (u yer pastroq)
   private drawWallArchers(b: Battle, side: Side): void {
     if (b.sides[side].castleHp <= 0) return;
     const frames = (side === 1 && this.enemy.kamonchi) || UNIT_FRAMES.kamonchi;
-    const f = frames[frames.length >= 16 ? 10 : frames.length - 1];
+    const f = frames[frames.length >= 24 ? 14 : frames.length >= 16 ? 10 : frames.length - 1];
     const dir = side === 0 ? 1 : -1;
     const n = b.wallArchers(side);
-    // oyog'i devor ortida qoladi: tanasi devor tepasidan ko'rinib turadi
-    const feet = (this.castleFrame(b, side).f.wz ?? 150) - 24;
+    const wz = this.castleFrame(b, side).f.wzGate;
     for (let i = 0; i < n; i++) {
       const [dx] = WALL_SPOTS[i];
-      this.drawSprite(f, CASTLE_X[side] + dir * dx, -14 - (i % 2) * 2, feet, side === 1, 0.85);
+      const feet = wz - (i < 3 ? 16 : 34);
+      this.drawSprite(f, CASTLE_X[side] + dir * dx, -9 - (i % 2) * 2, feet, side === 1, 0.85);
     }
   }
 
-  // Bizning qasr: 0 ochiq, 1 yopiq (chekinishda), 2 shikastlangan, 3 vayron
-  private castleFrame(b: Battle, side: Side): { f: Frame; alpha: number; sink: number } {
+  // Tayanch: bizniki butun yoki vayron; dushmanniki bayroqlari jang rangida, yiqilganda cho'kib yo'qoladi
+  private castleFrame(b: Battle, side: Side): { f: Base; alpha: number; sink: number } {
     const s = b.sides[side];
     const ratio = s.castleHp / s.castleMax;
-    if (side === 0) {
-      // hamma qasrga kirgach darvoza yopiladi
-      const i = ratio <= 0 ? 3 : ratio < 0.5 ? 2 : s.stance === 'chekinish' && b.allInside(0) ? 1 : 0;
-      return { f: BUILDINGS.qasr_biz[i], alpha: 1, sink: 0 };
-    }
+    if (side === 0) return { f: ratio <= 0 && BASES.biz_vayron ? BASES.biz_vayron : BASES.biz, alpha: 1, sink: 0 };
     const t = ratio <= 0 ? Math.min(1, b.overT / 2) : 0;
-    return { f: this.enemyCastle ?? building(BATTLES[b.level].castle), alpha: 1 - t * 0.85, sink: t * 60 };
+    return { f: this.enemyBase ?? BASES[BATTLES[b.level].castle], alpha: 1 - t * 0.85, sink: t * 60 };
   }
 
-  private drawCastle(b: Battle, side: Side): void {
+  private drawBase(b: Battle, side: Side): void {
     const { f, alpha, sink } = this.castleFrame(b, side);
-    this.groundShadow(this.castleMid(b, side), -8, f.w * 0.52, 12, 0.3 * alpha);
-    this.drawSprite(f, CASTLE_X[side], -10, -sink, side === 1, 1, alpha);
+    this.drawSprite(f, CASTLE_X[side], -6, -sink, side === 1, 1, alpha);
+  }
+
+  // Ustki qatlam (teshiklari o'yilgan) va yopiq darvoza — kirayotgan askarlarni devor va ramka yopadi
+  private drawBaseFront(b: Battle, side: Side): void {
+    const s = b.sides[side];
+    if (s.castleHp <= 0) return;
+    const { f } = this.castleFrame(b, side);
+    const front = baseFront(f, f.img);
+    if (front) this.drawSprite({ ...f, img: front }, CASTLE_X[side], -6, 0, side === 1);
+    if (s.stance === 'chekinish' && b.allInside(side)) this.drawClosedGate(f, side);
+  }
+
+  // Yopiq darvoza: ravoqsimon yog'och eshik, temir tasmalar
+  private drawClosedGate(f: Base, side: Side): void {
+    const { ctx } = this;
+    const [x0, x1, y0, y1] = f.gate;
+    const dir = side === 0 ? 1 : -1;
+    // tayanch rasmidagi teshik joyi (o'yin birligida, darvozaga nisbatan)
+    const ux0 = (x0 - f.ax) * f.w;
+    const ux1 = (x1 - f.ax) * f.w;
+    const a = this.sx(CASTLE_X[side] + dir * ux0);
+    const c = this.sx(CASTLE_X[side] + dir * ux1);
+    const l = Math.min(a, c);
+    const r = Math.max(a, c);
+    const bot = this.sy(-6, y0 * f.h);
+    const top = this.sy(-6, y1 * f.h);
+    const rad = (r - l) / 2;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(l, bot);
+    ctx.lineTo(l, top + rad * 0.6);
+    ctx.ellipse(l + rad, top + rad * 0.6, rad, rad * 0.6, 0, Math.PI, 0);
+    ctx.lineTo(r, bot);
+    ctx.closePath();
+    const g = ctx.createLinearGradient(l, 0, r, 0);
+    g.addColorStop(0, '#4a2f17');
+    g.addColorStop(0.5, '#7a5230');
+    g.addColorStop(1, '#4a2f17');
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.clip();
+    ctx.strokeStyle = 'rgba(30,18,8,0.7)';
+    ctx.lineWidth = Math.max(1, this.scale);
+    for (let i = 1; i < 6; i++) {
+      const x = l + ((r - l) * i) / 6;
+      ctx.beginPath();
+      ctx.moveTo(x, top);
+      ctx.lineTo(x, bot);
+      ctx.stroke();
+    }
+    ctx.fillStyle = '#2b2622';
+    for (const k of [0.35, 0.75]) ctx.fillRect(l, top + (bot - top) * k, r - l, Math.max(2, 3 * this.scale));
+    ctx.fillRect((l + r) / 2 - 1, top, 2, bot - top);
+    ctx.restore();
   }
 
   // "Joyida tur" safi qayerda turishini ko'rsatadigan bayroq
@@ -430,38 +477,33 @@ export class Renderer {
     ctx.stroke();
   }
 
+  // Qasr jon chizig'i darvoza minoralari ustida turadi
   private castleTop(b: Battle, side: Side): number {
-    return this.castleFrame(b, side).f.h;
-  }
-
-  // Qasr rasmining o'rtasi (darvoza chetroqda bo'lgani uchun)
-  private castleMid(b: Battle, side: Side): number {
-    const f = this.castleFrame(b, side).f;
-    return CASTLE_X[side] + (side === 0 ? 1 : -1) * (0.5 - f.ax) * f.w;
+    return this.castleFrame(b, side).f.wzGate + 80;
   }
 
   // ---------------- Askarlar ----------------
 
-  // 16 kadrli varaq: 0–5 yurish, 6–7 turish, 8–11 zarba, 12 zarba yeyish, 13–15 o'lim.
-  // Konchi: 0–5 bo'sh yurish, 6–7 qazish, 8–11 savat bilan yurish, 12 turish, 13 zarba yeyish, 14–15 o'lim.
+  // 24 kadrli varaq: 0–7 yurish, 8–9 turish, 10–11 zarba yeyish, 12–15 1-zarba, 16–19 2-zarba, 20–23 o'lim.
+  // Konchi: 0–7 bo'sh yurish, 8–15 savat bilan yurish, 16–17 turish, 18–19 zarba yeyish, 20–23 o'lim.
   // Eski 4 kadrli varaq: 0 turish, 1–2 yurish, 3 zarba.
   private frameIndex(u: Unit, n: number): number {
-    const walk6 = Math.floor(u.walkDist / 11) % 6;
     const phase = swingPhase(u);
-    if (n >= 16) {
+    if (n >= 24) {
+      const walk8 = Math.floor(u.walkDist / 9) % 8;
+      if (u.dead) return u.deadT < 0.16 ? 20 : u.deadT < 0.34 ? 21 : u.deadT < 0.55 ? 22 : 23;
       if (u.kind === 'konchi') {
-        if (u.dead) return u.deadT < 0.35 ? 14 : 15;
-        if (u.hitT > 0.08) return 13;
-        if (u.anim === 'walk' || u.anim === 'carry') return u.load > 0 ? 8 + (Math.floor(u.walkDist / 12) % 4) : walk6;
-        return u.load > 0 ? 9 : 12;
+        if (u.hitT > 0.08) return u.hitT > 0.16 ? 18 : 19;
+        if (u.anim === 'walk' || u.anim === 'carry') return (u.load > 0 ? 8 : 0) + walk8;
+        return Math.floor((u.animT + u.id * 0.37) / 1.4) % 3 === 2 ? 17 : 16;
       }
-      if (u.dead) return u.deadT < 0.22 ? 13 : u.deadT < 0.45 ? 14 : 15;
-      if (phase >= 0) return 8 + Math.min(3, Math.floor(phase * 4));
-      if (u.hitT > 0.1) return 12;
-      if (u.anim === 'walk') return walk6;
-      return Math.floor((u.animT + u.id * 0.37) / 1.1) % 2 ? 7 : 6;
+      if (phase >= 0) return (u.swingAlt ? 16 : 12) + Math.min(3, Math.floor(phase * 4));
+      if (u.hitT > 0.08) return u.hitT > 0.16 ? 10 : 11;
+      if (u.anim === 'walk') return walk8;
+      return Math.floor((u.animT + u.id * 0.37) / 1.1) % 2 ? 9 : 8;
     }
     if (n >= 4) {
+      if (u.dead) return 0;
       if (phase >= 0) return phase > 0.25 && phase < 0.8 ? 3 : 0;
       if (u.anim === 'walk') return [1, 0, 2, 0][Math.floor(u.walkDist / 14) % 4];
     }
@@ -475,11 +517,12 @@ export class Renderer {
     this.groundShadow(u.x, u.y, w, 3.5 * sc, 0.3 * fade);
   }
 
-  private drawUnit(u: Unit): void {
+  // alpha < 1 va y — darvoza yoki konga kirib-chiqayotgan askar uchun (qorong'ilikka singadi)
+  private drawUnit(u: Unit, alpha = 1, y = u.y): void {
     const frames = (u.side === 1 && this.enemy[u.kind]) || UNIT_FRAMES[u.kind];
     const n = frames.length;
     const f = frames[Math.min(this.frameIndex(u, n), n - 1)];
-    const stand = frames[n >= 16 ? (u.kind === 'konchi' ? 12 : 6) : 0];
+    const stand = frames[n >= 24 ? (u.kind === 'konchi' ? 16 : 8) : 0];
     const sc = RANK[u.rank].scale;
     let z = 0;
     // kam kadrli rasmlarda yurish tebranishini kod beradi
@@ -497,9 +540,22 @@ export class Renderer {
     if (u.dead) {
       const alpha = Math.max(0, 1 - Math.max(0, u.deadT - DEAD_LINGER));
       // varaqda o'lim kadrlari bo'lmasa — yiqilib tushishni burish bilan ko'rsatamiz
-      const rot = n >= 16 ? 0 : -u.facing * Math.min(1, u.deadT * 3) * 1.4;
+      const rot = n >= 24 ? 0 : -u.facing * Math.min(1, u.deadT * 3) * 1.4;
       this.drawSprite(f, u.x, u.y, 0, flip, sc, alpha, rot);
       return;
+    }
+    if (alpha < 1) {
+      this.drawSprite(f, u.x, y, z, flip, sc, alpha);
+      return;
+    }
+    if (u.promoteT > 0) {
+      // yangi Amir: oltin nur
+      const k = Math.min(1, u.promoteT / 1.5);
+      const g = ctx.createRadialGradient(this.sx(u.x), this.sy(u.y, stand.h * 0.5), 2, this.sx(u.x), this.sy(u.y, stand.h * 0.5), stand.h * this.scale);
+      g.addColorStop(0, `rgba(255,220,110,${0.75 * k})`);
+      g.addColorStop(1, 'rgba(255,220,110,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(this.sx(u.x) - stand.h * this.scale, this.sy(u.y, stand.h * 1.5), stand.h * 2 * this.scale, stand.h * 2 * this.scale);
     }
     if (u.hitT > 0) this.drawFlash(f, u.x, u.y, z, flip, sc, Math.min(1, u.hitT / 0.22));
     else this.drawSprite(f, u.x, u.y, z, flip, sc);
@@ -622,10 +678,10 @@ export class Renderer {
     for (const side of [0, 1] as Side[]) {
       const s = b.sides[side];
       const w = 150 * this.scale;
-      const cx = this.sx(this.castleMid(b, side)) - w / 2;
+      const cx = this.sx(CASTLE_X[side]) - w / 2;
       if (cx + w < 0 || cx > this.W) continue;
       const x = Math.max(6, Math.min(this.W - w - 6, cx)); // keng poytaxtda ham ekranda qolsin
-      const y = Math.max(this.safe.top + 6, this.sy(-10, this.castleTop(b, side) + 12));
+      const y = Math.max(this.safe.top + 6, this.sy(-6, this.castleTop(b, side)));
       ctx.fillStyle = 'rgba(20,14,8,0.7)';
       ctx.fillRect(x - 2, y - 2, w + 4, 12 * this.scale + 4);
       ctx.fillStyle = side === 0 ? '#5fbf5a' : '#d9503f';
@@ -638,31 +694,35 @@ export class Renderer {
     }
   }
 
-  private drawBubble(b: Battle): void {
-    const s = b.sides[0];
-    this.bubble = null;
-    if (s.stock <= 0 || b.winner !== null) return;
+  // "+30" kumush: qasr ustida ko'tarilib yo'qoladi
+  private drawPopups(b: Battle): void {
     const { ctx } = this;
-    const full = s.stock >= s.stockCap;
-    const pulse = 1 + Math.sin(b.time * 6) * (full ? 0.08 : 0.04);
-    const r = 34 * this.scale * pulse + 8;
-    const x = this.sx(this.castleMid(b, 0));
-    const y = this.sy(-10, this.castleTop(b, 0) * 0.5);
-    ctx.fillStyle = full ? 'rgba(200,50,40,0.92)' : 'rgba(250,240,215,0.95)';
-    ctx.strokeStyle = full ? '#fff' : '#8a6a2a';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.fillStyle = full ? '#fff' : '#4a3010';
+    ctx.save();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = `bold ${Math.round(r * 0.55)}px system-ui, sans-serif`;
-    ctx.fillText(`+${Math.floor(s.stock)}`, x, y - r * 0.12);
-    ctx.font = `bold ${Math.round(r * 0.28)}px system-ui, sans-serif`;
-    ctx.fillText(full ? "TO'LDI!" : 'bosing', x, y + r * 0.42);
-    this.bubble = { x: x - r, y: y - r, w: r * 2, h: r * 2 };
+    ctx.font = `800 ${Math.round(15 * this.scale + 6)}px system-ui, sans-serif`;
+    for (const p of b.popups) {
+      const a = Math.max(0, Math.min(1, 1.6 - p.t));
+      const x = this.sx(p.x);
+      const y = this.sy(0, p.z + p.t * 50);
+      ctx.globalAlpha = a;
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = 'rgba(30,20,8,0.85)';
+      ctx.strokeText(p.text, x, y);
+      ctx.fillStyle = '#eef3f7';
+      ctx.fillText(p.text, x, y);
+      const r = 6 * this.scale + 2;
+      const cx = x - ctx.measureText(p.text).width / 2 - r - 3;
+      const g = ctx.createRadialGradient(cx - r * 0.3, y - r * 0.3, 1, cx, y, r);
+      g.addColorStop(0, '#ffffff');
+      g.addColorStop(0.5, '#c9d1d8');
+      g.addColorStop(1, '#7d8890');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(cx, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
   }
 
   private drawMinimap(b: Battle): void {

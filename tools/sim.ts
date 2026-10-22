@@ -10,7 +10,6 @@ declare const process: { argv: string[] };
 
 function playBot(b: Battle): void {
   const s = b.sides[0];
-  if (Math.floor(b.time * 30) % 90 === 0) b.collect(); // har 3 soniyada kumushni yig'adi
   if (s.queue.length < 3) {
     if (b.minerCount(0) < 8) b.buy(0, 'konchi');
     else {
@@ -53,7 +52,7 @@ for (const level of only) {
     while (b.winner === null && b.time < 900) {
       playBot(b);
       b.step(dt);
-      for (const e of b.events.splice(0)) if (e.amir === 'dead') amirDeaths++;
+      for (const e of b.events.splice(0)) if (e.amir === 'dead' || e.amir === 'heir') amirDeaths++;
     }
     if (b.winner === 0) wins++;
     const w = b.winner === 0 ? 'YUTDI' : b.winner === 1 ? 'yutqazdi' : 'vaqt';

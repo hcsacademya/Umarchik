@@ -27,7 +27,11 @@ function parse(raw: string | null): Save | null {
   try {
     const s = JSON.parse(raw) as Partial<Save>;
     const base = newSave();
-    return { ...base, ...s, up: { ...base.up, ...s.up }, boosts: { ...base.boosts, ...s.boosts } };
+    const up = { ...base.up, ...s.up } as Record<string, number>;
+    // "Ombor" kuchaytirishi "Kon tezligi"ga almashdi: darajasi saqlanadi
+    if (up.ombor && !up.qazish) up.qazish = up.ombor;
+    delete up.ombor;
+    return { ...base, ...s, up: up as Save['up'], boosts: { ...base.boosts, ...s.boosts } };
   } catch {
     return null;
   }
@@ -44,7 +48,7 @@ function migrate(raw: string | null): Save | null {
     const u = old.up ?? {};
     s.up.qasr = u.qasr ?? 0;
     s.up.otish = u.otish ?? 0;
-    s.up.ombor = u.ombor ?? 0;
+    s.up.qazish = u.ombor ?? 0;
     s.up.kumush = u.kumush ?? 0;
     s.up.konchi = u.savat ?? 0;
     for (const k of ['amir', 'qilichli', 'nayzachi', 'kamonchi', 'otliq'] as const) s.up[k] = u.askar ?? 0;

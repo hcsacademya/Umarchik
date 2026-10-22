@@ -1,7 +1,7 @@
 // Dushman: o'yinchi bilan bir xil qoidalarda o'ynaydi — konchi yollaydi, kumushga askar oladi,
 // kuchi yetganda o'zi hujumga o'tadi, yengilayotganda qasriga qaytadi.
 // Xalqi (qaysi turlarni yoqtiradi) va xarakteri (tez / sabrli / reyd) har jangda boshqacha.
-import { CASTLE_X, FACTIONS, MAX_MINERS, itemOf, vsMult } from './config.ts';
+import { CASTLE_X, DEFENSIVE_FRONT, EASY_FIRST_ATTACK, FORMATION_FRONT, EASY_LEVELS, EASY_NEXT_UNIT, FACTIONS, MAX_MINERS, itemOf, vsMult } from './config.ts';
 import type { FactionId, ItemId, Kind, Temper } from './config.ts';
 import type { Battle, Unit } from './battle.ts';
 
@@ -49,7 +49,16 @@ export class EnemyAI {
   private shop(b: Battle): void {
     const miners = b.minerCount(1);
     const wantMiners = Math.min(MAX_MINERS, 6 + Math.floor(b.level / 2));
-    if (miners < 4 || (miners < wantMiners && b.rand() < 0.6)) {
+    // Qo'shini o'yinchinikidan kuchsiz bo'lsa — avval askar, keyin konchi
+    let mine = 0;
+    let theirs = 0;
+    for (const u of b.units) {
+      if (u.dead || u.kind === 'konchi') continue;
+      if (u.side === 1) mine += power(u);
+      else theirs += power(u);
+    }
+    const safe = mine >= theirs * 0.9;
+    if (miners < 4 || (miners < wantMiners && safe && b.rand() < 0.6)) {
       if (b.buy(1, 'konchi') === null) return;
     }
     if (!this.plan) this.plan = this.choose(b);
@@ -64,11 +73,15 @@ export class EnemyAI {
 
   private choose(b: Battle): ItemId | null {
     const s = b.sides[1];
-    const opts: ItemId[] = s.items.filter((id) => id !== 'konchi');
+    const easy = b.level < EASY_LEVELS;
+    // 1–3-janglarda "bir pog'ona oldindagi" askarni kechroq oladi
+    const ahead = b.level + 1;
+    const opts: ItemId[] = s.items.filter((id) => id !== 'konchi' && !(easy && b.time < EASY_NEXT_UNIT && itemOf(id).unlock === ahead));
     if (!opts.length) return null;
     // Sarkarda/qo'mondon: ba'zan shunga kumush yig'adi
-    const special = opts.filter((id) => itemOf(id).rank !== 'oddiy' && !s.bought.has(id));
-    if (special.length && b.rand() < 0.25) return special[Math.floor(b.rand() * special.length)];
+    // Sarkarda/qo'mondon: faqat puli yetganda (kutib, oddiy askar yollashni to'xtatmaydi)
+    const special = opts.filter((id) => itemOf(id).rank !== 'oddiy' && !s.bought.has(id) && itemOf(id).cost <= s.silver);
+    if (special.length && b.rand() < 0.35) return special[Math.floor(b.rand() * special.length)];
 
     // O'yinchi qo'shiniga qarshi qaysi tur foydali (zarba jadvali bo'yicha) + xalqning yoqtirgan turlari
     const theirs: Kind[] = b.units.filter((u) => u.side === 0 && !u.dead && u.kind !== 'konchi').map((u) => u.kind);
@@ -113,11 +126,21 @@ export class EnemyAI {
     const defended = theirs + 60;
     const minWave = rule.wave + b.level * rule.waveStep;
     const since = b.time - this.lastAttack;
-    if (threat > 0 && mine < threat * 0.25 && s.castleHp < s.castleMax) {
-      b.setStance(1, 'chekinish'); // qasr ichidan otib himoyalanadi
+    const easyWait = b.level < EASY_LEVELS && b.time < EASY_FIRST_ATTACK; // 1–3-janglar: boshida hujum qilmaydi
+    // Kuchli dushman qasrga yaqinlashsa — qasrga kirib, devordan otib himoyalanadi va tuzaladi;
+    // kuch yig'ilgach yana chiqadi
+    // Kuchsizroq bo'lsa — qasr yonida saf tortadi (qasr o'qlari yordam beradi, konchilar ishlayveradi);
+    // juda og'ir ahvolda — qasrga kirib, devordan otadi va tuzaladi
+    const weak = threat > 0 && mine < threat * 0.9;
+    s.front = weak ? DEFENSIVE_FRONT : FORMATION_FRONT;
+    const holding = s.stance === 'chekinish';
+    if (threat > 0 && mine < threat * (holding ? 0.55 : 0.3)) {
+      b.setStance(1, 'chekinish');
+    } else if (weak) {
+      b.setStance(1, 'tur');
     } else if (s.stance === 'hujum') {
       if (mine < theirs * rule.retreatAt) b.setStance(1, 'tur');
-    } else if (mineN >= minWave && (mine >= defended * rule.attackAt || (since > 120 && mine >= defended * 0.9))) {
+    } else if (!easyWait && mineN >= minWave && (mine >= defended * rule.attackAt || (since > 120 && mine >= defended * 0.9))) {
       b.setStance(1, 'hujum');
       this.lastAttack = b.time;
     } else {
@@ -127,7 +150,7 @@ export class EnemyAI {
 
   // Reydchi: vaqti-vaqti bilan tez askarlarni o'yinchi konchilariga yuboradi
   private raid(b: Battle): void {
-    if (b.time < this.nextRaid || b.sides[1].stance !== 'tur') return;
+    if (b.time < this.nextRaid || b.sides[1].stance !== 'tur' || (b.level < EASY_LEVELS && b.time < EASY_FIRST_ATTACK)) return;
     this.nextRaid = b.time + 35 + b.rand() * 20;
     const fast = b.units
       .filter((u) => u.side === 1 && !u.dead && !u.garrison && u.kind !== 'konchi' && u.raid <= 0)

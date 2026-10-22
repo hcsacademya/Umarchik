@@ -10,21 +10,24 @@ export type ItemId =
   | 'sarkarda_qilichli' | 'sarkarda_nayzachi' | 'sarkarda_kamonchi' | 'sarkarda_otliq' | 'qomondon';
 
 // ---------- Jang maydoni (o'yin birliklarida; ekran balandligi 560 birlik) ----------
-export const WORLD_W = 2300;
-// Qasrdan faqat darvoza old qismi ko'rinadi. CASTLE_X — darvoza; qasr rasmi darvozadan ~120 birlik orqaga ketadi
-export const CASTLE_X: [number, number] = [130, WORLD_W - 130];
-export const CASTLE_FRONT = 100; // darvozadan qasrning old (jang maydoni tomondagi) chetigacha
-export const CASTLE_DEPTH = 120; // darvozadan qasrning orqa chetigacha
-export const MINE_OFFSET = 300; // kon og'zi darvozadan
-export const FORMATION_FRONT = 560; // "Joyida tur" safining oldingi qatori darvozadan
-export const ROW_GAP = 20; // saf qatorlari orasidagi masofa
-export const ROW_SIZE = 4; // bir qatorda (chuqurlik bo'yicha) nechta askar
-export const DEPTH = 40; // askarlar 0..40 chuqurlikda turadi
+export const WORLD_W = 2500;
+// Yaxlit tayanch (qal'a devori + darvoza + kon) chap chetda. CASTLE_X — darvoza; devor undan orqaga ketadi
+export const CASTLE_X: [number, number] = [300, WORLD_W - 300];
+export const CASTLE_FRONT = 70; // darvozadan darvoza minorasining old chetigacha
+export const CASTLE_DEPTH = 300; // darvozadan qal'a devori orqaga qancha cho'ziladi
+export const MINE_OFFSET = 200; // kon og'zi darvozadan (tayanch rasmidagi joyi bilan bir xil)
+export const FORMATION_FRONT = 640; // "Joyida tur" safining oldingi qatori darvozadan
+export const DEFENSIVE_FRONT = 300; // dushman himoyada: qasr o'qlari yetadigan joyda saf tortadi
+export const COL_GAP = 26; // saf blokida ustunlar orasidagi masofa
+export const BLOCK_GAP = 34; // bloklar (turlar) orasidagi qo'shimcha oraliq
+export const ROW_SIZE = 4; // bir ustunda (chuqurlik bo'yicha) nechta askar
+export const DEPTH = 56; // askarlar 0..56 chuqurlikda turadi
+export const DOOR_TIME = 0.55; // darvoza yoki konga kirib-chiqish (soniya)
 
 // Devor tepasidagi kamonchilar joyi: [darvozadan jang maydoni tomonga masofa, o'q chiqadigan balandlik].
-// 0-joyda doim qasrning o'z kamonchisi, qolganlariga Chekinishda qasrga kirgan kamonchilar chiqadi
+// 0–2: darvoza ustida, 3–5: chap devorda. 0-joyda doim qasrning o'z kamonchisi turadi
 export const WALL_SPOTS: [number, number][] = [
-  [10, 150], [-6, 150], [24, 150], [-22, 150], [-36, 150], [38, 150],
+  [0, 200], [-26, 200], [26, 200], [-150, 165], [-185, 165], [-220, 165],
 ];
 
 export const DEAD_LINGER = 5; // o'lgan askar yerda necha soniya yotadi
@@ -42,12 +45,13 @@ export interface Stats {
 }
 
 export const STATS: Record<Kind, Stats> = {
-  amir: { name: 'Amir', hp: 550, dmg: 20, range: 32, cd: 0.8, speed: 70, pop: 0 },
+  // Kuch nisbati: 1 Amir ≈ 5 qilichli ≈ 4 nayzachi ≈ 3 otliq ≈ 6 kamonchi (tools/duel.ts bilan tekshiriladi)
+  amir: { name: 'Amir', hp: 870, dmg: 21, range: 34, cd: 0.7, speed: 70, pop: 0 },
   konchi: { name: 'Konchi', hp: 60, dmg: 0, range: 0, cd: 1, speed: 68, pop: 1 },
-  qilichli: { name: 'Qilichli', hp: 110, dmg: 13, range: 30, cd: 0.9, speed: 66, pop: 1 },
-  nayzachi: { name: 'Nayzachi', hp: 150, dmg: 12, range: 46, cd: 1.1, speed: 61, pop: 1 },
-  kamonchi: { name: 'Kamonchi', hp: 80, dmg: 11, range: 220, cd: 1.4, speed: 63, pop: 1 },
-  otliq: { name: 'Otliq', hp: 280, dmg: 22, range: 40, cd: 1.0, speed: 125, pop: 2 },
+  qilichli: { name: 'Qilichli', hp: 107, dmg: 13, range: 30, cd: 0.9, speed: 66, pop: 1 },
+  nayzachi: { name: 'Nayzachi', hp: 190, dmg: 13.5, range: 46, cd: 1.1, speed: 61, pop: 1 },
+  kamonchi: { name: 'Kamonchi', hp: 95, dmg: 13.8, range: 220, cd: 1.4, speed: 63, pop: 1 },
+  otliq: { name: 'Otliq', hp: 232, dmg: 18, range: 40, cd: 1.0, speed: 125, pop: 2 },
 };
 
 // Kim kimga qarshi qanday (real tarixga yaqin): VS[hujumchi][nishon] — zarba ko'paytmasi.
@@ -109,10 +113,10 @@ export function popCap(step: number): number {
 
 // ---------- Iqtisod ----------
 export const START_SILVER = 150;
-export const MINER_LOAD = 15;
-export const MINE_TIME = 2.2; // konchi kon ichida qancha turadi
+export const MINER_LOAD = 30; // bir safarda olib keladigan kumush
+export const MINE_TIME = 6; // konchi kon ichida qancha turadi
+export const CARRY_SLOW = 0.8; // savat bilan sekinroq yuradi
 export const MAX_MINERS = 12;
-export const STOCK_CAP = 250; // qasr yonidagi ombor: to'lsa konchilar kutib turadi
 
 // ---------- Qasr ----------
 export const CASTLE_HP = 3000;
@@ -130,10 +134,19 @@ export function winBonus(level: number): number {
 
 // ---------- Dushman ----------
 export function enemyIncome(level: number): number {
-  return 1.2 + 0.05 * level;
+  // 1–3-janglar yengilroq (o'rganish uchun)
+  if (level < 3) return [0.85, 0.95, 1.05][level];
+  return 1.55 + 0.06 * level;
 }
+export const EASY_LEVELS = 3; // shu janglarda dushman kechroq hujum qiladi
+export const EASY_FIRST_ATTACK = 80; // soniya
+export const EASY_NEXT_UNIT = 100; // "bir pog'ona oldindagi" askarni shundan keyin yollaydi
 export function enemyStats(level: number): number {
-  return 1 + 0.035 * level;
+  return 1.1 + 0.04 * level;
+}
+// Dushman askarlari tezroq tayyorlanadi (uning ham bitta navbati bor)
+export function enemyTrain(level: number): number {
+  return level < 3 ? 1 : 1.15 + 0.04 * level;
 }
 export function enemyCastleHp(level: number): number {
   return CASTLE_HP + 250 * level;
@@ -154,7 +167,7 @@ export const FACTIONS: Record<FactionId, Faction> = {
   kochmanchi: {
     name: "Ko'chmanchilar",
     desc: "Yengil va tez: otliq va kamonchini ko'p chiqaradi",
-    hp: 0.85,
+    hp: 0.95,
     speed: 1.2,
     arrowTaken: 1,
     prefer: { otliq: 2, kamonchi: 1.5 },
@@ -162,9 +175,9 @@ export const FACTIONS: Record<FactionId, Faction> = {
   sovutli: {
     name: 'Sovutlilar',
     desc: "Og'ir zirhli: chidamli, o'qdan kam zarar ko'radi, sekin",
-    hp: 1.25,
+    hp: 1.12,
     speed: 0.85,
-    arrowTaken: 0.7,
+    arrowTaken: 0.8,
     prefer: { qilichli: 1.5, nayzachi: 1.5 },
   },
 };
@@ -194,7 +207,7 @@ export const COLORS: Record<ColorId, { name: string; hex: string }> = {
 // ---------- Kuchaytirish (oltinga, doimiy) ----------
 // Har jangchi turi alohida kuchayadi; qasr ham alohida
 export type UnitUpId = 'amir' | 'konchi' | 'qilichli' | 'nayzachi' | 'kamonchi' | 'otliq';
-export type CastleUpId = 'qasr' | 'otish' | 'ombor' | 'kumush';
+export type CastleUpId = 'qasr' | 'otish' | 'qazish' | 'kumush';
 export type UpgradeId = UnitUpId | CastleUpId;
 
 export interface Upgrade {
@@ -210,7 +223,8 @@ const BASE_COSTS = [40, 80, 140, 220, 320];
 const costs = (k: number) => BASE_COSTS.map((c) => Math.round((c * k) / 5) * 5);
 
 export const UNIT_UP_STEP = 0.1; // har daraja: jon va zarba +10%
-export const MINER_UP = { load: 2, speed: 0.06 }; // konchi: har darajada
+export const MINER_UP = { load: 4, speed: 0.06 }; // konchi: har darajada
+export const DIG_UP = 0.1; // qazish: har darajada kon ichidagi vaqt shuncha qisqaradi
 
 const fighterDesc = (l: number) => `Jon va zarba +${Math.round(UNIT_UP_STEP * 100 * l)}%`;
 
@@ -223,7 +237,7 @@ export const UPGRADES: Upgrade[] = [
   { id: 'otliq', name: 'Otliq', group: 'askar', unlock: 3, costs: costs(1.5), desc: fighterDesc },
   { id: 'qasr', name: 'Qasr mustahkamligi', group: 'qasr', unlock: 0, costs: costs(1), desc: (l) => `${CASTLE_HP + 500 * l} jon` },
   { id: 'otish', name: 'Qasr kamonchilari', group: 'qasr', unlock: 0, costs: costs(1), desc: (l) => `O'q kuchi +${20 * l}%` },
-  { id: 'ombor', name: 'Ombor', group: 'qasr', unlock: 0, costs: costs(0.8).slice(0, 3), desc: (l) => `Sig'imi ${STOCK_CAP + 100 * l}` },
+  { id: 'qazish', name: 'Kon tezligi', group: 'qasr', unlock: 0, costs: costs(0.8), desc: (l) => `Qazish ${(MINE_TIME * (1 - DIG_UP * l)).toFixed(1)} s` },
   { id: 'kumush', name: "Boshlang'ich kumush", group: 'qasr', unlock: 0, costs: costs(0.6), desc: (l) => `Boshida ${START_SILVER + 50 * l} kumush` },
 ];
 
@@ -251,11 +265,11 @@ export const BOOST_EFFECT = {
 };
 
 // ---------- Kampaniya: xarita bo'ylab janglar ----------
+export type BaseId = 'ormon' | 'dasht' | 'ekinzor' | 'kol';
 export interface BattleDef {
   name: string;
   terrain: Terrain;
-  castle: string; // rasm: buildings kaliti va indeksi, masalan "qasr_dushman:0"
-  mine: number; // kon rasmi indeksi
+  castle: BaseId; // dushman tayanchi rasmi
   map: [number, number]; // xaritadagi joyi (rasm o'lchamiga nisbatan 0..1)
   faction: FactionId;
   color: ColorId;
@@ -276,19 +290,19 @@ export const TERRAIN_NAME: Record<Terrain, string> = {
 // Yo'l g'arbdagi o'rmondan boshlanib, xarita chetidan soat mili bo'ylab aylanadi va markazdagi ikki poytaxtda tugaydi.
 // Dushman xalqi navbatma-navbat almashadi, rangi — xaritadagi o'sha qal'a bayrog'ining rangi.
 export const BATTLES: BattleDef[] = [
-  { name: "G'arbiy o'rmon qal'asi", terrain: 'ormon', castle: 'qasr_dushman:0', mine: 1, map: [0.2, 0.27], faction: 'kochmanchi', color: 'kulrang', temper: 'sabrli' },
-  { name: "G'arbiy tog' koni", terrain: 'tog', castle: 'qasr_dushman:3', mine: 2, map: [0.262, 0.12], faction: 'sovutli', color: 'qora', temper: 'sabrli' },
-  { name: "Shimoliy dalalar qal'asi", terrain: 'ekinzor', castle: 'qasr_dushman:2', mine: 0, map: [0.42, 0.22], faction: 'kochmanchi', color: 'qizil', temper: 'tez' },
-  { name: "Yashil bayroqli qal'a", terrain: 'yaylov', castle: 'qasr_dushman:4', mine: 0, map: [0.617, 0.22], faction: 'sovutli', color: 'yashil', temper: 'sabrli' },
-  { name: "Sharqiy tog' koni", terrain: 'tog', castle: 'qasr_dushman:3', mine: 2, map: [0.797, 0.13], faction: 'kochmanchi', color: 'qora', temper: 'reyd' },
-  { name: "Binafsha bayroqli qal'a", terrain: 'yaylov', castle: 'qasr_dushman:3', mine: 0, map: [0.797, 0.285], faction: 'sovutli', color: 'binafsha', temper: 'tez' },
-  { name: "Ot yaylovi qal'asi", terrain: 'dasht', castle: 'qasr_dushman:4', mine: 0, map: [0.914, 0.52], faction: 'kochmanchi', color: 'zangori', temper: 'reyd' },
-  { name: "Sariq bayroqli qal'a", terrain: 'chol', castle: 'qasr_dushman:5', mine: 3, map: [0.867, 0.81], faction: 'sovutli', color: 'sariq', temper: 'sabrli' },
-  { name: "Cho'l vohasi", terrain: 'chol', castle: 'qasr_dushman:5', mine: 3, map: [0.738, 0.71], faction: 'kochmanchi', color: 'qizil', temper: 'tez' },
-  { name: "Janubiy qora qal'a", terrain: 'ekinzor', castle: 'qasr_dushman:0', mine: 0, map: [0.447, 0.77], faction: 'sovutli', color: 'qora', temper: 'sabrli' },
-  { name: 'Orol bandargohi', terrain: 'kol', castle: 'qasr_dushman:1', mine: 0, map: [0.215, 0.64], faction: 'kochmanchi', color: 'zangori', temper: 'reyd' },
-  { name: "Ko'l bo'yi qal'asi", terrain: 'kol', castle: 'qasr_dushman:1', mine: 1, map: [0.18, 0.49], faction: 'sovutli', color: 'kok', temper: 'tez' },
-  { name: "Qizil bayroqli qal'a", terrain: 'ekinzor', castle: 'qasr_dushman:2', mine: 0, map: [0.393, 0.63], faction: 'kochmanchi', color: 'qizil', temper: 'reyd' },
-  { name: 'Qizil tomli poytaxt', terrain: 'shahar', castle: 'shahar:0', mine: 0, map: [0.383, 0.45], faction: 'sovutli', color: 'qizil', temper: 'sabrli' },
-  { name: "Ko'k gumbazli poytaxt", terrain: 'shahar', castle: 'shahar:1', mine: 0, map: [0.648, 0.43], faction: 'sovutli', color: 'kok', temper: 'tez' },
+  { name: "G'arbiy o'rmon qal'asi", terrain: 'ormon', castle: 'ormon', map: [0.2, 0.27], faction: 'kochmanchi', color: 'kulrang', temper: 'sabrli' },
+  { name: "G'arbiy tog' koni", terrain: 'tog', castle: 'ormon', map: [0.262, 0.12], faction: 'sovutli', color: 'qora', temper: 'sabrli' },
+  { name: "Shimoliy dalalar qal'asi", terrain: 'ekinzor', castle: 'ekinzor', map: [0.42, 0.22], faction: 'kochmanchi', color: 'qizil', temper: 'tez' },
+  { name: "Yashil bayroqli qal'a", terrain: 'yaylov', castle: 'ekinzor', map: [0.617, 0.22], faction: 'sovutli', color: 'yashil', temper: 'sabrli' },
+  { name: "Sharqiy tog' koni", terrain: 'tog', castle: 'ormon', map: [0.797, 0.13], faction: 'kochmanchi', color: 'qora', temper: 'reyd' },
+  { name: "Binafsha bayroqli qal'a", terrain: 'yaylov', castle: 'ekinzor', map: [0.797, 0.285], faction: 'sovutli', color: 'binafsha', temper: 'tez' },
+  { name: "Ot yaylovi qal'asi", terrain: 'dasht', castle: 'dasht', map: [0.914, 0.52], faction: 'kochmanchi', color: 'zangori', temper: 'reyd' },
+  { name: "Sariq bayroqli qal'a", terrain: 'chol', castle: 'dasht', map: [0.867, 0.81], faction: 'sovutli', color: 'sariq', temper: 'sabrli' },
+  { name: "Cho'l vohasi", terrain: 'chol', castle: 'dasht', map: [0.738, 0.71], faction: 'kochmanchi', color: 'qizil', temper: 'tez' },
+  { name: "Janubiy qora qal'a", terrain: 'ekinzor', castle: 'ormon', map: [0.447, 0.77], faction: 'sovutli', color: 'qora', temper: 'sabrli' },
+  { name: 'Orol bandargohi', terrain: 'kol', castle: 'kol', map: [0.215, 0.64], faction: 'kochmanchi', color: 'zangori', temper: 'reyd' },
+  { name: "Ko'l bo'yi qal'asi", terrain: 'kol', castle: 'kol', map: [0.18, 0.49], faction: 'sovutli', color: 'kok', temper: 'tez' },
+  { name: "Qizil bayroqli qal'a", terrain: 'ekinzor', castle: 'ekinzor', map: [0.393, 0.63], faction: 'kochmanchi', color: 'qizil', temper: 'reyd' },
+  { name: 'Qizil tomli poytaxt', terrain: 'shahar', castle: 'ekinzor', map: [0.383, 0.45], faction: 'sovutli', color: 'qizil', temper: 'sabrli' },
+  { name: "Ko'k gumbazli poytaxt", terrain: 'shahar', castle: 'kol', map: [0.648, 0.43], faction: 'sovutli', color: 'kok', temper: 'tez' },
 ];
