@@ -178,7 +178,11 @@ export class Renderer {
 
   private drawScene(b: Battle): void {
     const { ctx } = this;
-    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    // qasr qulaganda ekran titraydi
+    const shake = b.winner !== null && b.overT < 2.4 ? 1 - b.overT / 2.4 : 0;
+    const shx = shake ? Math.sin(b.overT * 61) * 4 * shake * this.scale : 0;
+    const shy = shake ? Math.cos(b.overT * 47) * 2.5 * shake * this.scale : 0;
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, shx * this.dpr, shy * this.dpr);
     const def = BATTLES[b.level];
     const bg = BACKGROUNDS[def.terrain] ?? BACKGROUNDS[BG_FALLBACK[def.terrain] ?? def.terrain];
     if (bg && ready(bg.img)) this.drawBackground(bg);
@@ -207,6 +211,7 @@ export class Renderer {
     this.drawParticles(b);
     this.drawShots(b);
     this.drawPopups(b);
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     this.drawCastleBars(b);
     this.drawMinimap(b);
   }
@@ -440,18 +445,123 @@ export class Renderer {
     }
   }
 
-  // Tayanch: bizniki butun yoki vayron; dushmanniki bayroqlari jang rangida, yiqilganda cho'kib yo'qoladi
+  // Tayanch: bizniki; dushmanniki bayroqlari jang rangida
   private castleFrame(b: Battle, side: Side): { f: Base; alpha: number; sink: number } {
-    const s = b.sides[side];
-    const ratio = s.castleHp / s.castleMax;
-    if (side === 0) return { f: ratio <= 0 && BASES.biz_vayron ? BASES.biz_vayron : BASES.biz, alpha: 1, sink: 0 };
-    const t = ratio <= 0 ? Math.min(1, b.overT / 2) : 0;
-    return { f: this.enemyBase ?? BASES[BATTLES[b.level].castle], alpha: 1 - t * 0.85, sink: t * 60 };
+    if (side === 0) return { f: BASES.biz, alpha: 1, sink: 0 };
+    return { f: this.enemyBase ?? BASES[BATTLES[b.level].castle], alpha: 1, sink: 0 };
   }
 
   private drawBase(b: Battle, side: Side): void {
-    const { f, alpha, sink } = this.castleFrame(b, side);
-    this.drawSprite(f, CASTLE_X[side], -6, -sink, side === 1, 1, alpha);
+    const { f, alpha } = this.castleFrame(b, side);
+    if (b.sides[side].castleHp <= 0) this.drawCollapse(b, side, f);
+    else this.drawSprite(f, CASTLE_X[side], -6, 0, side === 1, 1, alpha);
+  }
+
+  // Yiqilish: tayanch ustunlarga va bo'laklarga bo'linadi; yuqoridan boshlab ag'dariladi, yerga tushib chang
+  // bo'lib so'nadi; pastida notekis xarobalar qoladi. Tayyor rasm kerak emas — hamma tayanch uchun bir xil
+  private static COLS = 26;
+  private static PIECES = 3;
+  private ruins = new Map<Frame['img'], HTMLCanvasElement>();
+
+  private ruinFrac(c: number): number {
+    const n = Renderer.COLS;
+    const edge = Math.min(c, n - 1 - c) / 4;
+    return 0.07 + 0.17 * noise(c * 0.55, 7) + 0.07 * hash(c + 31) + 0.04 * Math.min(1, edge);
+  }
+
+  // Xarobalar: pastki qismi (har ustun har xil balandlikda), qoraygan
+  private ruinOf(img: Frame['img']): HTMLCanvasElement | null {
+    if (!ready(img)) return null;
+    let c = this.ruins.get(img);
+    if (c) return c;
+    const iw = img instanceof HTMLImageElement ? img.naturalWidth : img.width;
+    const ih = img instanceof HTMLImageElement ? img.naturalHeight : img.height;
+    c = document.createElement('canvas');
+    c.width = iw;
+    c.height = ih;
+    const g = c.getContext('2d')!;
+    const sw = iw / Renderer.COLS;
+    for (let i = 0; i < Renderer.COLS; i++) {
+      const rh = this.ruinFrac(i) * ih;
+      g.drawImage(img, i * sw, ih - rh, sw + 1, rh, i * sw, ih - rh, sw + 1, rh);
+    }
+    g.globalCompositeOperation = 'source-atop';
+    g.fillStyle = 'rgba(28,20,12,0.4)';
+    g.fillRect(0, 0, iw, ih);
+    this.ruins.set(img, c);
+    return c;
+  }
+
+  private drawCollapse(b: Battle, side: Side, f: Base): void {
+    const { ctx } = this;
+    const img = f.img;
+    const ruin = this.ruinOf(img);
+    if (!ruin || !ready(img)) return;
+    const t = b.overT;
+    const k = this.scale;
+    const wpx = f.w * k;
+    const hpx = f.h * k;
+    const iw = ruin.width;
+    const ih = ruin.height;
+    const px = this.sx(CASTLE_X[side]);
+    if (px + wpx < -50 || px - wpx > this.W + 50) return;
+    const COLS = Renderer.COLS;
+    const PIECES = Renderer.PIECES;
+    const x0 = -f.ax * wpx;
+    const cw = wpx / COLS;
+    const sw = iw / COLS;
+    const G = 950 * k;
+    ctx.save();
+    ctx.translate(px, this.sy(-6, 0));
+    if (side === 1) ctx.scale(-1, 1);
+    // xarobalar doim shu yerda
+    ctx.drawImage(ruin, x0, -hpx, wpx, hpx);
+    const shake = Math.max(0, 1 - t / 1.4) * 1.6 * k;
+    for (let c = 0; c < COLS; c++) {
+      const ruinTop = this.ruinFrac(c) * hpx; // xarobaning tepasi yerdan
+      const upper = (1 - this.ruinFrac(c)) * ih;
+      const pieceSrc = upper / PIECES;
+      const ph = ((1 - this.ruinFrac(c)) * hpx) / PIECES;
+      const centre = Math.abs(c - COLS / 2) / (COLS / 2);
+      for (let p = 0; p < PIECES; p++) {
+        const delay = 0.25 + p * 0.28 + hash(c * 7 + p * 3) * 0.55 + centre * 0.35;
+        const ti = t - delay;
+        const left = x0 + c * cw;
+        const yTop = -hpx + p * ph; // bo'lakning asl joyi (yuqori chap)
+        // yerga tushganda bo'lakning pasti xarobaning tepasida bo'ladi (tepadagilar biroz yuqorida to'planadi)
+        const yLand = -ruinTop - ph - (PIECES - 1 - p) * ph * 0.15;
+        const D = yLand - yTop;
+        let dx = 0;
+        let dy = 0;
+        let rot = 0;
+        let alpha = 1;
+        let sq = 1;
+        if (ti < 0) {
+          // hali turibdi, lekin qasr titrayapti
+          dx = Math.sin(t * 60 + c * 1.7 + p) * shake;
+          dy = Math.cos(t * 51 + c * 2.3) * shake * 0.6;
+        } else {
+          const T = Math.sqrt((2 * Math.max(D, 1)) / G);
+          const u = Math.min(1, ti / T);
+          dy = Math.min(D, 0.5 * G * ti * ti);
+          dx = (hash(c * 3 + p) - 0.5) * 60 * k * u;
+          rot = (hash(c * 5 + p * 2) - 0.5) * 1.1 * u;
+          if (ti > T) {
+            alpha = Math.max(0, 1 - (ti - T) / 0.8);
+            sq = 0.8;
+          }
+        }
+        if (alpha <= 0) continue;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.translate(left + cw / 2 + dx, yTop + dy + ph / 2);
+        ctx.rotate(rot);
+        ctx.scale(1, sq);
+        ctx.drawImage(img, c * sw, p * pieceSrc, sw + 0.5, pieceSrc + 0.5, -cw / 2 - 0.3, -ph / 2, cw + 0.6, ph + 0.6);
+        ctx.restore();
+      }
+    }
+    ctx.restore();
   }
 
   // Ustki qatlam (teshiklari o'yilgan) va yopiq darvoza — kirayotgan askarlarni devor va ramka yopadi
@@ -552,18 +662,18 @@ export class Renderer {
       if (u.dead) return u.deadT < 0.16 ? 20 : u.deadT < 0.34 ? 21 : u.deadT < 0.55 ? 22 : 23;
       if (u.kind === 'konchi') {
         if (u.hitT > 0.08) return u.hitT > 0.16 ? 18 : 19;
-        if (u.anim === 'walk' || u.anim === 'carry') return (u.load > 0 ? 8 : 0) + walk8;
+        if (u.anim === 'walk' || u.anim === 'run' || u.anim === 'carry') return (u.load > 0 ? 8 : 0) + walk8;
         return Math.floor((u.animT + u.id * 0.37) / 1.4) % 3 === 2 ? 17 : 16;
       }
       if (phase >= 0) return (u.swingAlt ? 16 : 12) + Math.min(3, Math.floor(phase * 4));
       if (u.hitT > 0.08) return u.hitT > 0.16 ? 10 : 11;
-      if (u.anim === 'walk') return walk8;
+      if (u.anim === 'walk' || u.anim === 'run') return walk8;
       return Math.floor((u.animT + u.id * 0.37) / 1.1) % 2 ? 9 : 8;
     }
     if (n >= 4) {
       if (u.dead) return 0;
       if (phase >= 0) return phase > 0.25 && phase < 0.8 ? 3 : 0;
-      if (u.anim === 'walk') return [1, 0, 2, 0][Math.floor(u.walkDist / 14) % 4];
+      if (u.anim === 'walk' || u.anim === 'run') return [1, 0, 2, 0][Math.floor(u.walkDist / 14) % 4];
     }
     return 0;
   }
@@ -584,7 +694,7 @@ export class Renderer {
     const sc = RANK[u.rank].scale;
     let z = 0;
     // kam kadrli rasmlarda yurish tebranishini kod beradi
-    if (n < 16 && u.anim === 'walk' && !u.dead) z = Math.abs(Math.sin(u.walkDist / 9)) * (u.kind === 'otliq' ? 3 : 2);
+    if (n < 16 && (u.anim === 'walk' || u.anim === 'run') && !u.dead) z = Math.abs(Math.sin(u.walkDist / 9)) * (u.kind === 'otliq' ? 3 : 2);
     const flip = u.facing < 0;
     const { ctx } = this;
     // skeletli jangchi (otliq hali kadr bilan); dushman skeleti jang rangiga bo'yalgan
@@ -781,6 +891,17 @@ export class Renderer {
       const x = this.sx(p.x);
       const y = this.sy(p.y, p.z);
       if (p.kind === 'smoke') ctx.fillStyle = `rgba(70,66,62,${0.45 * a})`;
+      else if (p.kind === 'cloud') {
+        // yumshoq chang: ichma-ich uchta doira
+        const al = Math.min(1, a * 1.6);
+        for (const [r, o] of [[1, 0.16], [0.72, 0.2], [0.45, 0.22]]) {
+          ctx.fillStyle = `rgba(172,154,128,${o * al})`;
+          ctx.beginPath();
+          ctx.arc(x, y, p.size * r * this.scale, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        continue;
+      }
       else if (p.kind === 'spark') ctx.fillStyle = `rgba(255,220,120,${a})`;
       else ctx.fillStyle = `rgba(120,100,70,${0.7 * a})`;
       ctx.beginPath();
@@ -795,6 +916,7 @@ export class Renderer {
     const { ctx } = this;
     for (const side of [0, 1] as Side[]) {
       const s = b.sides[side];
+      if (s.castleHp <= 0) continue;
       const w = 150 * this.scale;
       const cx = this.sx(CASTLE_X[side]) - w / 2;
       if (cx + w < 0 || cx > this.W) continue;

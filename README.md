@@ -37,6 +37,16 @@ npm run build      # tayyor sayt dist/ papkasida
 - **Amir** ikki qilichli, kuchi: 1 Amir ≈ 5 qilichli ≈ 4 nayzachi ≈ 3 otliq ≈ 6 kamonchi.
   Amir halok bo'lsa, unga eng yaqin askar yangi Amir bo'ladi (oltin nur bilan); qo'shin o'zi chekinmaydi.
   Maydonda hech kim qolmasa, yangi Amir 20 soniyadan keyin qasrdan chiqadi. Dushmanda Amir yo'q.
+- **Jang:** hujum, chekinish va safga qaytishda askarlar yuguradi (safda joyni sozlashda — sekin qadam). Yaqin jangchi
+  dushmanning yoniga (chuqurlikda ham) borib uradi; bitta dushmanga hamma yopirilmaydi (nishonlar taqsimlanadi);
+  askarlar bir nuqtaga yig'ilib qolmaydi, zarba dushmanni biroz silkitadi. Dushman yaqin kelsa kamonchi bir necha
+  qadam orqaga chekinib o'q otadi. Qalqonli askar dushman yaqin bo'lsa qalqonini ko'taradi. Yangi sotib olingan askar
+  darvozadan yurib chiqadi.
+- **Harakat takrorlanmaydi:** har askarning o'z qadami va odati, zarbaning 3 xil turi tasodifiy, turganda
+  tasodifiy harakatlar (atrofga qarash, oyoq almashtirish, qurolni to'g'rilash), yiqilish turlicha (orqaga, oldinga,
+  tiz cho'kib).
+- **Qasr yiqilishi:** qasr tayanchi ustunlarga va bo'laklarga bo'linib qulaydi, ekran titraydi, chang ko'tariladi,
+  pastida notekis xarobalar qoladi (dushman ham, bizniki ham — alohida rasm kerak emas).
 - **Birinchi uch jang** yengilroq: dushman sekinroq boyiydi, kechroq hujum qiladi.
 - **Kim kimni yengadi** (real tarixga yaqin, zarba ko'paytmasi):
 
@@ -88,7 +98,8 @@ Balansni tekshirish: `node tools/sim.ts` (hammasi), `node tools/sim.ts 9 5` (9-j
 
 ## Rasmlar
 
-Asl varaqlar `art/` papkasida, rasm yaratuvchi uchun promptlar — [`art/promptlar.md`](art/promptlar.md).
+Asl varaqlar `art/` papkasida, rasm yaratuvchi uchun promptlar — [`art/promptlar.md`](art/promptlar.md), [`art/promptlar_v3.md`](art/promptlar_v3.md) va
+[`art/promptlar_v4.md`](art/promptlar_v4.md) (otliq, sarkardalar, qo'mondon, dushmanning to'liq to'plami — qismlar varag'i usulida).
 
 ```bash
 pip install pillow numpy scipy

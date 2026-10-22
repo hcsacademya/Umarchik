@@ -46,7 +46,7 @@ export interface Stats {
 
 export const STATS: Record<Kind, Stats> = {
   // Kuch nisbati: 1 Amir ≈ 5 qilichli ≈ 4 nayzachi ≈ 3 otliq ≈ 6 kamonchi (tools/duel.ts bilan tekshiriladi)
-  amir: { name: 'Amir', hp: 870, dmg: 21, range: 34, cd: 0.7, speed: 70, pop: 0 },
+  amir: { name: 'Amir', hp: 940, dmg: 22, range: 34, cd: 0.7, speed: 70, pop: 0 },
   konchi: { name: 'Konchi', hp: 60, dmg: 0, range: 0, cd: 1, speed: 68, pop: 1 },
   qilichli: { name: 'Qilichli', hp: 107, dmg: 13, range: 30, cd: 0.9, speed: 66, pop: 1 },
   nayzachi: { name: 'Nayzachi', hp: 190, dmg: 13.5, range: 46, cd: 1.1, speed: 61, pop: 1 },

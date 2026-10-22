@@ -351,7 +351,7 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     }
     r.draw(b, acc / STEP);
     updateHud(dt);
-    if (b.winner !== null && b.overT > 2.2 && !resultShown) showResult();
+    if (b.winner !== null && b.overT > 3.8 && !resultShown) showResult();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
