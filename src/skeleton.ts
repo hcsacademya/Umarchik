@@ -176,7 +176,7 @@ const MOVES: Record<Kind, Moves> = {
 const STRIDE = 52; // yurishda bir to'liq qadam sikli (ikki qadam) necha birlik yo'l
 const RUN_STRIDE = 50; // yugurishda
 const LEG_SWING = 0.42;
-const KNEE_LIFT = 0.8;
+const KNEE_LIFT = 0.55;
 
 const smooth = (t: number): number => t * t * (3 - 2 * t);
 
@@ -237,9 +237,9 @@ function runPose(u: Unit, base: Pose): Pose {
     body: lean,
     head: -0.06 - 0.03 * s,
     hipN: 0.7 * s,
-    kneeN: 0.25 + 1.2 * Math.max(0, -c) ** 1.3,
+    kneeN: 0.25 + 1.0 * Math.max(0, -c) ** 1.3,
     hipF: -0.7 * s,
-    kneeF: 0.25 + 1.2 * Math.max(0, c) ** 1.3,
+    kneeF: 0.25 + 1.0 * Math.max(0, c) ** 1.3,
     cape: base.cape + 0.5 + 0.1 * s,
   };
   switch (u.kind) {
@@ -429,23 +429,37 @@ function arm(ctx: Ctx, rig: Rig, at: [number, number], sh: number, el: number, f
   return { m, ang: sh + el };
 }
 
+// Oyoq kafti tovondan burilib, yerga deyarli tekis turadi: oyoq orqada bo'lsa uchi pastga (itarilish),
+// oldinda bo'lsa uchi yuqoriga (tovon bilan tushish). Shin va tizza burilishi shunga qarshi qaytariladi.
+function footAngle(hip: number, knee: number): number {
+  const world = Math.max(-0.3, Math.min(0.4, 0.45 * hip));
+  return world - (hip + knee);
+}
+
 function leg(ctx: Ctx, rig: Rig, at: [number, number], hip: number, knee: number, far: boolean): void {
   const P = rig.parts;
+  const J = rig.joints;
   const d = far ? '_d' : '';
   ctx.save();
   ctx.translate(at[0], at[1]);
   ctx.rotate(hip);
   part(ctx, P['thigh' + d]);
-  ctx.translate(rig.joints.knee[0], rig.joints.knee[1]);
+  ctx.translate(J.knee[0], J.knee[1]);
   ctx.rotate(knee);
   part(ctx, P['shin' + d]);
+  if (J.ankle && P['foot' + d]) {
+    ctx.translate(J.ankle[0], J.ankle[1]);
+    ctx.rotate(footAngle(hip, knee));
+    part(ctx, P['foot' + d]);
+  }
   ctx.restore();
 }
 
-// Son bo'g'inidan oyoq tagigacha tik masofa
+// Son bo'g'inidan oyoq tagigacha tik masofa (oyoq kafti tekis turgani uchun tovondan pastga doim sole)
 function legDepth(rig: Rig, hip: number, knee: number): number {
-  const t = rig.joints.knee[1];
-  return t * Math.cos(hip) + rig.joints.foot * Math.cos(hip + knee);
+  const J = rig.joints;
+  if (!J.ankle) return J.knee[1] * Math.cos(hip) + J.foot * Math.cos(hip + knee);
+  return J.knee[1] * Math.cos(hip) + J.ankle[1] * Math.cos(hip + knee) + (J.sole ?? 0);
 }
 
 // Qo'l matritsasida bo'lakni tik (yoki rot burchakda) chizadi: qalqon, kamon

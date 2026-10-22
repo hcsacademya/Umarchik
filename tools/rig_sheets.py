@@ -25,7 +25,10 @@ PX_PER_UNIT = 3.0  # bo'laklar o'yin birligiga nisbatan shuncha piksel bilan saq
 DARK = 0.68        # orqadagi qo'l va oyoq qorong'iroq
 
 # Bo'laklarning jangchi bo'yiga nisbati (bo'lak balandligi / jangchi bo'yi)
-BODY_FRAC = {'head': 0.19, 'torso': 0.43, 'upper': 0.19, 'fore': 0.19, 'thigh': 0.26, 'shin': 0.33}
+BODY_FRAC = {'head': 0.19, 'torso': 0.43, 'upper': 0.19, 'fore': 0.19, 'thigh': 0.16, 'shin': 0.22}
+# Oyoq bo'laklari tabiiy ingichkaroq: kenglik shuncha ko'paytiriladi (etik va keng shim juda katta ko'rinmasin)
+XS = {'thigh': 0.84, 'shin': 0.84, 'foot': 0.84}
+ANKLE_OVERLAP = 5  # tovon va boldir tutashgan joyda shuncha piksel ustma-ust (chok ko'rinmasin)
 
 # Bo'laklarni varaqda topish tartibi (qatorlar bo'yicha, chapdan o'ngga)
 ORDER_SWORD = ['head', 'torso', 'shield', 'upper', 'fore', 'thigh', 'shin', 'weapon']
@@ -147,6 +150,24 @@ def row_center(piece, y_from, y_to):
     return (xs.min() + xs.max() + 1) / 2 / piece.shape[1]
 
 
+def find_ankle(pc):
+    """Etikdagi tovon qatori: boldir (tor) tugab oyoq kafti (kengroq) boshlanadigan joy."""
+    a = pc[..., 3] > 128
+    h = pc.shape[0]
+    widths = np.array([np.count_nonzero(a[y]) for y in range(h)])
+    ref = np.median(widths[int(h * 0.25):int(h * 0.55)])
+    for y in range(int(h * 0.6), h):
+        if widths[y] > ref * 1.45:
+            return max(int(h * 0.55), y - int(h * 0.03))
+    return int(h * 0.8)
+
+
+def resize_x(arr, scale, xs=1.0):
+    im = pa.to_image(arr)
+    w, h = max(1, round(im.width * scale * xs)), max(1, round(im.height * scale))
+    return im.resize((w, h), Image.LANCZOS)
+
+
 def darker(im):
     a = np.asarray(im).astype(np.float32)
     a[..., :3] *= DARK
@@ -162,16 +183,24 @@ def build_rig(name, cfg):
         raise RuntimeError(f'{name}: {len(order)} ta bo\'lak kutilgandi, {len(comps)} ta topildi')
     pieces = {p: part_rgba(rgba, c) for p, c in zip(order, comps)}
     H = cfg['h']
+    # etik: boldir va oyoq kafti alohida bo'lak (yurganda oyoq kafti yerga tekis turishi uchun)
+    total_shin_px = pieces['shin'].shape[0]
+    ay = find_ankle(pieces['shin'])
+    ankle_x_px = row_center(pieces['shin'], max(0, ay - 6), ay) * pieces['shin'].shape[1]
+    whole = pieces['shin']
+    pieces['shin'] = whole[:ay + ANKLE_OVERLAP]
+    pieces['foot'] = whole[max(0, ay - ANKLE_OVERLAP):]
 
     # 1) har bir tana bo'lagining masshtabi: balandligi jangchi bo'yining belgilangan ulushi
-    sf = {p: BODY_FRAC[p] * H / pieces[p].shape[0] for p in BODY_FRAC}
+    sf = {p: BODY_FRAC[p] * H / (total_shin_px if p == 'shin' else pieces[p].shape[0]) for p in BODY_FRAC}
+    sf['foot'] = sf['shin']
     # 2) qurol-yarog' tana masshtabida (qo'shimcha ko'paytma bilan)
     for p in pieces:
         if p not in sf:
             sf[p] = sf['torso'] * cfg['wscale'].get(p, 1.0)
     # 3) butun jangchi bo'yi H bo'lishi uchun: oyoq tagidan bosh tepasigacha yig'ib o'lchaymiz, so'ng tuzatamiz
     def units(p):
-        return pieces[p].shape[1] * sf[p], pieces[p].shape[0] * sf[p]
+        return pieces[p].shape[1] * sf[p] * XS.get(p, 1.0), pieces[p].shape[0] * sf[p]
 
     def pivot_of(p):
         w, h = units(p)
@@ -188,9 +217,8 @@ def build_rig(name, cfg):
         w, h = units(p)
         return row_center(pc, pc.shape[0] * 0.93, pc.shape[0]) * w, fy * h
 
-    shin_w, shin_h = units('shin')
     shin_pv = pivot_of('shin')
-    knee_h = shin_h - shin_pv[1]  # tizzadan oyoq tagigacha
+    knee_h = total_shin_px * sf['shin'] - shin_pv[1]  # tizzadan oyoq tagigacha
     thigh_pv = pivot_of('thigh')
     thigh_tip = tip_of('thigh')
     thigh_len = thigh_tip[1] - thigh_pv[1]
@@ -208,9 +236,8 @@ def build_rig(name, cfg):
     sf = {p: v * k for p, v in sf.items()}
 
     # masshtab o'zgargach hamma o'lchamni qaytadan hisoblaymiz
-    shin_w, shin_h = units('shin')
     shin_pv = pivot_of('shin')
-    knee_h = shin_h - shin_pv[1]
+    knee_h = total_shin_px * sf['shin'] - shin_pv[1]
     thigh_pv = pivot_of('thigh')
     thigh_tip = tip_of('thigh')
     hip_y = knee_h + thigh_tip[1] - thigh_pv[1]
@@ -225,12 +252,15 @@ def build_rig(name, cfg):
     parts = {}
     for p, pc in pieces.items():
         w, h = units(p)
-        pv = pivot_of(p) if p != 'torso' else torso_hip
-        im = pa.resize(pc, sf[p] * PX_PER_UNIT)
+        if p == 'foot':
+            pv = (ankle_x_px * sf['foot'] * XS['foot'], ANKLE_OVERLAP * sf['foot'])  # oyoq kafti tovondan buriladi
+        else:
+            pv = pivot_of(p) if p != 'torso' else torso_hip
+        im = resize_x(pc, sf[p] * PX_PER_UNIT, XS.get(p, 1.0))
         rel = f'parts/{name}_{p}.webp'
         pa.save(im, rel)
         parts[p] = {'f': 'assets/' + rel, 'w': round(w, 2), 'h': round(h, 2), 'px': round(pv[0], 2), 'py': round(pv[1], 2)}
-        if p in ('upper', 'fore', 'thigh', 'shin'):
+        if p in ('upper', 'fore', 'thigh', 'shin', 'foot'):
             rel_d = f'parts/{name}_{p}_d.webp'
             pa.save(darker(im), rel_d)
             parts[p + '_d'] = dict(parts[p], f='assets/' + rel_d)
@@ -252,11 +282,13 @@ def build_rig(name, cfg):
         'elbow': sub(up_tip, pivot_of('upper')),
         'hand': sub(fo_tip, fo_pv),
         'knee': sub(thigh_tip, thigh_pv),
-        'foot': round(shin_h - shin_pv[1], 2),
+        'foot': round(knee_h, 2),
+        'ankle': [round(ankle_x_px * sf['shin'] * XS['shin'] - shin_pv[0], 2), round(ay * sf['shin'] - shin_pv[1], 2)],
+        'sole': round(knee_h - (ay * sf['shin'] - shin_pv[1]), 2),  # tovondan oyoq tagigacha
     }
     for item, (fx, fy) in cfg.get('attach', {}).items():
         joints[item] = sub((fx * tw, fy * th), torso_hip)
-    print(f'{name}: {len(parts)} bo\'lak, bo\'yi {H}, kattalashtirish {k:.3f}')
+    print(f'{name}: {len(parts)} bo\'lak, bo\'yi {H}, kattalashtirish {k:.3f}, oyoq ulushi {hip_y / H:.2f}')
     return {'h': H, 'parts': parts, 'joints': joints}
 
 

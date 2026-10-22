@@ -131,6 +131,8 @@ export interface RigJoints {
   hand: [number, number]; // qo'l tutqichi: tirsakdan
   knee: [number, number]; // tizza: son bo'g'inidan
   foot: number; // tizzadan oyoq tagigacha
+  ankle?: [number, number]; // tovon: tizzadan
+  sole?: number; // tovondan oyoq tagigacha
 }
 
 export interface Rig {
