@@ -107,6 +107,49 @@ export function baseFront(b: Base, img: Frame['img'] = b.img): HTMLCanvasElement
   return c;
 }
 
+// ---------- Skelet: jangchi bo'laklari va suyak nuqtalari (tools/rig_parts.py) ----------
+// Hamma o'lcham o'yin birligida; px, py — bo'lakning burilish nuqtasi (rasm chap-yuqori burchagidan)
+export interface RigPart {
+  img: HTMLImageElement;
+  w: number;
+  h: number;
+  px: number;
+  py: number;
+}
+
+export interface RigJoints {
+  hip: [number, number]; // son: oyoq tagidan
+  neck: [number, number]; // bo'yin, yelkalar, son bo'g'inlari: sondan
+  shoulder: [number, number];
+  shoulderFar: [number, number];
+  hipBack: [number, number];
+  hipFront: [number, number];
+  elbow: [number, number]; // tirsak: yelkadan
+  hand: [number, number]; // qilich dastasi: tirsakdan
+  knee: [number, number]; // tizza: son bo'g'inidan
+  foot: number; // tizzadan oyoq tagigacha
+}
+
+export interface Rig {
+  h: number;
+  parts: Record<string, RigPart>;
+  joints: RigJoints;
+}
+
+interface RigMeta {
+  h: number;
+  parts: Record<string, { f: string; w: number; h: number; px: number; py: number }>;
+  joints: RigJoints;
+}
+
+const rigMeta = (meta as unknown as { rigs?: Record<string, RigMeta> }).rigs ?? {};
+export const RIGS: Partial<Record<Kind, Rig>> = {};
+for (const [k, m] of Object.entries(rigMeta)) {
+  const parts: Record<string, RigPart> = {};
+  for (const [name, p] of Object.entries(m.parts)) parts[name] = { img: image(p.f), w: p.w, h: p.h, px: p.px, py: p.py };
+  RIGS[k as Kind] = { h: m.h, parts, joints: m.joints };
+}
+
 export const MAP_IMAGE = meta.map.f;
 
 // Realistik jang foni: ground — rasmda tekis yer boshlanadigan qator (balandlikka nisbatan)

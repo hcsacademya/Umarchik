@@ -70,6 +70,7 @@ src/
   campaign.ts        saqlash, ochilishlar, boshlang'ich qo'shin, mukofot
   battle.ts          jang mantig'i (grafikasiz)
   ai.ts              dushman aqli (xalq va xarakterga qarab)
+  skeleton.ts        skelet animatsiya: pozalar va bo'laklarni chizish
   render.ts          jang maydonini chizish (canvas)
   assets.ts          rasmlarni yuklash, dushmanni jang rangiga bo'yash
   telegram.ts        Telegram Mini App: profil, bulutli saqlash, to'liq ekran
@@ -77,6 +78,7 @@ src/
   ui/battleScreen.ts jang ekrani
 tools/
   prepare_assets.py  art/ dagi varaqlarni o'yin rasmlariga aylantiradi
+  rig_parts.py       skelet uchun bo'laklarni kesib oladi (python3 tools/rig_parts.py)
   sim.ts             balans sinovi: bot hamma janglarni o'ynaydi
   duel.ts            kuch nisbati sinovi: 1 Amir N ta askarga qarshi
 ```
@@ -99,6 +101,13 @@ o'yin ularni har jangda bayroq rangiga almashtiradi.
 Animatsiya varaqlari (`art/anim24_*.webp`) — 24 kadr: 1–8 yurish, 9–10 turish, 11–12 zarba yeyish,
 13–16 hujum A, 17–20 hujum B (zarbalar navbatma-navbat), 21–24 o'lim (konchida: 1–8 bo'sh yurish,
 9–16 savat bilan yurish, 17–18 turish, 19–20 zarba yeyish, 21–24 o'lim).
+**Skelet animatsiya** (hozircha faqat Amir): `tools/rig_parts.py` tik turgan kadrdan bo'laklarni (gavda, bosh,
+yelka, bilak, son, boldir) qirqib oladi, qo'l turgan joyni yonidagi mato bilan to'ldiradi; qilichlarni o'yin
+o'zi chizadi. `src/skeleton.ts` har kadrda suyak burchaklarini hisoblaydi: yurish (qadam bosib o'tilgan yo'lga
+mos), turish, ikki xil zarba, zarba yeyish, yiqilish. Toza "qismlar varag'i" kelsa, ko'pburchaklar o'rniga
+o'shandan olinadi.
+Hisob sekundiga 30 marta, ekran esa 60+ marta yangilanadi — ekran ikki hisob qadami orasini to'ldiradi.
+
 Tayanchlar (`art/baza_*.webp`): skript darvoza va kon og'zini (rasmdagi ikki eng katta qorong'i teshik) o'zi
 topadi, rasmni darvoza ostidan kesadi va hamma tayanchni bir xil darvoza balandligiga keltiradi.
 O'yin teshiklarni ustki qatlamda ochiq qoldiradi — askar ichkariga kirayotgandek ko'rinadi.

@@ -42,7 +42,8 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
   const b = new Battle(level, state.save, boosts);
   const r = new Renderer(canvas);
   r.setEnemyColor(level);
-  if (import.meta.env.DEV) (window as unknown as { umarBattle: Battle }).umarBattle = b; // faqat sinov uchun
+  // faqat sinov uchun
+  if (import.meta.env.DEV) Object.assign(window as unknown as { umarBattle: Battle; umarRenderer: Renderer }, { umarBattle: b, umarRenderer: r });
 
   // --- Chap yuqori: yollash tugmalari ---
   const shop = el('div', 'hud');
@@ -348,7 +349,7 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
       r.cam += pan * 800 * dt;
       r.clampCam();
     }
-    r.draw(b);
+    r.draw(b, acc / STEP);
     updateHud(dt);
     if (b.winner !== null && b.overT > 2.2 && !resultShown) showResult();
     requestAnimationFrame(frame);

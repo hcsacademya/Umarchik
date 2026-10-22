@@ -1,12 +1,18 @@
 // Jang maydonini chizish (canvas). Mantiqqa tegmaydi — faqat Battle holatini o'qiydi.
-import { BACKGROUNDS, BASES, UNIT_FRAMES, baseFront, enemyFrames, ready, tintedBase } from './assets.ts';
-import type { Background, Base, Frame } from './assets.ts';
+import { BACKGROUNDS, BASES, RIGS, UNIT_FRAMES, baseFront, enemyFrames, ready, tintedBase } from './assets.ts';
+import type { Background, Base, Frame, Rig } from './assets.ts';
 import { swingPhase } from './battle.ts';
-import type { Battle, Unit } from './battle.ts';
+import type { Battle, Shot, Snap, Unit } from './battle.ts';
 import { BATTLES, CASTLE_X, COLORS, DEAD_LINGER, DEPTH, FORMATION_FRONT, RANK, WALL_SPOTS, WORLD_W } from './config.ts';
 import type { Kind, Side, Terrain } from './config.ts';
+import { drawRig, rigBounds, rigPose } from './skeleton.ts';
 
 export const VIEW_H = 560; // ekran balandligiga sig'adigan o'yin birligi
+// Kamera: yer chizig'i ekran balandligining shu ulushida; chuqurlik (y) ekranda shuncha cho'ziladi —
+// kattaroq bo'lsa maydon yuqoriroqdan ko'rinadi, saf qatorlari aniqroq ajraladi
+const GROUND_AT = 0.7;
+const DEPTH_K = 1.2;
+const HORIZON = 36; // ufq yer chizig'idan shuncha birlik yuqorida
 
 export interface Rect {
   x: number;
@@ -73,6 +79,7 @@ export class Renderer {
   private enemy: Partial<Record<Kind, Frame[]>> = {};
   private enemyBase: Base | null = null;
   private flash = document.createElement('canvas'); // urilgan askarni qizartirish uchun
+  private rigCanvas = document.createElement('canvas'); // shaffof yoki qizargan skeletli askar
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -88,7 +95,7 @@ export class Renderer {
     this.W = w;
     this.H = h;
     this.scale = h / VIEW_H;
-    this.groundY = h * 0.74;
+    this.groundY = h * GROUND_AT;
     this.clampCam();
   }
 
@@ -115,10 +122,57 @@ export class Renderer {
   }
 
   sy(y: number, z: number): number {
-    return this.groundY + y * this.scale * 0.9 - z * this.scale;
+    return this.groundY + y * this.scale * DEPTH_K - z * this.scale;
   }
 
-  draw(b: Battle): void {
+  // k — oxirgi hisob qadamidan keyin o'tgan vaqt ulushi (0..1)
+  draw(b: Battle, k = 1): void {
+    const restore = this.blend(b, k);
+    try {
+      this.drawScene(b);
+    } finally {
+      restore();
+    }
+  }
+
+  // Askar va o'qlarni oldingi va hozirgi hisob qadami orasiga vaqtincha qo'yadi; chizib bo'lgach
+  // qaytaradigan funksiya asl holatni tiklaydi (mantiq ekran tezligiga bog'liq bo'lib qolmasin)
+  private blend(b: Battle, k: number): () => void {
+    if (k >= 1) return () => {};
+    const lerp = (a: number, c: number): number => a + (c - a) * k;
+    const saved: [Unit, Snap][] = [];
+    for (const u of b.units) {
+      const p = u.prev;
+      if (!p) continue;
+      saved.push([u, { x: u.x, y: u.y, walkDist: u.walkDist, animT: u.animT, swingT: u.swingT, hitT: u.hitT, deadT: u.deadT, door: u.door }]);
+      u.x = lerp(p.x, u.x);
+      u.y = lerp(p.y, u.y);
+      u.walkDist = lerp(p.walkDist, u.walkDist);
+      if (u.animT >= p.animT) u.animT = lerp(p.animT, u.animT);
+      if (p.swingT >= 0 && u.swingT >= p.swingT) u.swingT = lerp(p.swingT, u.swingT);
+      if (p.hitT > 0 && u.hitT > 0) u.hitT = lerp(p.hitT, u.hitT);
+      if (u.dead && u.deadT >= p.deadT) u.deadT = lerp(p.deadT, u.deadT);
+      u.door = lerp(p.door, u.door);
+    }
+    const shots: [Shot, number, number, number][] = [];
+    for (const s of b.shots) {
+      if (!s.prev) continue;
+      shots.push([s, s.x, s.y, s.z]);
+      s.x = lerp(s.prev.x, s.x);
+      s.y = lerp(s.prev.y, s.y);
+      s.z = lerp(s.prev.z, s.z);
+    }
+    return () => {
+      for (const [u, v] of saved) Object.assign(u, v);
+      for (const [s, x, y, z] of shots) {
+        s.x = x;
+        s.y = y;
+        s.z = z;
+      }
+    };
+  }
+
+  private drawScene(b: Battle): void {
     const { ctx } = this;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     const def = BATTLES[b.level];
@@ -163,7 +217,7 @@ export class Renderer {
     const img = bg.img;
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
-    const gy = this.groundY - 30 * this.scale; // ufq chizig'i (yer boshlanadigan joy)
+    const gy = this.groundY - HORIZON * this.scale; // ufq chizig'i (yer boshlanadigan joy)
     const srcG = bg.ground * ih;
     const k = gy / srcG;
     const tw = iw * k;
@@ -529,6 +583,8 @@ export class Renderer {
     if (n < 16 && u.anim === 'walk' && !u.dead) z = Math.abs(Math.sin(u.walkDist / 9)) * (u.kind === 'otliq' ? 3 : 2);
     const flip = u.facing < 0;
     const { ctx } = this;
+    // skeletli jangchi (hozircha faqat bizning Amir); dushman bo'yalgan kadrlar bilan qoladi
+    const rig = u.side === 0 ? RIGS[u.kind] : undefined;
 
     if (u.rank !== 'oddiy' && !u.dead) {
       ctx.strokeStyle = u.side === 0 ? 'rgba(255,205,80,0.9)' : 'rgba(200,40,30,0.85)';
@@ -541,11 +597,13 @@ export class Renderer {
       const alpha = Math.max(0, 1 - Math.max(0, u.deadT - DEAD_LINGER));
       // varaqda o'lim kadrlari bo'lmasa — yiqilib tushishni burish bilan ko'rsatamiz
       const rot = n >= 24 ? 0 : -u.facing * Math.min(1, u.deadT * 3) * 1.4;
-      this.drawSprite(f, u.x, u.y, 0, flip, sc, alpha, rot);
+      if (rig) this.drawRigged(u, rig, u.y, alpha, 0);
+      else this.drawSprite(f, u.x, u.y, 0, flip, sc, alpha, rot);
       return;
     }
     if (alpha < 1) {
-      this.drawSprite(f, u.x, y, z, flip, sc, alpha);
+      if (rig) this.drawRigged(u, rig, y, alpha, 0);
+      else this.drawSprite(f, u.x, y, z, flip, sc, alpha);
       return;
     }
     if (u.promoteT > 0) {
@@ -557,10 +615,11 @@ export class Renderer {
       ctx.fillStyle = g;
       ctx.fillRect(this.sx(u.x) - stand.h * this.scale, this.sy(u.y, stand.h * 1.5), stand.h * 2 * this.scale, stand.h * 2 * this.scale);
     }
-    if (u.hitT > 0) this.drawFlash(f, u.x, u.y, z, flip, sc, Math.min(1, u.hitT / 0.22));
+    if (rig) this.drawRigged(u, rig, u.y, 1, u.hitT > 0 ? Math.min(1, u.hitT / 0.22) : 0);
+    else if (u.hitT > 0) this.drawFlash(f, u.x, u.y, z, flip, sc, Math.min(1, u.hitT / 0.22));
     else this.drawSprite(f, u.x, u.y, z, flip, sc);
 
-    const top = stand.h * sc;
+    const top = (rig ? rig.h : stand.h) * sc;
     if (u.kind === 'amir') this.drawAmirMark(u, top);
     if (u.hp < u.maxHp) {
       const w = 26 * this.scale * Math.min(1.6, sc);
@@ -571,6 +630,51 @@ export class Renderer {
       ctx.fillStyle = u.side === 0 ? '#6fd06a' : '#e05a4a';
       ctx.fillRect(x, y, w * (u.hp / u.maxHp), 3);
     }
+  }
+
+  // Skeletli askar. Shaffof (darvozada, o'lgach so'nayotgan) yoki zarba yeb qizargan bo'lsa avval alohida
+  // kanvasga chiziladi — bo'laklar bir-biri orqali ko'rinmasin
+  private drawRigged(u: Unit, rig: Rig, y: number, alpha: number, flash: number): void {
+    const pose = rigPose(u);
+    const s = this.scale * RANK[u.rank].scale;
+    const px = this.sx(u.x);
+    const py = this.sy(y, 0);
+    if (px < -200 || px > this.W + 200) return;
+    const { ctx } = this;
+    const flip = u.facing < 0;
+    if (alpha >= 1 && flash <= 0) {
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.scale(flip ? -s : s, s);
+      drawRig(ctx, rig, pose);
+      ctx.restore();
+      return;
+    }
+    const bd = rigBounds(rig);
+    const k = s * this.dpr;
+    const w = Math.ceil((bd.r - bd.l) * k);
+    const h = Math.ceil((bd.b - bd.t) * k);
+    const c = this.rigCanvas;
+    if (c.width < w || c.height < h) {
+      c.width = Math.max(c.width, w);
+      c.height = Math.max(c.height, h);
+    }
+    const g = c.getContext('2d')!;
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.globalCompositeOperation = 'source-over';
+    g.clearRect(0, 0, w, h);
+    g.setTransform(flip ? -k : k, 0, 0, k, -bd.l * k, -bd.t * k);
+    drawRig(g, rig, pose);
+    if (flash > 0) {
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.globalCompositeOperation = 'source-atop';
+      g.fillStyle = `rgba(255,40,30,${0.4 * flash})`;
+      g.fillRect(0, 0, w, h);
+    }
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(c, 0, 0, w, h, px + bd.l * s, py + bd.t * s, w / this.dpr, h / this.dpr);
+    ctx.restore();
   }
 
   // Amir boshi ustida oltin belgi — uni qo'shin ichida darrov topish uchun

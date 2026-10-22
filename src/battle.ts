@@ -60,6 +60,32 @@ export interface Unit {
   load: number;
   mineT: number;
   mineSpot: number;
+  prev?: Snap; // oldingi hisob qadamidagi holat (chizish uchun)
+}
+
+// Hisob sekundiga 30 marta yangilanadi, ekran esa 60+ marta chiziladi. Ekran ikki qadam orasidagi
+// holatni shu ikki holatdan hisoblaydi — askarlar sakramay, silliq yuradi.
+export interface Snap {
+  x: number;
+  y: number;
+  walkDist: number;
+  animT: number;
+  swingT: number;
+  hitT: number;
+  deadT: number;
+  door: number;
+}
+
+function snap(u: Unit): void {
+  const p = (u.prev ??= { x: 0, y: 0, walkDist: 0, animT: 0, swingT: -1, hitT: 0, deadT: 0, door: 0 });
+  p.x = u.x;
+  p.y = u.y;
+  p.walkDist = u.walkDist;
+  p.animT = u.animT;
+  p.swingT = u.swingT;
+  p.hitT = u.hitT;
+  p.deadT = u.deadT;
+  p.door = u.door;
 }
 
 export interface Shot {
@@ -77,6 +103,7 @@ export interface Shot {
   x: number;
   y: number;
   z: number;
+  prev?: { x: number; y: number; z: number };
   t: number;
   dur: number;
   arc: number;
@@ -449,6 +476,8 @@ export class Battle {
   // ---------------- Qadam ----------------
 
   step(dt: number): void {
+    for (const u of this.units) snap(u);
+    for (const s of this.shots) s.prev = { x: s.x, y: s.y, z: s.z };
     if (this.winner !== null) {
       this.overT += dt;
       this.updateFx(dt);

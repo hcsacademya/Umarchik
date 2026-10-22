@@ -1432,5 +1432,121 @@
   "f": "assets/xarita.webp",
   "w": 1280,
   "h": 720
+ },
+ "rigs": {
+  "amir": {
+   "h": 76,
+   "parts": {
+    "torso": {
+     "w": 32.23,
+     "h": 50.21,
+     "px": 21.71,
+     "py": 32.91,
+     "f": "assets/parts/amir_torso.webp"
+    },
+    "head": {
+     "w": 15.27,
+     "h": 15.27,
+     "px": 7.8,
+     "py": 13.23,
+     "f": "assets/parts/amir_head.webp"
+    },
+    "upper": {
+     "w": 6.45,
+     "h": 15.27,
+     "px": 3.05,
+     "py": 1.02,
+     "f": "assets/parts/amir_upper.webp"
+    },
+    "upper_d": {
+     "w": 6.45,
+     "h": 15.27,
+     "px": 3.05,
+     "py": 1.02,
+     "f": "assets/parts/amir_upper_d.webp"
+    },
+    "fore": {
+     "w": 8.48,
+     "h": 11.54,
+     "px": 3.39,
+     "py": 0.34,
+     "f": "assets/parts/amir_fore.webp"
+    },
+    "fore_d": {
+     "w": 8.48,
+     "h": 11.54,
+     "px": 3.39,
+     "py": 0.34,
+     "f": "assets/parts/amir_fore_d.webp"
+    },
+    "thigh": {
+     "w": 8.14,
+     "h": 17.64,
+     "px": 4.07,
+     "py": 0.34,
+     "f": "assets/parts/amir_thigh.webp"
+    },
+    "thigh_d": {
+     "w": 8.14,
+     "h": 17.64,
+     "px": 4.07,
+     "py": 0.34,
+     "f": "assets/parts/amir_thigh_d.webp"
+    },
+    "shin": {
+     "w": 15.27,
+     "h": 19.0,
+     "px": 4.75,
+     "py": 3.73,
+     "f": "assets/parts/amir_shin.webp"
+    },
+    "shin_d": {
+     "w": 15.27,
+     "h": 19.0,
+     "px": 4.75,
+     "py": 3.73,
+     "f": "assets/parts/amir_shin_d.webp"
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -31.21
+    ],
+    "neck": [
+     -1.02,
+     -31.89
+    ],
+    "shoulder": [
+     -6.45,
+     -23.75
+    ],
+    "shoulderFar": [
+     3.05,
+     -23.07
+    ],
+    "elbow": [
+     0.0,
+     12.89
+    ],
+    "hand": [
+     0.68,
+     9.16
+    ],
+    "hipBack": [
+     -2.38,
+     -1.36
+    ],
+    "hipFront": [
+     2.38,
+     -1.36
+    ],
+    "knee": [
+     0.0,
+     16.96
+    ],
+    "foot": 15.61
+   }
+  }
  }
 }
