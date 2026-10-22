@@ -91,19 +91,9 @@ o'yin ularni har jangda bayroq rangiga almashtiradi.
 
 ## Telegram'ga joylash
 
-**1. Saytni joylash (Cloudflare Pages, bepul)**
-1. [dash.cloudflare.com](https://dash.cloudflare.com) → Workers & Pages → Create → Pages → *Connect to Git*.
-2. Shu repozitoriyni tanlang. Sozlamalar: Build command `npm run build`, Build output directory `dist`,
-   muhit o'zgaruvchisi `NODE_VERSION = 22`.
-3. Joylangach manzil beriladi, masalan `https://umar.pages.dev`. Har yangi commitda o'zi yangilanadi.
-
-**2. Bot ochish (@BotFather)**
-1. `/newbot` — bot nomi va username. Berilgan tokenni hech kimga ko'rsatmang.
-2. `/newapp` — botni tanlang, nom, tavsif, rasm va 1-qadamdagi manzilni kiriting. Natijada
-   `t.me/<bot>/<qisqa_nom>` havolasi chiqadi.
-3. Ixtiyoriy: `/mybots` → bot → Bot Settings → Menu Button — manzil va "O'ynash" yozuvi.
-
-To'liq ekran va gorizontal qulf Telegram 8.0+ versiyalarida ishlaydi; eskisida "telefonni burang" yozuvi chiqadi.
+To'liq bosqichma-bosqich qo'llanma: [`docs/joylash.md`](docs/joylash.md).
+Qisqasi: o'yin Cloudflare Workers'ga joylanadi (`wrangler.jsonc`, build: `npm run build`, deploy:
+`npx wrangler deploy`), keyin @BotFather'da bot ochilib, unga shu manzil Mini App sifatida ulanadi.
 
 ## Hali qilinmagan
 

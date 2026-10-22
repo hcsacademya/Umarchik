@@ -1,0 +1,9 @@
+// Cloudflare Workers sozlamasi: o'yin statik sayt sifatida dist/ papkasidan beriladi.
+// Keyinchalik (Telegram Stars, PvP) shu Worker'ga server kodi qo'shiladi.
+{
+  "name": "umar",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}
