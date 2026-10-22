@@ -27,8 +27,11 @@ npm run build      # tayyor sayt dist/ papkasida
 - **Yollash — bitta umumiy navbat:** qaysi tugma birinchi bosilsa, o'sha birinchi tayyorlanadi (tugma pastdan
   to'ladi). 10 tagacha bosib qo'yish mumkin, askarlar bittalab chiqadi. Tugmadagi raqam — navbatda nechta
   kutyapti; × — bittasini olib tashlaydi, puli qaytadi. Qimmatrog'i sekinroq tayyorlanadi.
-- **Holatlar:** *Chekinish* (hamma qasrga kiradi, ichkaridagi kamonchilar otadi), *Joyida tur* (qasr oldida
-  saf: sarkardalar, otliq, Amir, qilichli, nayzachi, kamonchi — qatorda 5 tadan), *Hujum*.
+- **Holatlar:** *Chekinish* — hamma (konchilar ham) qasrga kiradi, darvoza yopiladi, ichkarida askarlar
+  tuzaladi, qasrga kirgan kamonchilar devor tepasiga chiqib otadi. *Joyida tur* — kon oldida, bayroq
+  turgan joyda saf: sarkardalar, otliq, Amir, qilichli, nayzachi, kamonchi (har tur o'z ustunida). *Hujum*.
+- **Konchi** kon og'ziga kirib ketadi, ichkarida qazib, kumushli savat bilan chiqadi va qasr darvozasiga
+  olib boradi.
 - **Amir** halok bo'lsa, qo'shin o'zi qasrga chekinadi va 20 soniyadan keyin yangi Amir bilan chiqadi.
   Dushmanda Amir yo'q.
 - **Kim kimni yengadi** (real tarixga yaqin, zarba ko'paytmasi):
@@ -88,6 +91,9 @@ python3 tools/prepare_assets.py --preview
 Skript fonni olib tashlaydi, varaqni bo'laklarga ajratadi va `public/assets/` + `src/assets.json` ga yozadi.
 Dushman xalqlari varag'i (`art/dushman_*.webp`): tepada ko'chmanchi, pastda sovutli; mato qismlari toza ko'k —
 o'yin ularni har jangda bayroq rangiga almashtiradi.
+Animatsiya varaqlari (`art/anim_*.webp`) — 4×4, 16 kadr: 1–6 yurish, 7–8 turish, 9–12 zarba, 13 zarba yeyish,
+14–16 o'lim (konchida: 1–6 yurish, 7–8 qazish, 9–12 savat bilan yurish, 13 turish, 14 zarba yeyish, 15–16 o'lim).
+Qasrlardan faqat darvoza old qismi kesib olinadi (`CASTLE_KEEP`).
 
 ## Telegram'ga joylash
 
@@ -99,5 +105,7 @@ Qisqasi: o'yin Cloudflare Workers'ga joylanadi (`wrangler.jsonc`, build: `npm ru
 
 - Ekinzor va yaylov foni (6-prompt) — hozir vaqtincha dasht va o'rmon foni ishlatiladi.
 - Dushman otliq rasmi (12-prompt) — hozircha bizning otliq jang rangiga bo'yalgan. Dushman konchilari ham shunday.
+- Dushman qilichli, nayzachi, kamonchilari hozircha 4 kadrli; 16 kadrli varaqlari keyin.
+- Yangi old darvozali qasrlar va konlar (yuborilgan, lekin fayl bo'lib kelmagan) — hozir eski qasr rasmlari kesib ishlatiladi.
 - Bizning otliq, sarkardalar va qo'mondon rasmlari (hozir vaqtincha).
 - Telegram Stars orqali Market, PvP, ovoz.

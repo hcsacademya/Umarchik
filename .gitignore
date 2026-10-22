@@ -4,3 +4,4 @@ dist
 *.log
 scratch
 .wrangler
+__pycache__/

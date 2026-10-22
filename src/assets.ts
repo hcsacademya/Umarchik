@@ -7,6 +7,7 @@ export interface Frame {
   w: number; // o'yin birligida
   h: number;
   ax: number; // tayanch nuqta (oyoq o'rtasi), kenglikka nisbatan
+  wz?: number; // qasr: darvoza ustidagi devor tepasining balandligi
 }
 
 interface FrameMeta {
@@ -14,6 +15,7 @@ interface FrameMeta {
   w: number;
   h: number;
   ax: number;
+  wz?: number;
 }
 
 const cache = new Map<string, HTMLImageElement>();
@@ -30,7 +32,7 @@ function image(src: string): HTMLImageElement {
 }
 
 function frames(list: FrameMeta[]): Frame[] {
-  return list.map((m) => ({ img: image(m.f), w: m.w, h: m.h, ax: m.ax }));
+  return list.map((m) => ({ img: image(m.f), w: m.w, h: m.h, ax: m.ax, wz: m.wz }));
 }
 
 const unitMeta = meta.units as Record<Kind, FrameMeta[]>;

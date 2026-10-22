@@ -9,17 +9,26 @@ export type ItemId =
   | 'konchi' | 'qilichli' | 'nayzachi' | 'kamonchi' | 'otliq'
   | 'sarkarda_qilichli' | 'sarkarda_nayzachi' | 'sarkarda_kamonchi' | 'sarkarda_otliq' | 'qomondon';
 
-// ---------- Jang maydoni (o'yin birliklarida) ----------
-export const WORLD_W = 2600;
-// Qasr yon tomondan: CASTLE_X — darvoza joyi; uzun devor darvozadan orqaga (chet tomonga) ketadi
-export const CASTLE_X: [number, number] = [260, WORLD_W - 260];
-export const CASTLE_FRONT = 95; // darvozadan qasrning old (jang maydoni tomondagi) chetigacha
-export const CASTLE_DEPTH = 300; // darvozadan qasrning orqa chetigacha
-export const MINE_OFFSET = 330; // kon kirish joyi darvozadan
-export const FORMATION_FRONT = 560; // "Joyida tur" safining oldingi qatori qasrdan
-export const ROW_GAP = 30;
-export const ROW_SIZE = 5;
+// ---------- Jang maydoni (o'yin birliklarida; ekran balandligi 560 birlik) ----------
+export const WORLD_W = 2300;
+// Qasrdan faqat darvoza old qismi ko'rinadi. CASTLE_X — darvoza; qasr rasmi darvozadan ~120 birlik orqaga ketadi
+export const CASTLE_X: [number, number] = [130, WORLD_W - 130];
+export const CASTLE_FRONT = 100; // darvozadan qasrning old (jang maydoni tomondagi) chetigacha
+export const CASTLE_DEPTH = 120; // darvozadan qasrning orqa chetigacha
+export const MINE_OFFSET = 300; // kon og'zi darvozadan
+export const FORMATION_FRONT = 560; // "Joyida tur" safining oldingi qatori darvozadan
+export const ROW_GAP = 20; // saf qatorlari orasidagi masofa
+export const ROW_SIZE = 4; // bir qatorda (chuqurlik bo'yicha) nechta askar
 export const DEPTH = 40; // askarlar 0..40 chuqurlikda turadi
+
+// Devor tepasidagi kamonchilar joyi: [darvozadan jang maydoni tomonga masofa, o'q chiqadigan balandlik].
+// 0-joyda doim qasrning o'z kamonchisi, qolganlariga Chekinishda qasrga kirgan kamonchilar chiqadi
+export const WALL_SPOTS: [number, number][] = [
+  [10, 150], [-6, 150], [24, 150], [-22, 150], [-36, 150], [38, 150],
+];
+
+export const DEAD_LINGER = 5; // o'lgan askar yerda necha soniya yotadi
+export const HEAL_RATE = 0.05; // qasr ichida soniyasiga jonning shuncha ulushi tiklanadi
 
 // ---------- Askarlar ----------
 export interface Stats {
@@ -33,12 +42,12 @@ export interface Stats {
 }
 
 export const STATS: Record<Kind, Stats> = {
-  amir: { name: 'Amir', hp: 550, dmg: 20, range: 40, cd: 0.8, speed: 82, pop: 0 },
-  konchi: { name: 'Konchi', hp: 60, dmg: 0, range: 0, cd: 1, speed: 80, pop: 1 },
-  qilichli: { name: 'Qilichli', hp: 110, dmg: 13, range: 36, cd: 0.9, speed: 78, pop: 1 },
-  nayzachi: { name: 'Nayzachi', hp: 150, dmg: 12, range: 58, cd: 1.1, speed: 72, pop: 1 },
-  kamonchi: { name: 'Kamonchi', hp: 80, dmg: 11, range: 240, cd: 1.4, speed: 74, pop: 1 },
-  otliq: { name: 'Otliq', hp: 280, dmg: 22, range: 44, cd: 1.0, speed: 150, pop: 2 },
+  amir: { name: 'Amir', hp: 550, dmg: 20, range: 32, cd: 0.8, speed: 70, pop: 0 },
+  konchi: { name: 'Konchi', hp: 60, dmg: 0, range: 0, cd: 1, speed: 68, pop: 1 },
+  qilichli: { name: 'Qilichli', hp: 110, dmg: 13, range: 30, cd: 0.9, speed: 66, pop: 1 },
+  nayzachi: { name: 'Nayzachi', hp: 150, dmg: 12, range: 46, cd: 1.1, speed: 61, pop: 1 },
+  kamonchi: { name: 'Kamonchi', hp: 80, dmg: 11, range: 220, cd: 1.4, speed: 63, pop: 1 },
+  otliq: { name: 'Otliq', hp: 280, dmg: 22, range: 40, cd: 1.0, speed: 125, pop: 2 },
 };
 
 // Kim kimga qarshi qanday (real tarixga yaqin): VS[hujumchi][nishon] — zarba ko'paytmasi.
@@ -101,7 +110,7 @@ export function popCap(step: number): number {
 // ---------- Iqtisod ----------
 export const START_SILVER = 150;
 export const MINER_LOAD = 15;
-export const MINE_TIME = 1.6;
+export const MINE_TIME = 2.2; // konchi kon ichida qancha turadi
 export const MAX_MINERS = 12;
 export const STOCK_CAP = 250; // qasr yonidagi ombor: to'lsa konchilar kutib turadi
 
@@ -109,7 +118,7 @@ export const STOCK_CAP = 250; // qasr yonidagi ombor: to'lsa konchilar kutib tur
 export const CASTLE_HP = 3000;
 export const CASTLE_DMG = 14;
 export const CASTLE_CD = 1.5;
-export const CASTLE_RANGE = 420;
+export const CASTLE_RANGE = 400;
 export const FIRE_MULT = 1.5; // olovli o'q qasrga
 export const AMIR_RESPAWN = 20;
 

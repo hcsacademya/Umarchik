@@ -1,9 +1,9 @@
 // Jang maydonini chizish (canvas). Mantiqqa tegmaydi — faqat Battle holatini o'qiydi.
 import { BACKGROUNDS, BUILDINGS, UNIT_FRAMES, building, enemyFrames, ready, tintedBuilding } from './assets.ts';
 import type { Background, Frame } from './assets.ts';
-import { mineX } from './battle.ts';
+import { mineX, swingPhase } from './battle.ts';
 import type { Battle, Unit } from './battle.ts';
-import { BATTLES, CASTLE_X, COLORS, DEPTH, RANK, WORLD_W } from './config.ts';
+import { BATTLES, CASTLE_X, COLORS, DEAD_LINGER, DEPTH, FORMATION_FRONT, RANK, WALL_SPOTS, WORLD_W } from './config.ts';
 import type { Kind, Side, Terrain } from './config.ts';
 
 export const VIEW_H = 560; // ekran balandligiga sig'adigan o'yin birligi
@@ -73,6 +73,7 @@ export class Renderer {
   safe = { left: 0, right: 0, top: 0 }; // tugmalar egallamagan joy (UI beradi)
   private enemy: Partial<Record<Kind, Frame[]>> = {};
   private enemyCastle: Frame | null = null;
+  private flash = document.createElement('canvas'); // urilgan askarni qizartirish uchun
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -129,13 +130,18 @@ export class Renderer {
       this.drawSky(pal);
       this.drawGround(pal);
     }
-    this.drawMine(0, def.mine);
-    this.drawMine(1, def.mine);
-    this.drawCastle(b, 0);
-    this.drawCastle(b, 1);
+    for (const side of [0, 1] as Side[]) {
+      this.drawWallArchers(b, side); // qasr devori ularning oyog'ini yopadi
+      this.drawCastle(b, side);
+      this.drawMine(side, def.mine);
+    }
+    this.drawRallyFlag(b);
 
-    const list = b.units.filter((u) => !u.garrison).sort((a, c) => a.y - c.y);
-    for (const u of list) this.drawUnit(u);
+    const list = b.units.filter((u) => !u.garrison && !u.inside).sort((a, c) => a.y - c.y || Number(c.dead) - Number(a.dead));
+    for (const u of list) this.drawShadow(u);
+    // avval o'liklar (yerda yotadi), keyin tiriklar
+    for (const u of list) if (u.dead) this.drawUnit(u);
+    for (const u of list) if (!u.dead) this.drawUnit(u);
     this.drawParticles(b);
     this.drawShots(b);
     this.drawCastleBars(b);
@@ -145,19 +151,50 @@ export class Renderer {
 
   // ---------------- Fon ----------------
 
-  // Realistik panorama: tekis yer chizig'i jang maydoniga to'g'rilanadi, sekin siljiydi (parallaks),
-  // kenglik yetmasa ko'zgudek takrorlanadi
+  // Realistik panorama: uzoq manzara (osmon, tog', o'rmon) sekin siljiydi — chuqurlik hissi;
+  // yer qismi esa qasr, kon va askarlar bilan bir tezlikda siljiydi — ular yerda "turadi".
+  // Kenglik yetmasa rasm ko'zgudek takrorlanadi.
   private drawBackground(bg: Background): void {
-    const { ctx, W, H } = this;
+    const { H } = this;
     const img = bg.img;
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
-    const gy = this.groundY - 14 * this.scale;
-    const k = gy / (bg.ground * ih);
-    const tw = iw * k;
-    const off = this.cam * this.scale * 0.35;
+    const gy = this.groundY - 30 * this.scale; // ufq chizig'i (yer boshlanadigan joy)
     const srcG = bg.ground * ih;
-    let x = -(off % (2 * tw));
+    const k = gy / srcG;
+    const tw = iw * k;
+    const fe = Math.round(ih * 0.035); // ikki qatlam bir-biriga silliq o'tadigan oraliq (faqat yer qismida)
+    // avval yer (dunyo bilan siljiydi), ustidan uzoq manzara: ufqqacha tiniq, undan pastda asta shaffoflashadi
+    this.tile(img, srcG, ih - srcG, gy, H - gy, tw, this.cam * this.scale);
+    this.tile(this.farLayer(img, srcG, fe), 0, srcG + fe, 0, gy + fe * k, tw, this.cam * this.scale * 0.3);
+  }
+
+  private farCache = new Map<HTMLImageElement, HTMLCanvasElement>();
+
+  private farLayer(img: HTMLImageElement, srcG: number, fe: number): HTMLCanvasElement {
+    let c = this.farCache.get(img);
+    if (!c) {
+      c = document.createElement('canvas');
+      c.width = img.naturalWidth;
+      c.height = Math.round(srcG + fe);
+      const g = c.getContext('2d')!;
+      g.drawImage(img, 0, 0);
+      g.globalCompositeOperation = 'destination-in';
+      const grad = g.createLinearGradient(0, srcG, 0, srcG + fe);
+      grad.addColorStop(0, 'rgba(0,0,0,1)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      // bitta to'rtburchak butun rasmni qoplaydi: yuqorisi to'liq, pastki oralig'i asta shaffof
+      g.fillStyle = grad;
+      g.fillRect(0, 0, c.width, c.height);
+      this.farCache.set(img, c);
+    }
+    return c;
+  }
+
+  private tile(img: HTMLImageElement | HTMLCanvasElement, sy: number, sh: number, dy: number, dh: number, tw: number, off: number): void {
+    const { ctx, W } = this;
+    const iw = img.width;
+    let x = -(((off % (2 * tw)) + 2 * tw) % (2 * tw));
     let i = 0;
     while (x < W) {
       ctx.save();
@@ -165,8 +202,7 @@ export class Renderer {
         ctx.translate(x + tw, 0);
         ctx.scale(-1, 1);
       } else ctx.translate(x, 0);
-      ctx.drawImage(img, 0, 0, iw, srcG, 0, 0, tw + 1, gy);
-      ctx.drawImage(img, 0, srcG, iw, ih - srcG, 0, gy, tw + 1, H - gy);
+      ctx.drawImage(img, 0, sy, iw, sh, 0, dy, tw + 1, dh);
       ctx.restore();
       x += tw;
       i++;
@@ -318,10 +354,34 @@ export class Renderer {
     ctx.restore();
   }
 
-  // Kon kirish joyi (tayanch nuqta) qasr tomonga qaragan
+  // Kon og'zi (tayanch nuqta) qasr tomonga qaragan; konchilar shu yerga kirib-chiqadi
   private drawMine(side: Side, idx: number): void {
     const f = BUILDINGS.kon[idx];
-    this.drawSprite(f, mineX(side), -14, 0, side === 1);
+    this.groundShadow(mineX(side) + (side === 0 ? 1 : -1) * (0.5 - f.ax) * f.w, -12, f.w * 0.5, 10);
+    this.drawSprite(f, mineX(side), -12, -2, side === 1);
+  }
+
+  private groundShadow(x: number, y: number, rx: number, ry: number, alpha = 0.28): void {
+    const { ctx } = this;
+    ctx.fillStyle = `rgba(20,14,6,${alpha})`;
+    ctx.beginPath();
+    ctx.ellipse(this.sx(x), this.sy(y, 0), rx * this.scale, ry * this.scale, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Devor tepasidagi kamonchilar: qasrniki + Chekinishda qasrga kirgan kamonchilar
+  private drawWallArchers(b: Battle, side: Side): void {
+    if (b.sides[side].castleHp <= 0) return;
+    const frames = (side === 1 && this.enemy.kamonchi) || UNIT_FRAMES.kamonchi;
+    const f = frames[frames.length >= 16 ? 10 : frames.length - 1];
+    const dir = side === 0 ? 1 : -1;
+    const n = b.wallArchers(side);
+    // oyog'i devor ortida qoladi: tanasi devor tepasidan ko'rinib turadi
+    const feet = (this.castleFrame(b, side).f.wz ?? 150) - 24;
+    for (let i = 0; i < n; i++) {
+      const [dx] = WALL_SPOTS[i];
+      this.drawSprite(f, CASTLE_X[side] + dir * dx, -14 - (i % 2) * 2, feet, side === 1, 0.85);
+    }
   }
 
   // Bizning qasr: 0 ochiq, 1 yopiq (chekinishda), 2 shikastlangan, 3 vayron
@@ -329,7 +389,8 @@ export class Renderer {
     const s = b.sides[side];
     const ratio = s.castleHp / s.castleMax;
     if (side === 0) {
-      const i = ratio <= 0 ? 3 : ratio < 0.5 ? 2 : s.stance === 'chekinish' ? 1 : 0;
+      // hamma qasrga kirgach darvoza yopiladi
+      const i = ratio <= 0 ? 3 : ratio < 0.5 ? 2 : s.stance === 'chekinish' && b.allInside(0) ? 1 : 0;
       return { f: BUILDINGS.qasr_biz[i], alpha: 1, sink: 0 };
     }
     const t = ratio <= 0 ? Math.min(1, b.overT / 2) : 0;
@@ -338,7 +399,35 @@ export class Renderer {
 
   private drawCastle(b: Battle, side: Side): void {
     const { f, alpha, sink } = this.castleFrame(b, side);
+    this.groundShadow(this.castleMid(b, side), -8, f.w * 0.52, 12, 0.3 * alpha);
     this.drawSprite(f, CASTLE_X[side], -10, -sink, side === 1, 1, alpha);
+  }
+
+  // "Joyida tur" safi qayerda turishini ko'rsatadigan bayroq
+  private drawRallyFlag(b: Battle): void {
+    if (b.sides[0].stance !== 'tur') return;
+    const { ctx } = this;
+    const x = this.sx(CASTLE_X[0] + FORMATION_FRONT + 26);
+    const y0 = this.sy(-2, 0);
+    const h = 70 * this.scale;
+    ctx.strokeStyle = '#4a3418';
+    ctx.lineWidth = Math.max(1.5, 2 * this.scale);
+    ctx.beginPath();
+    ctx.moveTo(x, y0);
+    ctx.lineTo(x, y0 - h);
+    ctx.stroke();
+    const wave = Math.sin(b.time * 4) * 3 * this.scale;
+    ctx.fillStyle = '#2346c8';
+    ctx.strokeStyle = '#e8c060';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y0 - h);
+    ctx.quadraticCurveTo(x + 14 * this.scale, y0 - h - 3 * this.scale + wave, x + 28 * this.scale, y0 - h + 5 * this.scale);
+    ctx.lineTo(x + 20 * this.scale, y0 - h + 11 * this.scale);
+    ctx.quadraticCurveTo(x + 12 * this.scale, y0 - h + 17 * this.scale + wave, x, y0 - h + 18 * this.scale);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
   }
 
   private castleTop(b: Battle, side: Side): number {
@@ -353,50 +442,129 @@ export class Renderer {
 
   // ---------------- Askarlar ----------------
 
-  private frameIndex(u: Unit): number {
-    if (u.kind === 'otliq') return 0;
-    const step = Math.floor((u.animT * u.speed) / 14);
-    if (u.kind === 'konchi') {
-      if (u.anim === 'mine') return Math.floor(u.animT / 0.35) % 2 ? 3 : 0;
-      if (u.anim === 'carry') return step % 2 ? 4 : 5;
-      if (u.anim === 'walk') return [1, 0, 2, 0][step % 4];
-      return u.load > 0 ? 4 : 0;
+  // 16 kadrli varaq: 0–5 yurish, 6–7 turish, 8–11 zarba, 12 zarba yeyish, 13–15 o'lim.
+  // Konchi: 0–5 bo'sh yurish, 6–7 qazish, 8–11 savat bilan yurish, 12 turish, 13 zarba yeyish, 14–15 o'lim.
+  // Eski 4 kadrli varaq: 0 turish, 1–2 yurish, 3 zarba.
+  private frameIndex(u: Unit, n: number): number {
+    const walk6 = Math.floor(u.walkDist / 11) % 6;
+    const phase = swingPhase(u);
+    if (n >= 16) {
+      if (u.kind === 'konchi') {
+        if (u.dead) return u.deadT < 0.35 ? 14 : 15;
+        if (u.hitT > 0.08) return 13;
+        if (u.anim === 'walk' || u.anim === 'carry') return u.load > 0 ? 8 + (Math.floor(u.walkDist / 12) % 4) : walk6;
+        return u.load > 0 ? 9 : 12;
+      }
+      if (u.dead) return u.deadT < 0.22 ? 13 : u.deadT < 0.45 ? 14 : 15;
+      if (phase >= 0) return 8 + Math.min(3, Math.floor(phase * 4));
+      if (u.hitT > 0.1) return 12;
+      if (u.anim === 'walk') return walk6;
+      return Math.floor((u.animT + u.id * 0.37) / 1.1) % 2 ? 7 : 6;
     }
-    if (u.anim === 'walk') return [1, 0, 2, 0][step % 4];
-    if (u.anim === 'attack') return 3;
+    if (n >= 4) {
+      if (phase >= 0) return phase > 0.25 && phase < 0.8 ? 3 : 0;
+      if (u.anim === 'walk') return [1, 0, 2, 0][Math.floor(u.walkDist / 14) % 4];
+    }
     return 0;
+  }
+
+  private drawShadow(u: Unit): void {
+    const sc = RANK[u.rank].scale;
+    const fade = u.dead ? Math.max(0, 1 - Math.max(0, u.deadT - DEAD_LINGER)) : 1;
+    const w = (u.kind === 'otliq' ? 34 : 15) * sc;
+    this.groundShadow(u.x, u.y, w, 3.5 * sc, 0.3 * fade);
   }
 
   private drawUnit(u: Unit): void {
     const frames = (u.side === 1 && this.enemy[u.kind]) || UNIT_FRAMES[u.kind];
-    const f = frames[Math.min(this.frameIndex(u), frames.length - 1)];
+    const n = frames.length;
+    const f = frames[Math.min(this.frameIndex(u, n), n - 1)];
+    const stand = frames[n >= 16 ? (u.kind === 'konchi' ? 12 : 6) : 0];
     const sc = RANK[u.rank].scale;
     let z = 0;
-    if (u.kind === 'otliq' && u.anim === 'walk') z = Math.abs(Math.sin(u.animT * 10)) * 3;
+    // kam kadrli rasmlarda yurish tebranishini kod beradi
+    if (n < 16 && u.anim === 'walk' && !u.dead) z = Math.abs(Math.sin(u.walkDist / 9)) * (u.kind === 'otliq' ? 3 : 2);
     const flip = u.facing < 0;
     const { ctx } = this;
 
     if (u.rank !== 'oddiy' && !u.dead) {
-      ctx.fillStyle = u.side === 0 ? 'rgba(255,205,80,0.55)' : 'rgba(160,30,30,0.5)';
+      ctx.strokeStyle = u.side === 0 ? 'rgba(255,205,80,0.9)' : 'rgba(200,40,30,0.85)';
+      ctx.lineWidth = Math.max(1.5, 2 * this.scale);
       ctx.beginPath();
-      ctx.ellipse(this.sx(u.x), this.sy(u.y, 0), f.w * 0.45 * sc * this.scale, 6 * this.scale, 0, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.ellipse(this.sx(u.x), this.sy(u.y, 0), stand.w * 0.42 * sc * this.scale, 5 * this.scale, 0, 0, Math.PI * 2);
+      ctx.stroke();
     }
     if (u.dead) {
-      const t = Math.min(1, u.deadT * 3);
-      this.drawSprite(f, u.x, u.y, 0, flip, sc, Math.max(0, 1 - u.deadT / 1.2), -u.facing * t * 1.3);
+      const alpha = Math.max(0, 1 - Math.max(0, u.deadT - DEAD_LINGER));
+      // varaqda o'lim kadrlari bo'lmasa — yiqilib tushishni burish bilan ko'rsatamiz
+      const rot = n >= 16 ? 0 : -u.facing * Math.min(1, u.deadT * 3) * 1.4;
+      this.drawSprite(f, u.x, u.y, 0, flip, sc, alpha, rot);
       return;
     }
-    this.drawSprite(f, u.x, u.y, z, flip, sc);
+    if (u.hitT > 0) this.drawFlash(f, u.x, u.y, z, flip, sc, Math.min(1, u.hitT / 0.22));
+    else this.drawSprite(f, u.x, u.y, z, flip, sc);
+
+    const top = stand.h * sc;
+    if (u.kind === 'amir') this.drawAmirMark(u, top);
     if (u.hp < u.maxHp) {
-      const w = 34 * this.scale * Math.min(1.6, sc);
+      const w = 26 * this.scale * Math.min(1.6, sc);
       const x = this.sx(u.x) - w / 2;
-      const y = this.sy(u.y, f.h * sc + 8);
+      const y = this.sy(u.y, top + 6);
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
       ctx.fillRect(x - 1, y - 1, w + 2, 5);
       ctx.fillStyle = u.side === 0 ? '#6fd06a' : '#e05a4a';
       ctx.fillRect(x, y, w * (u.hp / u.maxHp), 3);
     }
+  }
+
+  // Amir boshi ustida oltin belgi — uni qo'shin ichida darrov topish uchun
+  private drawAmirMark(u: Unit, top: number): void {
+    const { ctx } = this;
+    const x = this.sx(u.x);
+    const y = this.sy(u.y, top + 16);
+    const s = 5 * this.scale + 2;
+    ctx.fillStyle = '#ffd24a';
+    ctx.strokeStyle = '#5a3a08';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x - s, y - s * 0.6);
+    ctx.lineTo(x - s * 0.5, y - s * 0.1);
+    ctx.lineTo(x, y - s * 0.8);
+    ctx.lineTo(x + s * 0.5, y - s * 0.1);
+    ctx.lineTo(x + s, y - s * 0.6);
+    ctx.lineTo(x + s * 0.8, y + s * 0.4);
+    ctx.lineTo(x - s * 0.8, y + s * 0.4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  // Urilgan askar qisqa vaqt qizarib chaqnaydi
+  private drawFlash(f: Frame, x: number, y: number, z: number, flip: boolean, scale: number, k: number): void {
+    if (!ready(f.img)) return;
+    const c = this.flash;
+    const w = Math.max(1, Math.ceil(f.w * this.scale * scale * this.dpr));
+    const h = Math.max(1, Math.ceil(f.h * this.scale * scale * this.dpr));
+    if (c.width < w || c.height < h) {
+      c.width = Math.max(c.width, w);
+      c.height = Math.max(c.height, h);
+    }
+    const fc = c.getContext('2d')!;
+    fc.globalCompositeOperation = 'source-over';
+    fc.clearRect(0, 0, w, h);
+    fc.drawImage(f.img, 0, 0, w, h);
+    fc.globalCompositeOperation = 'source-atop';
+    fc.fillStyle = `rgba(255,40,30,${0.55 * k})`;
+    fc.fillRect(0, 0, w, h);
+    const tmp: Frame = { img: c, w: f.w, h: f.h, ax: f.ax };
+    const { ctx } = this;
+    ctx.save();
+    const px = this.sx(x);
+    const py = this.sy(y, z);
+    ctx.translate(px, py);
+    if (flip) ctx.scale(-1, 1);
+    ctx.drawImage(c, 0, 0, w, h, -tmp.ax * (w / this.dpr), -(h / this.dpr), w / this.dpr, h / this.dpr);
+    ctx.restore();
   }
 
   // ---------------- O'qlar va effektlar ----------------

@@ -324,8 +324,17 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
       stanceBtns[st].disabled = side.amirDead;
     }
     if (side.amirDead) {
-      banner.classList.remove('hidden');
+      banner.classList.remove('hidden', 'calm');
       banner.textContent = `Amir halok bo'ldi — qo'shin qasrda, yangi Amir ${Math.ceil(side.amirTimer)} soniyadan keyin`;
+    } else if (side.stance === 'chekinish') {
+      // Chekinish: kim qasrda, darvoza yopiqmi, kamonchilar devordan otyaptimi — hammasi bir qatorda
+      const n = b.garrisonCount(0);
+      const archers = b.wallArchers(0) - 1;
+      banner.classList.remove('hidden');
+      banner.classList.add('calm');
+      banner.textContent = b.allInside(0)
+        ? `Qo'shin qasrda: ${n} askar tuzalmoqda${archers ? `, ${archers} kamonchi devordan otmoqda` : ''}`
+        : "Qo'shin qasrga chekinmoqda…";
     } else banner.classList.add('hidden');
 
     // Amir halok bo'lgani tepadagi yozuvda ko'rinib turadi — alohida xabar shart emas

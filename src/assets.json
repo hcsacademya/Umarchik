@@ -4,150 +4,498 @@
   "amir": [
    {
     "f": "assets/units/amir_0.webp",
-    "w": 35.9,
-    "h": 119.5,
-    "ax": 0.493
+    "w": 52.7,
+    "h": 74.1,
+    "ax": 0.566
    },
    {
     "f": "assets/units/amir_1.webp",
-    "w": 65.0,
-    "h": 118.2,
-    "ax": 0.478
+    "w": 46.8,
+    "h": 71.4,
+    "ax": 0.579
    },
    {
     "f": "assets/units/amir_2.webp",
-    "w": 65.0,
-    "h": 119.1,
-    "ax": 0.465
+    "w": 45.9,
+    "h": 73.2,
+    "ax": 0.648
    },
    {
     "f": "assets/units/amir_3.webp",
-    "w": 88.2,
-    "h": 112.7,
-    "ax": 0.383
-   }
-  ],
-  "konchi": [
-   {
-    "f": "assets/units/konchi_0.webp",
-    "w": 42.3,
-    "h": 105.9,
-    "ax": 0.558
+    "w": 52.3,
+    "h": 73.2,
+    "ax": 0.575
    },
    {
-    "f": "assets/units/konchi_1.webp",
-    "w": 60.9,
-    "h": 105.0,
-    "ax": 0.477
+    "f": "assets/units/amir_4.webp",
+    "w": 50.0,
+    "h": 72.7,
+    "ax": 0.554
    },
    {
-    "f": "assets/units/konchi_2.webp",
-    "w": 63.6,
-    "h": 104.5,
-    "ax": 0.47
+    "f": "assets/units/amir_5.webp",
+    "w": 46.8,
+    "h": 73.6,
+    "ax": 0.587
    },
    {
-    "f": "assets/units/konchi_3.webp",
-    "w": 95.0,
-    "h": 95.5,
-    "ax": 0.407
+    "f": "assets/units/amir_6.webp",
+    "w": 34.5,
+    "h": 78.6,
+    "ax": 0.543
    },
    {
-    "f": "assets/units/konchi_4.webp",
-    "w": 62.3,
-    "h": 101.8,
-    "ax": 0.414
+    "f": "assets/units/amir_7.webp",
+    "w": 37.7,
+    "h": 77.3,
+    "ax": 0.573
    },
    {
-    "f": "assets/units/konchi_5.webp",
-    "w": 66.4,
-    "h": 101.4,
-    "ax": 0.433
+    "f": "assets/units/amir_8.webp",
+    "w": 58.2,
+    "h": 75.5,
+    "ax": 0.461
+   },
+   {
+    "f": "assets/units/amir_9.webp",
+    "w": 97.3,
+    "h": 64.1,
+    "ax": 0.393
+   },
+   {
+    "f": "assets/units/amir_10.webp",
+    "w": 93.6,
+    "h": 59.5,
+    "ax": 0.416
+   },
+   {
+    "f": "assets/units/amir_11.webp",
+    "w": 79.1,
+    "h": 66.4,
+    "ax": 0.373
+   },
+   {
+    "f": "assets/units/amir_12.webp",
+    "w": 56.4,
+    "h": 70.0,
+    "ax": 0.35
+   },
+   {
+    "f": "assets/units/amir_13.webp",
+    "w": 93.2,
+    "h": 50.5,
+    "ax": 0.37
+   },
+   {
+    "f": "assets/units/amir_14.webp",
+    "w": 81.4,
+    "h": 43.6,
+    "ax": 0.531
+   },
+   {
+    "f": "assets/units/amir_15.webp",
+    "w": 110.0,
+    "h": 27.7,
+    "ax": 0.475
    }
   ],
   "qilichli": [
    {
     "f": "assets/units/qilichli_0.webp",
-    "w": 41.8,
-    "h": 117.3,
-    "ax": 0.452
+    "w": 60.5,
+    "h": 71.8,
+    "ax": 0.593
    },
    {
     "f": "assets/units/qilichli_1.webp",
-    "w": 64.1,
-    "h": 116.4,
-    "ax": 0.539
+    "w": 43.6,
+    "h": 68.2,
+    "ax": 0.602
    },
    {
     "f": "assets/units/qilichli_2.webp",
-    "w": 64.1,
-    "h": 116.4,
-    "ax": 0.543
+    "w": 28.2,
+    "h": 72.3,
+    "ax": 0.532
    },
    {
     "f": "assets/units/qilichli_3.webp",
-    "w": 80.5,
-    "h": 111.4,
+    "w": 54.5,
+    "h": 71.4,
+    "ax": 0.56
+   },
+   {
+    "f": "assets/units/qilichli_4.webp",
+    "w": 47.7,
+    "h": 70.5,
+    "ax": 0.668
+   },
+   {
+    "f": "assets/units/qilichli_5.webp",
+    "w": 31.4,
+    "h": 73.2,
+    "ax": 0.528
+   },
+   {
+    "f": "assets/units/qilichli_6.webp",
+    "w": 32.3,
+    "h": 76.4,
     "ax": 0.49
+   },
+   {
+    "f": "assets/units/qilichli_7.webp",
+    "w": 34.5,
+    "h": 77.7,
+    "ax": 0.499
+   },
+   {
+    "f": "assets/units/qilichli_8.webp",
+    "w": 59.1,
+    "h": 78.2,
+    "ax": 0.548
+   },
+   {
+    "f": "assets/units/qilichli_9.webp",
+    "w": 94.5,
+    "h": 61.8,
+    "ax": 0.515
+   },
+   {
+    "f": "assets/units/qilichli_10.webp",
+    "w": 80.5,
+    "h": 58.2,
+    "ax": 0.491
+   },
+   {
+    "f": "assets/units/qilichli_11.webp",
+    "w": 72.3,
+    "h": 64.5,
+    "ax": 0.486
+   },
+   {
+    "f": "assets/units/qilichli_12.webp",
+    "w": 52.7,
+    "h": 65.5,
+    "ax": 0.348
+   },
+   {
+    "f": "assets/units/qilichli_13.webp",
+    "w": 87.7,
+    "h": 51.8,
+    "ax": 0.387
+   },
+   {
+    "f": "assets/units/qilichli_14.webp",
+    "w": 89.5,
+    "h": 41.8,
+    "ax": 0.471
+   },
+   {
+    "f": "assets/units/qilichli_15.webp",
+    "w": 116.8,
+    "h": 25.5,
+    "ax": 0.457
    }
   ],
   "nayzachi": [
    {
     "f": "assets/units/nayzachi_0.webp",
-    "w": 38.6,
-    "h": 135.5,
-    "ax": 0.451
+    "w": 65.5,
+    "h": 79.5,
+    "ax": 0.617
    },
    {
     "f": "assets/units/nayzachi_1.webp",
-    "w": 62.7,
-    "h": 131.4,
-    "ax": 0.556
+    "w": 54.5,
+    "h": 75.9,
+    "ax": 0.623
    },
    {
     "f": "assets/units/nayzachi_2.webp",
-    "w": 63.2,
-    "h": 130.0,
-    "ax": 0.521
+    "w": 31.4,
+    "h": 80.9,
+    "ax": 0.443
    },
    {
     "f": "assets/units/nayzachi_3.webp",
-    "w": 103.2,
-    "h": 110.5,
-    "ax": 0.367
+    "w": 60.5,
+    "h": 77.7,
+    "ax": 0.602
+   },
+   {
+    "f": "assets/units/nayzachi_4.webp",
+    "w": 60.0,
+    "h": 77.3,
+    "ax": 0.617
+   },
+   {
+    "f": "assets/units/nayzachi_5.webp",
+    "w": 37.7,
+    "h": 77.3,
+    "ax": 0.481
+   },
+   {
+    "f": "assets/units/nayzachi_6.webp",
+    "w": 35.0,
+    "h": 83.2,
+    "ax": 0.492
+   },
+   {
+    "f": "assets/units/nayzachi_7.webp",
+    "w": 33.6,
+    "h": 84.5,
+    "ax": 0.479
+   },
+   {
+    "f": "assets/units/nayzachi_8.webp",
+    "w": 67.3,
+    "h": 66.8,
+    "ax": 0.635
+   },
+   {
+    "f": "assets/units/nayzachi_9.webp",
+    "w": 115.0,
+    "h": 63.2,
+    "ax": 0.438
+   },
+   {
+    "f": "assets/units/nayzachi_10.webp",
+    "w": 111.4,
+    "h": 61.8,
+    "ax": 0.435
+   },
+   {
+    "f": "assets/units/nayzachi_11.webp",
+    "w": 81.8,
+    "h": 66.4,
+    "ax": 0.451
+   },
+   {
+    "f": "assets/units/nayzachi_12.webp",
+    "w": 57.7,
+    "h": 67.7,
+    "ax": 0.32
+   },
+   {
+    "f": "assets/units/nayzachi_13.webp",
+    "w": 103.6,
+    "h": 52.3,
+    "ax": 0.359
+   },
+   {
+    "f": "assets/units/nayzachi_14.webp",
+    "w": 90.9,
+    "h": 40.5,
+    "ax": 0.487
+   },
+   {
+    "f": "assets/units/nayzachi_15.webp",
+    "w": 122.7,
+    "h": 24.5,
+    "ax": 0.444
    }
   ],
   "kamonchi": [
    {
     "f": "assets/units/kamonchi_0.webp",
-    "w": 43.6,
-    "h": 113.6,
-    "ax": 0.377
+    "w": 56.4,
+    "h": 71.8,
+    "ax": 0.511
    },
    {
     "f": "assets/units/kamonchi_1.webp",
-    "w": 60.0,
-    "h": 112.7,
-    "ax": 0.46
+    "w": 51.8,
+    "h": 70.9,
+    "ax": 0.509
    },
    {
     "f": "assets/units/kamonchi_2.webp",
-    "w": 60.9,
-    "h": 113.2,
-    "ax": 0.469
+    "w": 34.5,
+    "h": 71.8,
+    "ax": 0.359
    },
    {
     "f": "assets/units/kamonchi_3.webp",
-    "w": 80.9,
-    "h": 125.0,
-    "ax": 0.367
+    "w": 56.8,
+    "h": 72.7,
+    "ax": 0.528
+   },
+   {
+    "f": "assets/units/kamonchi_4.webp",
+    "w": 51.4,
+    "h": 72.7,
+    "ax": 0.557
+   },
+   {
+    "f": "assets/units/kamonchi_5.webp",
+    "w": 38.2,
+    "h": 73.2,
+    "ax": 0.354
+   },
+   {
+    "f": "assets/units/kamonchi_6.webp",
+    "w": 36.4,
+    "h": 74.1,
+    "ax": 0.36
+   },
+   {
+    "f": "assets/units/kamonchi_7.webp",
+    "w": 35.5,
+    "h": 75.0,
+    "ax": 0.338
+   },
+   {
+    "f": "assets/units/kamonchi_8.webp",
+    "w": 55.5,
+    "h": 74.5,
+    "ax": 0.378
+   },
+   {
+    "f": "assets/units/kamonchi_9.webp",
+    "w": 55.5,
+    "h": 76.4,
+    "ax": 0.446
+   },
+   {
+    "f": "assets/units/kamonchi_10.webp",
+    "w": 62.7,
+    "h": 80.5,
+    "ax": 0.443
+   },
+   {
+    "f": "assets/units/kamonchi_11.webp",
+    "w": 56.8,
+    "h": 80.0,
+    "ax": 0.445
+   },
+   {
+    "f": "assets/units/kamonchi_12.webp",
+    "w": 57.3,
+    "h": 60.5,
+    "ax": 0.318
+   },
+   {
+    "f": "assets/units/kamonchi_13.webp",
+    "w": 80.5,
+    "h": 49.1,
+    "ax": 0.374
+   },
+   {
+    "f": "assets/units/kamonchi_14.webp",
+    "w": 89.5,
+    "h": 41.8,
+    "ax": 0.502
+   },
+   {
+    "f": "assets/units/kamonchi_15.webp",
+    "w": 110.9,
+    "h": 28.6,
+    "ax": 0.459
+   }
+  ],
+  "konchi": [
+   {
+    "f": "assets/units/konchi_0.webp",
+    "w": 58.2,
+    "h": 74.1,
+    "ax": 0.535
+   },
+   {
+    "f": "assets/units/konchi_1.webp",
+    "w": 48.6,
+    "h": 72.3,
+    "ax": 0.584
+   },
+   {
+    "f": "assets/units/konchi_2.webp",
+    "w": 32.3,
+    "h": 75.5,
+    "ax": 0.45
+   },
+   {
+    "f": "assets/units/konchi_3.webp",
+    "w": 57.3,
+    "h": 74.5,
+    "ax": 0.534
+   },
+   {
+    "f": "assets/units/konchi_4.webp",
+    "w": 50.9,
+    "h": 74.5,
+    "ax": 0.565
+   },
+   {
+    "f": "assets/units/konchi_5.webp",
+    "w": 33.6,
+    "h": 75.9,
+    "ax": 0.488
+   },
+   {
+    "f": "assets/units/konchi_6.webp",
+    "w": 38.6,
+    "h": 80.0,
+    "ax": 0.638
+   },
+   {
+    "f": "assets/units/konchi_7.webp",
+    "w": 67.3,
+    "h": 58.2,
+    "ax": 0.434
+   },
+   {
+    "f": "assets/units/konchi_8.webp",
+    "w": 55.0,
+    "h": 73.2,
+    "ax": 0.471
+   },
+   {
+    "f": "assets/units/konchi_9.webp",
+    "w": 51.4,
+    "h": 74.1,
+    "ax": 0.448
+   },
+   {
+    "f": "assets/units/konchi_10.webp",
+    "w": 53.2,
+    "h": 72.3,
+    "ax": 0.467
+   },
+   {
+    "f": "assets/units/konchi_11.webp",
+    "w": 50.5,
+    "h": 73.2,
+    "ax": 0.455
+   },
+   {
+    "f": "assets/units/konchi_12.webp",
+    "w": 36.4,
+    "h": 70.5,
+    "ax": 0.357
+   },
+   {
+    "f": "assets/units/konchi_13.webp",
+    "w": 50.5,
+    "h": 61.4,
+    "ax": 0.297
+   },
+   {
+    "f": "assets/units/konchi_14.webp",
+    "w": 78.6,
+    "h": 48.2,
+    "ax": 0.445
+   },
+   {
+    "f": "assets/units/konchi_15.webp",
+    "w": 112.3,
+    "h": 30.5,
+    "ax": 0.506
    }
   ],
   "otliq": [
    {
     "f": "assets/units/otliq_0.webp",
-    "w": 108.2,
-    "h": 200.5,
+    "w": 69.1,
+    "h": 127.7,
     "ax": 0.493
    }
   ]
@@ -157,78 +505,78 @@
    "qilichli": [
     {
      "f": "assets/units/kochmanchi_qilichli_0.webp",
-     "w": 51.8,
-     "h": 122.3,
+     "w": 33.2,
+     "h": 78.6,
      "ax": 0.452
     },
     {
      "f": "assets/units/kochmanchi_qilichli_1.webp",
-     "w": 73.2,
-     "h": 120.5,
+     "w": 46.8,
+     "h": 77.3,
      "ax": 0.534
     },
     {
      "f": "assets/units/kochmanchi_qilichli_2.webp",
-     "w": 70.0,
-     "h": 120.5,
+     "w": 45.0,
+     "h": 77.7,
      "ax": 0.547
     },
     {
      "f": "assets/units/kochmanchi_qilichli_3.webp",
-     "w": 96.8,
-     "h": 113.2,
+     "w": 62.3,
+     "h": 72.7,
      "ax": 0.553
     }
    ],
    "nayzachi": [
     {
      "f": "assets/units/kochmanchi_nayzachi_0.webp",
-     "w": 45.9,
-     "h": 135.0,
+     "w": 29.5,
+     "h": 86.8,
      "ax": 0.482
     },
     {
      "f": "assets/units/kochmanchi_nayzachi_1.webp",
-     "w": 74.1,
-     "h": 132.3,
+     "w": 47.7,
+     "h": 85.0,
      "ax": 0.543
     },
     {
      "f": "assets/units/kochmanchi_nayzachi_2.webp",
-     "w": 71.4,
-     "h": 130.9,
+     "w": 45.9,
+     "h": 84.1,
      "ax": 0.534
     },
     {
      "f": "assets/units/kochmanchi_nayzachi_3.webp",
-     "w": 131.8,
-     "h": 106.8,
+     "w": 85.0,
+     "h": 68.6,
      "ax": 0.385
     }
    ],
    "kamonchi": [
     {
      "f": "assets/units/kochmanchi_kamonchi_0.webp",
-     "w": 50.0,
-     "h": 119.5,
+     "w": 32.3,
+     "h": 76.8,
      "ax": 0.404
     },
     {
      "f": "assets/units/kochmanchi_kamonchi_1.webp",
-     "w": 72.7,
-     "h": 117.3,
+     "w": 46.8,
+     "h": 75.5,
      "ax": 0.482
     },
     {
      "f": "assets/units/kochmanchi_kamonchi_2.webp",
-     "w": 71.4,
-     "h": 115.9,
+     "w": 45.9,
+     "h": 74.5,
      "ax": 0.492
     },
     {
      "f": "assets/units/kochmanchi_kamonchi_3.webp",
-     "w": 100.5,
-     "h": 125.5,
+     "w": 64.5,
+     "h": 80.5,
      "ax": 0.402
     }
    ]
@@ -237,78 +585,78 @@
    "qilichli": [
     {
      "f": "assets/units/sovutli_qilichli_0.webp",
-     "w": 55.5,
-     "h": 120.5,
+     "w": 35.5,
+     "h": 77.3,
      "ax": 0.462
     },
     {
      "f": "assets/units/sovutli_qilichli_1.webp",
-     "w": 75.5,
-     "h": 120.0,
+     "w": 48.6,
+     "h": 77.3,
      "ax": 0.537
     },
     {
      "f": "assets/units/sovutli_qilichli_2.webp",
-     "w": 76.4,
-     "h": 120.0,
+     "w": 49.1,
+     "h": 76.8,
      "ax": 0.54
     },
     {
      "f": "assets/units/sovutli_qilichli_3.webp",
-     "w": 102.3,
-     "h": 118.2,
+     "w": 65.9,
+     "h": 75.9,
      "ax": 0.538
     }
    ],
    "nayzachi": [
     {
      "f": "assets/units/sovutli_nayzachi_0.webp",
-     "w": 46.8,
-     "h": 134.1,
+     "w": 30.0,
+     "h": 86.4,
      "ax": 0.467
     },
     {
      "f": "assets/units/sovutli_nayzachi_1.webp",
-     "w": 71.8,
-     "h": 133.6,
+     "w": 45.9,
+     "h": 85.9,
      "ax": 0.566
     },
     {
      "f": "assets/units/sovutli_nayzachi_2.webp",
-     "w": 73.2,
-     "h": 133.6,
+     "w": 46.8,
+     "h": 85.9,
      "ax": 0.534
     },
     {
      "f": "assets/units/sovutli_nayzachi_3.webp",
-     "w": 135.0,
-     "h": 111.8,
+     "w": 86.8,
+     "h": 71.8,
      "ax": 0.41
     }
    ],
    "kamonchi": [
     {
      "f": "assets/units/sovutli_kamonchi_0.webp",
-     "w": 40.5,
-     "h": 115.9,
+     "w": 25.9,
+     "h": 74.5,
      "ax": 0.447
     },
     {
      "f": "assets/units/sovutli_kamonchi_1.webp",
-     "w": 74.1,
-     "h": 114.1,
+     "w": 47.3,
+     "h": 73.2,
      "ax": 0.478
     },
     {
      "f": "assets/units/sovutli_kamonchi_2.webp",
-     "w": 70.9,
-     "h": 114.1,
+     "w": 45.5,
+     "h": 73.2,
      "ax": 0.493
     },
     {
      "f": "assets/units/sovutli_kamonchi_3.webp",
-     "w": 101.8,
-     "h": 123.2,
+     "w": 65.5,
+     "h": 79.1,
      "ax": 0.427
     }
    ]
@@ -318,105 +666,117 @@
   "qasr_biz": [
    {
     "f": "assets/qasr_biz_0.webp",
-    "w": 395.8,
-    "h": 238.0,
-    "ax": 0.74
+    "w": 224.1,
+    "h": 240.6,
+    "ax": 0.537,
+    "wz": 163.4
    },
    {
     "f": "assets/qasr_biz_1.webp",
-    "w": 395.2,
-    "h": 236.4,
-    "ax": 0.74
+    "w": 223.5,
+    "h": 238.9,
+    "ax": 0.538,
+    "wz": 160.6
    },
    {
     "f": "assets/qasr_biz_2.webp",
-    "w": 404.2,
-    "h": 230.7,
-    "ax": 0.74
+    "w": 232.6,
+    "h": 233.2,
+    "ax": 0.517,
+    "wz": 154.3
    },
    {
     "f": "assets/qasr_biz_3.webp",
-    "w": 413.8,
-    "h": 201.5,
-    "ax": 0.74
+    "w": 242.3,
+    "h": 178.7,
+    "ax": 0.496,
+    "wz": 102.7
    }
   ],
   "kon": [
    {
     "f": "assets/kon_0.webp",
-    "w": 231.4,
-    "h": 143.2,
+    "w": 211.4,
+    "h": 130.9,
     "ax": 0.474
    },
    {
     "f": "assets/kon_1.webp",
-    "w": 224.5,
-    "h": 153.2,
+    "w": 205.0,
+    "h": 140.0,
     "ax": 0.42
    },
    {
     "f": "assets/kon_2.webp",
-    "w": 232.7,
-    "h": 150.9,
+    "w": 212.3,
+    "h": 137.7,
     "ax": 0.478
    },
    {
     "f": "assets/kon_3.webp",
-    "w": 228.6,
-    "h": 152.7,
+    "w": 208.6,
+    "h": 139.5,
     "ax": 0.426
    }
   ],
   "qasr_dushman": [
    {
     "f": "assets/qasr_dushman_0.webp",
-    "w": 400.0,
+    "w": 242.8,
     "h": 227.6,
-    "ax": 0.693
+    "ax": 0.495,
+    "wz": 160.3
    },
    {
     "f": "assets/qasr_dushman_1.webp",
-    "w": 400.0,
+    "w": 244.9,
     "h": 264.9,
-    "ax": 0.688
+    "ax": 0.491,
+    "wz": 180.3
    },
    {
     "f": "assets/qasr_dushman_2.webp",
-    "w": 400.5,
+    "w": 239.7,
     "h": 221.8,
-    "ax": 0.702
+    "ax": 0.502,
+    "wz": 144.0
    },
    {
     "f": "assets/qasr_dushman_3.webp",
-    "w": 395.3,
+    "w": 237.6,
     "h": 221.3,
-    "ax": 0.699
+    "ax": 0.5,
+    "wz": 134.0
    },
    {
     "f": "assets/qasr_dushman_4.webp",
-    "w": 399.5,
+    "w": 218.7,
     "h": 226.0,
-    "ax": 0.754
+    "ax": 0.55,
+    "wz": 134.5
    },
    {
     "f": "assets/qasr_dushman_5.webp",
-    "w": 405.3,
+    "w": 235.0,
     "h": 227.6,
-    "ax": 0.721
+    "ax": 0.518,
+    "wz": 157.7
    }
   ],
   "shahar": [
    {
     "f": "assets/shahar_0.webp",
-    "w": 634.2,
+    "w": 289.2,
     "h": 380.8,
-    "ax": 0.824
+    "ax": 0.615,
+    "wz": 305.8
    },
    {
     "f": "assets/shahar_1.webp",
-    "w": 645.8,
+    "w": 362.5,
     "h": 384.2,
-    "ax": 0.72
+    "ax": 0.501,
+    "wz": 241.7
    }
   ]
  },
