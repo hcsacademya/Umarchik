@@ -1,6 +1,6 @@
 // Jang simulyatsiyasi: grafikasiz, faqat mantiq. Har qadam step(dt) bilan yuradi.
 import {
-  AMIR_RESPAWN, BATTLES, BOOST_EFFECT, CASTLE_CD, CASTLE_DMG, CASTLE_FRONT, CASTLE_HP, CASTLE_RANGE, CASTLE_X, DEPTH,
+  AMIR_RESPAWN, BATTLES, BOOST_EFFECT, CASTLE_CD, CASTLE_DEPTH, CASTLE_DMG, CASTLE_FRONT, CASTLE_HP, CASTLE_RANGE, CASTLE_X, DEPTH,
   FACTIONS, FIRE_MULT, FORMATION_FRONT, MAX_MINERS, MINE_OFFSET, MINE_TIME, MINER_LOAD, MINER_UP, QUEUE_MAX,
   RANK, ROW_GAP, ROW_SIZE, START_SILVER, STATS, STOCK_CAP, UNIT_UP_STEP, enemyCastleHp, enemyIncome, enemyStats,
   itemOf, popCap, vsMult,
@@ -416,7 +416,7 @@ export class Battle {
       if (this.sides[side].castleHp <= 0) {
         this.sides[side].castleHp = 0;
         this.winner = side === 0 ? 1 : 0;
-        for (let i = 0; i < 30; i++) this.smoke(CASTLE_X[side] + (this.rand() - 0.5) * 220, 20 + this.rand() * 150, 1.5);
+        for (let i = 0; i < 30; i++) this.smoke(this.castleMid(side) + (this.rand() - 0.5) * 300, 20 + this.rand() * 150, 1.5);
       }
     }
   }
@@ -449,6 +449,11 @@ export class Battle {
 
   private castleFront(side: Side): number {
     return CASTLE_X[side] + dirOf(side) * CASTLE_FRONT;
+  }
+
+  // Qasrning o'rtasi (tutun va effektlar uchun)
+  private castleMid(side: Side): number {
+    return CASTLE_X[side] + (dirOf(side) * (CASTLE_FRONT - CASTLE_DEPTH)) / 2;
   }
 
   private moveTo(u: Unit, x: number, dt: number): boolean {
@@ -647,7 +652,7 @@ export class Battle {
   // ---------------- O'qlar ----------------
 
   private fireArrow(side: Side, kind: Kind | null, dmg: number, x: number, z: number, t: Unit | null, castle: Side | -1, fire: boolean): void {
-    const tx = t ? t.x : this.castleFront(castle as Side) + dirOf(castle as Side) * this.rand() * 60;
+    const tx = t ? t.x : this.castleFront(castle as Side) - dirOf(castle as Side) * this.rand() * 220;
     const tz = t ? 50 : 40 + this.rand() * 160;
     const dist = Math.hypot(tx - x, tz - z);
     this.shots.push({
@@ -676,13 +681,13 @@ export class Battle {
     s.castleCd -= dt;
     if (s.castleCd <= 0) {
       s.castleCd = CASTLE_CD;
-      this.fireArrow(side, null, s.castleDmg, cx + dirOf(side) * 60, 210, nearest(), -1, false);
+      this.fireArrow(side, null, s.castleDmg, cx + dirOf(side) * 40, 200, nearest(), -1, false);
     }
     // Qasr ichidagi kamonchilar ham otadi
     for (const u of this.units) {
       if (u.side !== side || !u.garrison || u.dead || u.kind !== 'kamonchi' || u.cdLeft > 0) continue;
       u.cdLeft = u.cd;
-      this.fireArrow(side, 'kamonchi', u.dmg, cx + (this.rand() - 0.5) * 160, 160, nearest(), -1, side === 1);
+      this.fireArrow(side, 'kamonchi', u.dmg, cx - dirOf(side) * this.rand() * CASTLE_DEPTH * 0.8, 160, nearest(), -1, side === 1);
     }
   }
 
@@ -761,7 +766,7 @@ export class Battle {
       const s = this.sides[side];
       const dmg = 1 - s.castleHp / s.castleMax;
       if (dmg > 0.4 && this.rand() < dmg * dt * 6) {
-        this.smoke(CASTLE_X[side] + (this.rand() - 0.5) * 200, 120 + this.rand() * 100, 2.5);
+        this.smoke(this.castleMid(side) + (this.rand() - 0.5) * 300, 120 + this.rand() * 100, 2.5);
       }
     }
   }

@@ -105,6 +105,7 @@ To'liq ekran va gorizontal qulf Telegram 8.0+ versiyalarida ishlaydi; eskisida "
 
 ## Hali qilinmagan
 
-- Yon tomondan qasrlar, konlar, realistik jang foni va 2 dushman xalqining rasmlari (12 ta prompt tayyor; dushman xalqlari 4 rasmda: tepada ko'chmanchi, pastda sovutli).
+- Ekinzor va yaylov foni (6-prompt) — hozir vaqtincha dasht va o'rmon foni ishlatiladi.
+- 2 dushman xalqining rasmlari (9–12-promptlar; tepada ko'chmanchi, pastda sovutli) — hozir bizning askarlar jang rangiga bo'yalgan.
 - Bizning otliq, sarkardalar va qo'mondon rasmlari (hozir vaqtincha).
 - Telegram Stars orqali Market, PvP, ovoz.

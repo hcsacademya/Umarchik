@@ -37,12 +37,16 @@ UNITS = {
     'otliq': ('otliq_vaqtincha.jpg', 1, 1, 160, True),
 }
 
-# Binolar: (varaq, qatorlar, ustunlar, o'rtacha kenglik o'yin birligida)
-BUILDINGS = {
-    'qasr_biz': ('qasr_biz.webp', 1, 3, 270),
-    'qasr_dushman': ('qasr_dushman.webp', 2, 3, 280),
-    'kon': ('konlar.webp', 2, 2, 200),
-    'shahar': ('shaharlar.webp', 2, 2, 560),
+# Binolar (yon tomondan). Kenglik — o'yin birligida.
+CASTLE_W = 400  # bizning va dushman qasrlari
+CITY_W = 640  # poytaxtlar
+MINE_W = 230
+
+# Jang fonlari: (varaq, [tepadagi joy, pastdagi joy]) va har panoramada tekis yer boshlanadigan qator (ulushda)
+BACKGROUNDS = {
+    'fon_ormon_kol.webp': (('ormon', 0.82), ('kol', 0.79)),
+    'fon_tog_dasht.webp': (('tog', 0.82), ('dasht', 0.56)),
+    'fon_chol_shahar.webp': (('chol', 0.74), ('shahar', 0.67)),
 }
 
 
@@ -117,6 +121,13 @@ def segments(profile, want, min_gap=10):
         k = int(np.argmin(gaps))
         merged[k][1] = merged[k + 1][1]
         del merged[k + 1]
+    # bir-biriga tegib turgan bo'laklar: eng kengini o'rtasidagi eng ingichka joyidan bo'lamiz
+    while 0 < len(merged) < want:
+        k = int(np.argmax([b - a for a, b in merged]))
+        a, b = merged[k]
+        lo, hi = a + int((b - a) * 0.3), a + int((b - a) * 0.7)
+        cut = lo + int(np.argmin(profile[lo:hi]))
+        merged[k:k + 1] = [[a, cut], [cut, b]]
     if len(merged) != want:
         raise RuntimeError(f'{want} ta bo\'lak kutilgandi, {len(merged)} ta topildi')
     return merged
@@ -210,20 +221,77 @@ def build_units(meta, preview):
         print(f'{kind}: {len(pieces)} ta poza, gavda {body_h}px -> {game_h} birlik')
 
 
+def gate_x(piece):
+    """Darvoza yoki kon kirish joyi: pastki qismdagi eng katta qorong'i joyning o'rtasi (kenglikka nisbatan)."""
+    a = piece[..., 3] > 200
+    lum = (piece[..., :3] * [0.299, 0.587, 0.114]).sum(axis=2)
+    h = piece.shape[0]
+    low = np.zeros_like(a)
+    low[int(h * 0.45):] = True
+    zone = a & low
+    thr = np.percentile(lum[zone], 7)
+    lab, n = ndi.label(zone & (lum <= thr))
+    if not n:
+        return 0.5
+    sizes = ndi.sum(np.ones_like(lum), lab, index=np.arange(1, n + 1))
+    ys, xs = np.nonzero(lab == int(np.argmax(sizes)) + 1)
+    return float(xs.mean()) / piece.shape[1]
+
+
+def put_buildings(meta, preview, key, pieces, game_w, axes):
+    """Bir guruh binolarni bir xil masshtabda saqlaydi. axes — har biri uchun tayanch nuqta (darvoza)."""
+    med_w = float(np.median([p.shape[1] for p in pieces]))
+    ppu = min(PPU, med_w / game_w)  # asl o'lchamdan kattalashtirmaymiz
+    scale = game_w * ppu / med_w
+    frames = []
+    for i, (p, ax) in enumerate(zip(pieces, axes)):
+        im = resize(p, scale)
+        frames.append(frame_meta(save(im, f'{key}_{i}.webp'), im, ax, ppu))
+        preview.append((im, ax))
+    meta['buildings'][key] = frames
+    print(f'{key}: {len(pieces)} ta, kenglik ~{game_w} birlik, darvoza {[round(a, 2) for a in axes]}')
+
+
 def build_buildings(meta, preview):
     meta['buildings'] = {}
-    for key, (src, rows, cols, game_w) in BUILDINGS.items():
-        pieces = split(remove_bg(load(src)), rows, cols)
-        med_w = float(np.median([p.shape[1] for p in pieces]))
-        ppu = min(PPU, med_w / game_w)  # asl o'lchamdan kattalashtirmaymiz
-        scale = game_w * ppu / med_w
-        frames = []
-        for i, p in enumerate(pieces):
-            im = resize(p, scale)
-            frames.append(frame_meta(save(im, f'{key}_{i}.webp'), im, 0.5, ppu))
-            preview.append((im, 0.5))
-        meta['buildings'][key] = frames
-        print(f'{key}: {len(pieces)} ta, kenglik ~{game_w} birlik')
+    # Bizning qasr: ochiq, yopiq, shikastlangan, vayron. Darvoza joyi — ochiq holatdan.
+    ours = split(remove_bg(load('qasr_biz.webp')), 2, 2)
+    gx = gate_x(ours[0])
+    put_buildings(meta, preview, 'qasr_biz', ours, CASTLE_W, [gx] * 4)
+    # Konlar: kirish joyi qasr tomonga (chapga) qaragan
+    mines = split(remove_bg(load('konlar.webp')), 2, 2)
+    put_buildings(meta, preview, 'kon', mines, MINE_W, [gate_x(m) for m in mines])
+    # Dushman qasrlari: o'rmon, ko'l, ekinzor, tog', dasht, cho'l; keyin ikki poytaxt
+    a = split(remove_bg(load('qasr_dushman_1.webp')), 2, 2)
+    b = split(remove_bg(load('qasr_dushman_2.webp')), 2, 2)
+    forts = a + b[:2]
+    put_buildings(meta, preview, 'qasr_dushman', forts, CASTLE_W, [gate_x(f) for f in forts])
+    put_buildings(meta, preview, 'shahar', b[2:], CITY_W, [gate_x(c) for c in b[2:]])
+
+
+def build_backgrounds(meta, preview):
+    """Har varaqda ikki panorama: o'rtadagi och ajratuvchi chiziq bo'yicha bo'linadi."""
+    meta['backgrounds'] = {}
+    for src, parts in BACKGROUNDS.items():
+        rgb = load(src)
+        h = rgb.shape[0]
+        mid = rgb[int(h * 0.35):int(h * 0.65)]
+        bright = mid.mean(axis=(1, 2))
+        flat = mid.std(axis=(1, 2))
+        rows = np.nonzero((bright > 190) & (flat < 22))[0] + int(h * 0.35)
+        top_end, bot_start = (rows.min() - 2, rows.max() + 3) if len(rows) else (h // 2 - 4, h // 2 + 4)
+        for (terrain, ground), (y0, y1) in zip(parts, [(2, top_end), (bot_start, h - 2)]):
+            im = Image.fromarray(rgb[y0:y1, 2:-2].astype(np.uint8), 'RGB')
+            rel = f'fon_{terrain}.webp'
+            im.save(os.path.join(OUT, rel), 'WEBP', quality=80, method=6)
+            meta['backgrounds'][terrain] = {'f': 'assets/' + rel, 'w': im.width, 'h': im.height, 'ground': ground}
+            # tekshirish uchun yer chizig'i (qizil)
+            pv = im.convert('RGBA')
+            gy = int(ground * im.height)
+            for x in range(im.width):
+                pv.putpixel((x, gy), (255, 0, 0, 255))
+            preview.append((pv, 0))
+        print(f'{src}: {parts[0][0]}, {parts[1][0]}')
 
 
 def build_map(meta):
@@ -262,6 +330,7 @@ def main():
     meta, preview = {'ppu': PPU}, []
     build_units(meta, preview)
     build_buildings(meta, preview)
+    build_backgrounds(meta, preview)
     build_map(meta)
     with open(META, 'w', encoding='utf-8') as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)

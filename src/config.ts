@@ -11,9 +11,11 @@ export type ItemId =
 
 // ---------- Jang maydoni (o'yin birliklarida) ----------
 export const WORLD_W = 2600;
-export const CASTLE_X: [number, number] = [170, WORLD_W - 170];
-export const CASTLE_FRONT = 115; // qasr markazidan old devorigacha
-export const MINE_OFFSET = 370; // kon markazi qasrdan
+// Qasr yon tomondan: CASTLE_X — darvoza joyi; uzun devor darvozadan orqaga (chet tomonga) ketadi
+export const CASTLE_X: [number, number] = [260, WORLD_W - 260];
+export const CASTLE_FRONT = 95; // darvozadan qasrning old (jang maydoni tomondagi) chetigacha
+export const CASTLE_DEPTH = 300; // darvozadan qasrning orqa chetigacha
+export const MINE_OFFSET = 330; // kon kirish joyi darvozadan
 export const FORMATION_FRONT = 560; // "Joyida tur" safining oldingi qatori qasrdan
 export const ROW_GAP = 30;
 export const ROW_SIZE = 5;
@@ -244,7 +246,6 @@ export interface BattleDef {
   name: string;
   terrain: Terrain;
   castle: string; // rasm: buildings kaliti va indeksi, masalan "qasr_dushman:0"
-  ruin?: string; // vayron holati (bo'lsa)
   mine: number; // kon rasmi indeksi
   map: [number, number]; // xaritadagi joyi (rasm o'lchamiga nisbatan 0..1)
   faction: FactionId;
@@ -279,6 +280,6 @@ export const BATTLES: BattleDef[] = [
   { name: 'Orol bandargohi', terrain: 'kol', castle: 'qasr_dushman:1', mine: 0, map: [0.215, 0.64], faction: 'kochmanchi', color: 'zangori', temper: 'reyd' },
   { name: "Ko'l bo'yi qal'asi", terrain: 'kol', castle: 'qasr_dushman:1', mine: 1, map: [0.18, 0.49], faction: 'sovutli', color: 'kok', temper: 'tez' },
   { name: "Qizil bayroqli qal'a", terrain: 'ekinzor', castle: 'qasr_dushman:2', mine: 0, map: [0.393, 0.63], faction: 'kochmanchi', color: 'qizil', temper: 'reyd' },
-  { name: 'Qizil tomli poytaxt', terrain: 'shahar', castle: 'shahar:0', ruin: 'shahar:2', mine: 0, map: [0.383, 0.45], faction: 'sovutli', color: 'qizil', temper: 'sabrli' },
-  { name: "Ko'k gumbazli poytaxt", terrain: 'shahar', castle: 'shahar:1', ruin: 'shahar:3', mine: 0, map: [0.648, 0.43], faction: 'sovutli', color: 'kok', temper: 'tez' },
+  { name: 'Qizil tomli poytaxt', terrain: 'shahar', castle: 'shahar:0', mine: 0, map: [0.383, 0.45], faction: 'sovutli', color: 'qizil', temper: 'sabrli' },
+  { name: "Ko'k gumbazli poytaxt", terrain: 'shahar', castle: 'shahar:1', mine: 0, map: [0.648, 0.43], faction: 'sovutli', color: 'kok', temper: 'tez' },
 ];

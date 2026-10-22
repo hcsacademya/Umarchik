@@ -318,113 +318,145 @@
   "qasr_biz": [
    {
     "f": "assets/qasr_biz_0.webp",
-    "w": 272.2,
-    "h": 283.4,
-    "ax": 0.5
+    "w": 395.8,
+    "h": 238.0,
+    "ax": 0.74
    },
    {
     "f": "assets/qasr_biz_1.webp",
-    "w": 261.6,
-    "h": 251.1,
-    "ax": 0.5
+    "w": 395.2,
+    "h": 236.4,
+    "ax": 0.74
    },
    {
     "f": "assets/qasr_biz_2.webp",
-    "w": 270.0,
-    "h": 197.1,
-    "ax": 0.5
-   }
-  ],
-  "qasr_dushman": [
-   {
-    "f": "assets/qasr_dushman_0.webp",
-    "w": 280.3,
-    "h": 216.1,
-    "ax": 0.5
+    "w": 404.2,
+    "h": 230.7,
+    "ax": 0.74
    },
    {
-    "f": "assets/qasr_dushman_1.webp",
-    "w": 269.7,
-    "h": 223.3,
-    "ax": 0.5
-   },
-   {
-    "f": "assets/qasr_dushman_2.webp",
-    "w": 281.4,
-    "h": 215.5,
-    "ax": 0.5
-   },
-   {
-    "f": "assets/qasr_dushman_3.webp",
-    "w": 279.7,
-    "h": 202.1,
-    "ax": 0.5
-   },
-   {
-    "f": "assets/qasr_dushman_4.webp",
-    "w": 271.9,
-    "h": 203.2,
-    "ax": 0.5
-   },
-   {
-    "f": "assets/qasr_dushman_5.webp",
-    "w": 281.4,
-    "h": 201.6,
-    "ax": 0.5
+    "f": "assets/qasr_biz_3.webp",
+    "w": 413.8,
+    "h": 201.5,
+    "ax": 0.74
    }
   ],
   "kon": [
    {
     "f": "assets/kon_0.webp",
-    "w": 201.8,
-    "h": 122.3,
-    "ax": 0.5
+    "w": 231.4,
+    "h": 143.2,
+    "ax": 0.474
    },
    {
     "f": "assets/kon_1.webp",
-    "w": 191.4,
-    "h": 130.9,
-    "ax": 0.5
+    "w": 224.5,
+    "h": 153.2,
+    "ax": 0.42
    },
    {
     "f": "assets/kon_2.webp",
-    "w": 200.5,
-    "h": 117.3,
-    "ax": 0.5
+    "w": 232.7,
+    "h": 150.9,
+    "ax": 0.478
    },
    {
     "f": "assets/kon_3.webp",
-    "w": 199.5,
-    "h": 108.6,
-    "ax": 0.5
+    "w": 228.6,
+    "h": 152.7,
+    "ax": 0.426
+   }
+  ],
+  "qasr_dushman": [
+   {
+    "f": "assets/qasr_dushman_0.webp",
+    "w": 400.0,
+    "h": 227.6,
+    "ax": 0.693
+   },
+   {
+    "f": "assets/qasr_dushman_1.webp",
+    "w": 400.0,
+    "h": 264.9,
+    "ax": 0.688
+   },
+   {
+    "f": "assets/qasr_dushman_2.webp",
+    "w": 400.5,
+    "h": 221.8,
+    "ax": 0.702
+   },
+   {
+    "f": "assets/qasr_dushman_3.webp",
+    "w": 395.3,
+    "h": 221.3,
+    "ax": 0.699
+   },
+   {
+    "f": "assets/qasr_dushman_4.webp",
+    "w": 399.5,
+    "h": 226.0,
+    "ax": 0.754
+   },
+   {
+    "f": "assets/qasr_dushman_5.webp",
+    "w": 405.3,
+    "h": 227.6,
+    "ax": 0.721
    }
   ],
   "shahar": [
    {
     "f": "assets/shahar_0.webp",
-    "w": 570.6,
-    "h": 262.3,
-    "ax": 0.5
+    "w": 634.2,
+    "h": 380.8,
+    "ax": 0.824
    },
    {
     "f": "assets/shahar_1.webp",
-    "w": 546.4,
-    "h": 274.3,
-    "ax": 0.5
-   },
-   {
-    "f": "assets/shahar_2.webp",
-    "w": 569.8,
-    "h": 266.8,
-    "ax": 0.5
-   },
-   {
-    "f": "assets/shahar_3.webp",
-    "w": 550.2,
-    "h": 297.7,
-    "ax": 0.5
+    "w": 645.8,
+    "h": 384.2,
+    "ax": 0.72
    }
   ]
+ },
+ "backgrounds": {
+  "ormon": {
+   "f": "assets/fon_ormon.webp",
+   "w": 1532,
+   "h": 500,
+   "ground": 0.82
+  },
+  "kol": {
+   "f": "assets/fon_kol.webp",
+   "w": 1532,
+   "h": 355,
+   "ground": 0.79
+  },
+  "tog": {
+   "f": "assets/fon_tog.webp",
+   "w": 1532,
+   "h": 498,
+   "ground": 0.82
+  },
+  "dasht": {
+   "f": "assets/fon_dasht.webp",
+   "w": 1532,
+   "h": 508,
+   "ground": 0.56
+  },
+  "chol": {
+   "f": "assets/fon_chol.webp",
+   "w": 1532,
+   "h": 503,
+   "ground": 0.74
+  },
+  "shahar": {
+   "f": "assets/fon_shahar.webp",
+   "w": 1532,
+   "h": 505,
+   "ground": 0.67
+  }
  },
  "map": {
   "f": "assets/xarita.webp",

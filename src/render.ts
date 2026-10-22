@@ -1,6 +1,6 @@
 // Jang maydonini chizish (canvas). Mantiqqa tegmaydi — faqat Battle holatini o'qiydi.
-import { BUILDINGS, UNIT_FRAMES, building, enemyFrames, ready } from './assets.ts';
-import type { Frame } from './assets.ts';
+import { BACKGROUNDS, BUILDINGS, UNIT_FRAMES, building, enemyFrames, ready, tintedBuilding } from './assets.ts';
+import type { Background, Frame } from './assets.ts';
 import { mineX } from './battle.ts';
 import type { Battle, Unit } from './battle.ts';
 import { BATTLES, CASTLE_X, COLORS, DEPTH, RANK, WORLD_W } from './config.ts';
@@ -29,6 +29,9 @@ interface Palette {
   city?: string;
   fields?: string;
 }
+
+// Rasmi hali yo'q joylar uchun vaqtincha o'xshash fon
+const BG_FALLBACK: Partial<Record<Terrain, Terrain>> = { ekinzor: 'dasht', yaylov: 'ormon' };
 
 const PALETTE: Record<Terrain, Palette> = {
   ormon: { sky: ['#8fb7d4', '#dfe9e4'], far: '#7f9a86', near: '#4f6b48', ground: ['#5f7a3c', '#3f5528'], tuft: '#7c9a4a', trees: '#2f4a30' },
@@ -69,6 +72,7 @@ export class Renderer {
   minimap: Rect = { x: 0, y: 0, w: 0, h: 0 };
   safe = { left: 0, right: 0, top: 0 }; // tugmalar egallamagan joy (UI beradi)
   private enemy: Partial<Record<Kind, Frame[]>> = {};
+  private enemyCastle: Frame | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -90,9 +94,12 @@ export class Renderer {
 
   // Dushman jangchilari shu jang rangida chiziladi
   setEnemyColor(level: number): void {
-    const hex = COLORS[BATTLES[level].color].hex;
+    const def = BATTLES[level];
+    const hex = COLORS[def.color].hex;
     this.enemy = {};
     for (const k of Object.keys(UNIT_FRAMES) as Kind[]) this.enemy[k] = enemyFrames(k, hex);
+    // Poytaxtlar o'z rangida qoladi, qolgan qasrlarning bayrog'i jang rangiga bo'yaladi
+    this.enemyCastle = def.castle.startsWith('shahar') ? null : tintedBuilding(def.castle, hex);
   }
 
   viewWidth(): number {
@@ -115,9 +122,13 @@ export class Renderer {
     const { ctx } = this;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     const def = BATTLES[b.level];
-    const pal = PALETTE[def.terrain];
-    this.drawSky(pal);
-    this.drawGround(pal);
+    const bg = BACKGROUNDS[def.terrain] ?? BACKGROUNDS[BG_FALLBACK[def.terrain] ?? def.terrain];
+    if (bg && ready(bg.img)) this.drawBackground(bg);
+    else {
+      const pal = PALETTE[def.terrain];
+      this.drawSky(pal);
+      this.drawGround(pal);
+    }
     this.drawMine(0, def.mine);
     this.drawMine(1, def.mine);
     this.drawCastle(b, 0);
@@ -133,6 +144,34 @@ export class Renderer {
   }
 
   // ---------------- Fon ----------------
+
+  // Realistik panorama: tekis yer chizig'i jang maydoniga to'g'rilanadi, sekin siljiydi (parallaks),
+  // kenglik yetmasa ko'zgudek takrorlanadi
+  private drawBackground(bg: Background): void {
+    const { ctx, W, H } = this;
+    const img = bg.img;
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
+    const gy = this.groundY - 14 * this.scale;
+    const k = gy / (bg.ground * ih);
+    const tw = iw * k;
+    const off = this.cam * this.scale * 0.35;
+    const srcG = bg.ground * ih;
+    let x = -(off % (2 * tw));
+    let i = 0;
+    while (x < W) {
+      ctx.save();
+      if (i % 2) {
+        ctx.translate(x + tw, 0);
+        ctx.scale(-1, 1);
+      } else ctx.translate(x, 0);
+      ctx.drawImage(img, 0, 0, iw, srcG, 0, 0, tw + 1, gy);
+      ctx.drawImage(img, 0, srcG, iw, ih - srcG, 0, gy, tw + 1, H - gy);
+      ctx.restore();
+      x += tw;
+      i++;
+    }
+  }
 
   private drawSky(p: Palette): void {
     const { ctx, W, groundY } = this;
@@ -279,22 +318,22 @@ export class Renderer {
     ctx.restore();
   }
 
+  // Kon kirish joyi (tayanch nuqta) qasr tomonga qaragan
   private drawMine(side: Side, idx: number): void {
     const f = BUILDINGS.kon[idx];
     this.drawSprite(f, mineX(side), -14, 0, side === 1);
   }
 
+  // Bizning qasr: 0 ochiq, 1 yopiq (chekinishda), 2 shikastlangan, 3 vayron
   private castleFrame(b: Battle, side: Side): { f: Frame; alpha: number; sink: number } {
     const s = b.sides[side];
     const ratio = s.castleHp / s.castleMax;
     if (side === 0) {
-      const i = ratio <= 0 ? 2 : ratio < 0.5 ? 1 : 0;
+      const i = ratio <= 0 ? 3 : ratio < 0.5 ? 2 : s.stance === 'chekinish' ? 1 : 0;
       return { f: BUILDINGS.qasr_biz[i], alpha: 1, sink: 0 };
     }
-    const def = BATTLES[b.level];
-    if (ratio <= 0 && def.ruin) return { f: building(def.ruin), alpha: 1, sink: 0 };
     const t = ratio <= 0 ? Math.min(1, b.overT / 2) : 0;
-    return { f: building(def.castle), alpha: 1 - t * 0.85, sink: t * 60 };
+    return { f: this.enemyCastle ?? building(BATTLES[b.level].castle), alpha: 1 - t * 0.85, sink: t * 60 };
   }
 
   private drawCastle(b: Battle, side: Side): void {
@@ -304,6 +343,12 @@ export class Renderer {
 
   private castleTop(b: Battle, side: Side): number {
     return this.castleFrame(b, side).f.h;
+  }
+
+  // Qasr rasmining o'rtasi (darvoza chetroqda bo'lgani uchun)
+  private castleMid(b: Battle, side: Side): number {
+    const f = this.castleFrame(b, side).f;
+    return CASTLE_X[side] + (side === 0 ? 1 : -1) * (0.5 - f.ax) * f.w;
   }
 
   // ---------------- Askarlar ----------------
@@ -409,9 +454,10 @@ export class Renderer {
     for (const side of [0, 1] as Side[]) {
       const s = b.sides[side];
       const w = 150 * this.scale;
-      const x = this.sx(CASTLE_X[side]) - w / 2;
-      const y = Math.max(this.safe.top + 6, this.sy(-10, this.castleTop(b, side) * 0.88));
-      if (x + w < 0 || x > this.W) continue;
+      const cx = this.sx(this.castleMid(b, side)) - w / 2;
+      if (cx + w < 0 || cx > this.W) continue;
+      const x = Math.max(6, Math.min(this.W - w - 6, cx)); // keng poytaxtda ham ekranda qolsin
+      const y = Math.max(this.safe.top + 6, this.sy(-10, this.castleTop(b, side) + 12));
       ctx.fillStyle = 'rgba(20,14,8,0.7)';
       ctx.fillRect(x - 2, y - 2, w + 4, 12 * this.scale + 4);
       ctx.fillStyle = side === 0 ? '#5fbf5a' : '#d9503f';
@@ -432,8 +478,8 @@ export class Renderer {
     const full = s.stock >= s.stockCap;
     const pulse = 1 + Math.sin(b.time * 6) * (full ? 0.08 : 0.04);
     const r = 34 * this.scale * pulse + 8;
-    const x = this.sx(CASTLE_X[0] + 190);
-    const y = this.sy(-10, this.castleTop(b, 0) * 0.62);
+    const x = this.sx(this.castleMid(b, 0));
+    const y = this.sy(-10, this.castleTop(b, 0) * 0.5);
     ctx.fillStyle = full ? 'rgba(200,50,40,0.92)' : 'rgba(250,240,215,0.95)';
     ctx.strokeStyle = full ? '#fff' : '#8a6a2a';
     ctx.lineWidth = 2;

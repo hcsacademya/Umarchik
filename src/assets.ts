@@ -1,6 +1,6 @@
 // Rasmlarni yuklash. O'lchamlar va tayanch nuqtalar tools/prepare_assets.py yasagan assets.json dan.
 import meta from './assets.json';
-import type { Kind } from './config.ts';
+import type { Kind, Terrain } from './config.ts';
 
 export interface Frame {
   img: HTMLImageElement | HTMLCanvasElement;
@@ -52,6 +52,16 @@ export function building(ref: string): Frame {
 }
 
 export const MAP_IMAGE = meta.map.f;
+
+// Realistik jang foni: ground — rasmda tekis yer boshlanadigan qator (balandlikka nisbatan)
+export interface Background {
+  img: HTMLImageElement;
+  ground: number;
+}
+
+const bgMeta = (meta as { backgrounds?: Record<string, { f: string; ground: number }> }).backgrounds ?? {};
+export const BACKGROUNDS: Partial<Record<Terrain, Background>> = {};
+for (const [k, v] of Object.entries(bgMeta)) BACKGROUNDS[k as Terrain] = { img: image(v.f), ground: v.ground };
 
 // Tugma rasmlari uchun: askarning tik turgan holati
 export function unitIcon(kind: Kind): string {
@@ -107,6 +117,18 @@ function recolorImage(img: HTMLImageElement, hex: string, key: boolean): HTMLCan
 }
 
 const tinted = new Map<string, Frame[]>();
+
+// Dushman qasri bayroqlari (toza ko'k) jang rangiga bo'yaladi
+export function tintedBuilding(ref: string, hex: string): Frame {
+  const k = `b:${ref}:${hex}`;
+  let out = tinted.get(k);
+  if (!out) {
+    const f = building(ref);
+    out = [{ ...f, img: ready(f.img) && f.img instanceof HTMLImageElement ? recolorImage(f.img, hex, true) : f.img }];
+    tinted.set(k, out);
+  }
+  return out[0];
+}
 
 export function enemyFrames(kind: Kind, hex: string): Frame[] {
   const k = `${kind}:${hex}`;
