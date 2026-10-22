@@ -107,10 +107,10 @@ export function baseFront(b: Base, img: Frame['img'] = b.img): HTMLCanvasElement
   return c;
 }
 
-// ---------- Skelet: jangchi bo'laklari va suyak nuqtalari (tools/rig_parts.py) ----------
+// ---------- Skelet: jangchi bo'laklari va suyak nuqtalari (tools/rig_sheets.py) ----------
 // Hamma o'lcham o'yin birligida; px, py — bo'lakning burilish nuqtasi (rasm chap-yuqori burchagidan)
 export interface RigPart {
-  img: HTMLImageElement;
+  img: Frame['img'];
   w: number;
   h: number;
   px: number;
@@ -119,13 +119,16 @@ export interface RigPart {
 
 export interface RigJoints {
   hip: [number, number]; // son: oyoq tagidan
-  neck: [number, number]; // bo'yin, yelkalar, son bo'g'inlari: sondan
+  neck: [number, number]; // bo'yin, yelkalar, son bo'g'inlari, plash/o'qdon/savat tayanchi: sondan
   shoulder: [number, number];
   shoulderFar: [number, number];
   hipBack: [number, number];
   hipFront: [number, number];
+  cape?: [number, number];
+  quiver?: [number, number];
+  basket?: [number, number];
   elbow: [number, number]; // tirsak: yelkadan
-  hand: [number, number]; // qilich dastasi: tirsakdan
+  hand: [number, number]; // qo'l tutqichi: tirsakdan
   knee: [number, number]; // tizza: son bo'g'inidan
   foot: number; // tizzadan oyoq tagigacha
 }
@@ -143,12 +146,16 @@ interface RigMeta {
 }
 
 const rigMeta = (meta as unknown as { rigs?: Record<string, RigMeta> }).rigs ?? {};
-export const RIGS: Partial<Record<Kind, Rig>> = {};
+const RIG_DATA: Record<string, Rig> = {};
 for (const [k, m] of Object.entries(rigMeta)) {
   const parts: Record<string, RigPart> = {};
   for (const [name, p] of Object.entries(m.parts)) parts[name] = { img: image(p.f), w: p.w, h: p.h, px: p.px, py: p.py };
-  RIGS[k as Kind] = { h: m.h, parts, joints: m.joints };
+  RIG_DATA[k] = { h: m.h, parts, joints: m.joints };
 }
+
+// Bizning jangchilar skeleti
+export const RIGS: Partial<Record<Kind, Rig>> = {};
+for (const k of ['amir', 'qilichli', 'nayzachi', 'kamonchi', 'konchi'] as Kind[]) if (RIG_DATA[k]) RIGS[k] = RIG_DATA[k];
 
 export const MAP_IMAGE = meta.map.f;
 
@@ -250,6 +257,28 @@ export function enemyFrames(kind: Kind, hex: string, faction: FactionId): Frame[
     const src = own ?? UNIT_FRAMES[kind];
     out = src.map((f) => ({ ...f, img: ready(f.img) && f.img instanceof HTMLImageElement ? recolorImage(f.img, hex, key) : f.img }));
     tinted.set(k, out);
+  }
+  return out;
+}
+
+// Dushman skeleti: xalqning o'z bo'laklari bo'lsa (ko'k mato jang rangiga bo'yaladi), bo'lmasa bizning skelet bo'yalgan
+const tintedRigs = new Map<string, Rig>();
+
+export function enemyRig(kind: Kind, hex: string, faction: FactionId): Rig | undefined {
+  const own = RIG_DATA[`${faction}_${kind}`];
+  const src = own ?? RIGS[kind];
+  if (!src) return undefined;
+  const k = `${faction}:${kind}:${hex}`;
+  let out = tintedRigs.get(k);
+  if (!out) {
+    const parts: Record<string, RigPart> = {};
+    for (const [name, p] of Object.entries(src.parts)) {
+      const base = p.img;
+      parts[name] = { ...p, img: ready(base) && base instanceof HTMLImageElement ? recolorImage(base, hex, !!own) : base };
+    }
+    out = { ...src, parts };
+    // rasm hali yuklanmagan bo'lsa saqlamaymiz — keyingi chizishda qayta uriniladi
+    if (Object.values(src.parts).every((p) => ready(p.img))) tintedRigs.set(k, out);
   }
   return out;
 }

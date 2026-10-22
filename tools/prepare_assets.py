@@ -476,8 +476,8 @@ def main():
     build_bases(meta, preview)
     build_backgrounds(meta, preview)
     build_map(meta)
-    import rig_parts  # skelet qismlari (xuddi shu papkada)
-    rig_parts.build_rigs(meta)
+    import rig_sheets  # skelet qismlari (xuddi shu papkada)
+    rig_sheets.build_rigs(meta)
     with open(META, 'w', encoding='utf-8') as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)
     print('src/assets.json yozildi')
