@@ -1,36 +1,81 @@
-// Kampaniya holati: g'alabalar, oltin, kuchaytirishlar. Brauzer xotirasida saqlanadi.
-import { BATTLES, ITEMS, SILVER_PER_GOLD, UPGRADES, winBonus } from './config.ts';
-import type { ItemId, Kind, Side, UpgradeId } from './config.ts';
+// Kampaniya holati: g'alabalar, oltin, kuchaytirishlar, Market tezlatishlari.
+// Telegram ichida — Telegram bulutida, aks holda brauzer xotirasida saqlanadi.
+import { BATTLES, BOOSTS, ITEMS, SILVER_PER_GOLD, UPGRADES, winBonus } from './config.ts';
+import type { BoostId, ItemId, Kind, Side, UpgradeId } from './config.ts';
+import { cloudGet, cloudSet } from './telegram.ts';
 
 export interface Save {
   won: number; // nechta jang yutilgan (keyingi jang indeksi ham shu)
   gold: number;
   up: Record<UpgradeId, number>;
+  boosts: Record<BoostId, number>; // sotib olingan, keyingi jangda ishlatiladigan tezlatishlar
 }
 
-const KEY = 'umar-save-v1';
+const KEY = 'umar-save-v2';
+const OLD_KEY = 'umar-save-v1';
 
 export function newSave(): Save {
-  return { won: 0, gold: 0, up: { qasr: 0, otish: 0, savat: 0, askar: 0, kumush: 0, ombor: 0 } };
+  const up = {} as Record<UpgradeId, number>;
+  for (const u of UPGRADES) up[u.id] = 0;
+  const boosts = {} as Record<BoostId, number>;
+  for (const b of BOOSTS) boosts[b.id] = 0;
+  return { won: 0, gold: 0, up, boosts };
 }
 
-export function loadSave(): Save | null {
+function parse(raw: string | null): Save | null {
+  if (!raw) return null;
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return null;
-    const s = JSON.parse(raw) as Save;
-    return { ...newSave(), ...s, up: { ...newSave().up, ...s.up } };
+    const s = JSON.parse(raw) as Partial<Save>;
+    const base = newSave();
+    return { ...base, ...s, up: { ...base.up, ...s.up }, boosts: { ...base.boosts, ...s.boosts } };
   } catch {
     return null;
   }
 }
 
-export function writeSave(s: Save): void {
+// 1-versiyadagi umumiy kuchaytirishlarni yangisiga o'tkazish
+function migrate(raw: string | null): Save | null {
+  if (!raw) return null;
   try {
-    localStorage.setItem(KEY, JSON.stringify(s));
+    const old = JSON.parse(raw) as { won: number; gold: number; up: Record<string, number> };
+    const s = newSave();
+    s.won = old.won ?? 0;
+    s.gold = old.gold ?? 0;
+    const u = old.up ?? {};
+    s.up.qasr = u.qasr ?? 0;
+    s.up.otish = u.otish ?? 0;
+    s.up.ombor = u.ombor ?? 0;
+    s.up.kumush = u.kumush ?? 0;
+    s.up.konchi = u.savat ?? 0;
+    for (const k of ['amir', 'qilichli', 'nayzachi', 'kamonchi', 'otliq'] as const) s.up[k] = u.askar ?? 0;
+    return s;
+  } catch {
+    return null;
+  }
+}
+
+function localGet(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+export async function loadSave(): Promise<Save | null> {
+  const cloud = parse(await cloudGet(KEY));
+  if (cloud) return cloud;
+  return parse(localGet(KEY)) ?? migrate(localGet(OLD_KEY));
+}
+
+export function writeSave(s: Save): void {
+  const raw = JSON.stringify(s);
+  try {
+    localStorage.setItem(KEY, raw);
   } catch {
     // xotira yopiq bo'lsa ham o'yin ishlayveradi
   }
+  cloudSet(KEY, raw);
 }
 
 export function campaignDone(s: Save): boolean {
@@ -56,20 +101,52 @@ export function startForce(side: Side, level: number): Kind[] {
   return out;
 }
 
+// ---------- Kuchaytirish ----------
+
 export function upgradeCost(s: Save, id: UpgradeId): number | null {
   const u = UPGRADES.find((x) => x.id === id)!;
   const lvl = s.up[id];
   return lvl < u.costs.length ? u.costs[lvl] : null;
 }
 
+export function upgradeOpen(s: Save, id: UpgradeId): boolean {
+  return UPGRADES.find((x) => x.id === id)!.unlock <= s.won;
+}
+
 export function buyUpgrade(s: Save, id: UpgradeId): boolean {
   const cost = upgradeCost(s, id);
-  if (cost === null || s.gold < cost) return false;
+  if (cost === null || s.gold < cost || !upgradeOpen(s, id)) return false;
   s.gold -= cost;
   s.up[id]++;
   writeSave(s);
   return true;
 }
+
+// ---------- Market ----------
+
+export function buyBoost(s: Save, id: BoostId): boolean {
+  const b = BOOSTS.find((x) => x.id === id)!;
+  if (s.gold < b.cost) return false;
+  s.gold -= b.cost;
+  s.boosts[id]++;
+  writeSave(s);
+  return true;
+}
+
+// Jang boshlanganda: har bir sotib olingan tezlatishdan bittasi ishlatiladi
+export function takeBoosts(s: Save): BoostId[] {
+  const out: BoostId[] = [];
+  for (const b of BOOSTS) {
+    if (s.boosts[b.id] > 0) {
+      s.boosts[b.id]--;
+      out.push(b.id);
+    }
+  }
+  if (out.length) writeSave(s);
+  return out;
+}
+
+// ---------- Jang natijasi ----------
 
 export interface Reward {
   silver: number;

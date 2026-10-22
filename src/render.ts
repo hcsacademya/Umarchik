@@ -1,10 +1,10 @@
 // Jang maydonini chizish (canvas). Mantiqqa tegmaydi — faqat Battle holatini o'qiydi.
-import { BUILDINGS, UNIT_FRAMES, building } from './assets.ts';
+import { BUILDINGS, UNIT_FRAMES, building, enemyFrames, ready } from './assets.ts';
 import type { Frame } from './assets.ts';
 import { mineX } from './battle.ts';
 import type { Battle, Unit } from './battle.ts';
-import { BATTLES, CASTLE_X, DEPTH, RANK, WORLD_W } from './config.ts';
-import type { Side, Terrain } from './config.ts';
+import { BATTLES, CASTLE_X, COLORS, DEPTH, RANK, WORLD_W } from './config.ts';
+import type { Kind, Side, Terrain } from './config.ts';
 
 export const VIEW_H = 560; // ekran balandligiga sig'adigan o'yin birligi
 
@@ -68,6 +68,7 @@ export class Renderer {
   bubble: Rect | null = null; // kumush pufagi (bosiladigan)
   minimap: Rect = { x: 0, y: 0, w: 0, h: 0 };
   safe = { left: 0, right: 0, top: 0 }; // tugmalar egallamagan joy (UI beradi)
+  private enemy: Partial<Record<Kind, Frame[]>> = {};
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -85,6 +86,13 @@ export class Renderer {
     this.scale = h / VIEW_H;
     this.groundY = h * 0.74;
     this.clampCam();
+  }
+
+  // Dushman jangchilari shu jang rangida chiziladi
+  setEnemyColor(level: number): void {
+    const hex = COLORS[BATTLES[level].color].hex;
+    this.enemy = {};
+    for (const k of Object.keys(UNIT_FRAMES) as Kind[]) this.enemy[k] = enemyFrames(k, hex);
   }
 
   viewWidth(): number {
@@ -256,7 +264,7 @@ export class Renderer {
 
   private drawSprite(f: Frame, x: number, y: number, z: number, flip: boolean, scale = 1, alpha = 1, rot = 0): void {
     const { ctx } = this;
-    if (!f.img.complete || !f.img.naturalWidth) return;
+    if (!ready(f.img)) return;
     const w = f.w * this.scale * scale;
     const h = f.h * this.scale * scale;
     const px = this.sx(x);
@@ -315,7 +323,7 @@ export class Renderer {
   }
 
   private drawUnit(u: Unit): void {
-    const frames = UNIT_FRAMES[u.kind][u.side];
+    const frames = (u.side === 1 && this.enemy[u.kind]) || UNIT_FRAMES[u.kind][u.side];
     const f = frames[Math.min(this.frameIndex(u), frames.length - 1)];
     const sc = RANK[u.rank].scale;
     let z = 0;

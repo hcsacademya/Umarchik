@@ -1,10 +1,11 @@
 // Jang simulyatsiyasi: grafikasiz, faqat mantiq. Har qadam step(dt) bilan yuradi.
 import {
-  AMIR_RESPAWN, BEATS, BEATS_MULT, CASTLE_CD, CASTLE_DMG, CASTLE_FRONT, CASTLE_HP, CASTLE_RANGE, CASTLE_X,
-  DEPTH, FIRE_MULT, FORMATION_FRONT, ITEMS, MAX_MINERS, MINE_OFFSET, MINE_TIME, MINER_LOAD, QUEUE_MAX, RANK,
-  ROW_GAP, ROW_SIZE, START_SILVER, STATS, STOCK_CAP, enemyCastleHp, enemyIncome, enemyStats, popCap,
+  AMIR_RESPAWN, BATTLES, BOOST_EFFECT, CASTLE_CD, CASTLE_DMG, CASTLE_FRONT, CASTLE_HP, CASTLE_RANGE, CASTLE_X, DEPTH,
+  FACTIONS, FIRE_MULT, FORMATION_FRONT, MAX_MINERS, MINE_OFFSET, MINE_TIME, MINER_LOAD, MINER_UP, QUEUE_MAX,
+  RANK, ROW_GAP, ROW_SIZE, START_SILVER, STATS, STOCK_CAP, UNIT_UP_STEP, enemyCastleHp, enemyIncome, enemyStats,
+  itemOf, popCap, vsMult,
 } from './config.ts';
-import type { Item, ItemId, Kind, Rank, Side, Stance } from './config.ts';
+import type { BoostId, Item, ItemId, Kind, Rank, Side, Stance } from './config.ts';
 import { itemsFor, startForce, stepFor } from './campaign.ts';
 import type { Save } from './campaign.ts';
 import { EnemyAI } from './ai.ts';
@@ -37,6 +38,7 @@ export interface Unit {
   reach: number; // jangovar masofaga kichik farq: hammasi bir nuqtaga yig'ilmasin
   slotX: number;
   slotY: number;
+  raid: number; // reyd vaqti (soniya); 0 — reydda emas
   task: Task;
   load: number;
   mineT: number;
@@ -76,11 +78,6 @@ export interface Particle {
   size: number;
 }
 
-export interface Queue {
-  count: number;
-  t: number;
-}
-
 export interface SideState {
   silver: number;
   stock: number; // qasr yonida yig'ilgan, hali olinmagan kumush (faqat o'yinchida)
@@ -92,11 +89,18 @@ export interface SideState {
   castleCd: number;
   items: ItemId[];
   popCap: number;
-  queues: Partial<Record<ItemId, Queue>>;
+  queue: ItemId[]; // umumiy navbat: birinchi bosilgan birinchi chiqadi
+  queueT: number; // navbatdagi birinchisining tayyorlanish vaqti
   bought: Set<ItemId>; // sarkarda/qo'mondon: jangda bir marta
-  statMult: number;
-  income: number;
+  hpMult: Record<Kind, number>;
+  dmgMult: Record<Kind, number>;
+  speedMult: number; // jangchilar yurishi
+  attackSpeed: number; // zarba tezligi
+  trainSpeed: number; // navbat tezligi
+  minerSpeed: number;
   minerLoad: number;
+  arrowTaken: number;
+  income: number;
   amirDead: boolean;
   amirTimer: number;
 }
@@ -121,9 +125,17 @@ export function itemPop(it: Item): number {
 }
 
 const ARROW_SPEED = 650;
+const KINDS: Kind[] = ['amir', 'konchi', 'qilichli', 'nayzachi', 'kamonchi', 'otliq'];
+
+function perKind(f: (k: Kind) => number): Record<Kind, number> {
+  const out = {} as Record<Kind, number>;
+  for (const k of KINDS) out[k] = f(k);
+  return out;
+}
 
 export class Battle {
   level: number;
+  boosts: BoostId[];
   time = 0;
   units: Unit[] = [];
   shots: Shot[] = [];
@@ -136,10 +148,15 @@ export class Battle {
   private seed: number;
   private ai: EnemyAI;
 
-  constructor(level: number, save: Save, seed = Date.now()) {
+  constructor(level: number, save: Save, boosts: BoostId[] = [], seed = Date.now()) {
     this.level = level;
+    this.boosts = boosts;
     this.seed = seed >>> 0;
     const up = save.up;
+    const has = (b: BoostId) => boosts.includes(b);
+    const def = BATTLES[level];
+    const fac = FACTIONS[def.faction];
+    const eMult = enemyStats(level);
     this.sides = [
       {
         silver: START_SILVER + 50 * up.kumush,
@@ -152,11 +169,18 @@ export class Battle {
         castleCd: 1,
         items: itemsFor(stepFor(0, level)),
         popCap: popCap(stepFor(0, level)),
-        queues: {},
+        queue: [],
+        queueT: 0,
         bought: new Set(),
-        statMult: 1 + 0.08 * up.askar,
+        hpMult: perKind((k) => (k === 'konchi' ? 1 : 1 + UNIT_UP_STEP * up[k])),
+        dmgMult: perKind((k) => (k === 'konchi' ? 1 : 1 + UNIT_UP_STEP * up[k])),
+        speedMult: 1 + (has('tez_qadam') ? BOOST_EFFECT.tez_qadam : 0),
+        attackSpeed: 1 + (has('jangovar_ruh') ? BOOST_EFFECT.jangovar_ruh : 0),
+        trainSpeed: 1 / (1 - (has('tez_yollash') ? BOOST_EFFECT.tez_yollash : 0)),
+        minerSpeed: (1 + MINER_UP.speed * up.konchi) * (1 + (has('tez_konchi') ? BOOST_EFFECT.tez_konchi : 0)),
+        minerLoad: MINER_LOAD + MINER_UP.load * up.konchi,
+        arrowTaken: 1,
         income: 1,
-        minerLoad: MINER_LOAD + 2 * up.savat,
         amirDead: false,
         amirTimer: 0,
       },
@@ -167,15 +191,22 @@ export class Battle {
         stance: 'tur',
         castleHp: enemyCastleHp(level),
         castleMax: enemyCastleHp(level),
-        castleDmg: CASTLE_DMG * enemyStats(level),
+        castleDmg: CASTLE_DMG * eMult,
         castleCd: 1,
         items: itemsFor(stepFor(1, level)),
         popCap: popCap(stepFor(1, level)),
-        queues: {},
+        queue: [],
+        queueT: 0,
         bought: new Set(),
-        statMult: enemyStats(level),
-        income: enemyIncome(level),
+        hpMult: perKind((k) => eMult * (k === 'konchi' ? 1 : fac.hp)),
+        dmgMult: perKind(() => eMult),
+        speedMult: fac.speed,
+        attackSpeed: 1,
+        trainSpeed: 1,
+        minerSpeed: 1,
         minerLoad: MINER_LOAD,
+        arrowTaken: fac.arrowTaken,
+        income: enemyIncome(level),
         amirDead: false,
         amirTimer: 0,
       },
@@ -190,7 +221,7 @@ export class Battle {
         u.y = u.slotY;
       }
     }
-    this.ai = new EnemyAI();
+    this.ai = new EnemyAI(def.temper, def.faction);
   }
 
   rand(): number {
@@ -201,30 +232,41 @@ export class Battle {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   }
 
-  // ---------------- Sotib olish ----------------
+  // ---------------- Sotib olish va navbat ----------------
 
   popUsed(side: Side): number {
     let n = 0;
     for (const u of this.units) if (u.side === side && !u.dead) n += STATS[u.kind].pop;
-    const q = this.sides[side].queues;
-    for (const it of ITEMS) n += (q[it.id]?.count ?? 0) * itemPop(it);
+    for (const id of this.sides[side].queue) n += itemPop(itemOf(id));
+    return n;
+  }
+
+  queued(side: Side, id: ItemId): number {
+    let n = 0;
+    for (const q of this.sides[side].queue) if (q === id) n++;
     return n;
   }
 
   minerCount(side: Side): number {
-    let n = this.sides[side].queues.konchi?.count ?? 0;
+    let n = this.queued(side, 'konchi');
     for (const u of this.units) if (u.side === side && !u.dead && u.kind === 'konchi') n++;
     return n;
   }
 
+  // Navbatdagi birinchisi (tayyorlanayotgani) va uning ulushi 0..1
+  training(side: Side): { id: ItemId; p: number } | null {
+    const s = this.sides[side];
+    if (!s.queue.length) return null;
+    return { id: s.queue[0], p: Math.min(1, s.queueT / itemOf(s.queue[0]).train) };
+  }
+
   canBuy(side: Side, id: ItemId): BuyError | null {
     const s = this.sides[side];
-    const it = ITEMS.find((x) => x.id === id)!;
+    const it = itemOf(id);
     if (!s.items.includes(id)) return 'yopiq';
     if (it.rank !== 'oddiy' && s.bought.has(id)) return 'bor';
     if (id === 'konchi' && this.minerCount(side) >= MAX_MINERS) return 'konchi';
-    const q = s.queues[id];
-    if (q && q.count >= (it.rank === 'oddiy' ? QUEUE_MAX : 1)) return 'navbat';
+    if (s.queue.length >= QUEUE_MAX) return 'navbat';
     if (this.popUsed(side) + itemPop(it) > s.popCap) return 'joy';
     if (s.silver < it.cost) return 'kumush';
     return null;
@@ -234,12 +276,24 @@ export class Battle {
     const err = this.canBuy(side, id);
     if (err) return err;
     const s = this.sides[side];
-    const it = ITEMS.find((x) => x.id === id)!;
+    const it = itemOf(id);
     s.silver -= it.cost;
     if (it.rank !== 'oddiy') s.bought.add(id);
-    const q = (s.queues[id] ??= { count: 0, t: 0 });
-    q.count++;
+    s.queue.push(id);
     return null;
+  }
+
+  // Navbatdan shu turdagi oxirgisini olib tashlash, puli to'liq qaytadi
+  cancel(side: Side, id: ItemId): boolean {
+    const s = this.sides[side];
+    const i = s.queue.lastIndexOf(id);
+    if (i < 0) return false;
+    s.queue.splice(i, 1);
+    if (i === 0) s.queueT = 0;
+    const it = itemOf(id);
+    s.silver += it.cost;
+    if (it.rank !== 'oddiy') s.bought.delete(id);
+    return true;
   }
 
   // Qasr yonidagi kumushni olish (o'yinchi bosganda)
@@ -264,7 +318,7 @@ export class Battle {
     const r = RANK[rank];
     const s = this.sides[side];
     const dir = dirOf(side);
-    const hp = st.hp * r.hp * s.statMult;
+    const hp = st.hp * r.hp * s.hpMult[kind];
     const u: Unit = {
       id: this.nextId++,
       side,
@@ -274,10 +328,10 @@ export class Battle {
       y: 6 + this.rand() * (DEPTH - 12),
       hp,
       maxHp: hp,
-      dmg: st.dmg * r.dmg * s.statMult,
+      dmg: st.dmg * r.dmg * s.dmgMult[kind],
       range: st.range,
-      cd: st.cd,
-      speed: st.speed,
+      cd: st.cd / s.attackSpeed,
+      speed: st.speed * (kind === 'konchi' ? s.minerSpeed : s.speedMult),
       cdLeft: this.rand() * st.cd,
       facing: dir,
       anim: 'idle',
@@ -290,6 +344,7 @@ export class Battle {
       reach: 0.75 + this.rand() * 0.25,
       slotX: CASTLE_X[side],
       slotY: DEPTH / 2,
+      raid: 0,
       task: 'toMine',
       load: 0,
       mineT: 0,
@@ -368,13 +423,12 @@ export class Battle {
 
   private updateSide(side: Side, dt: number): void {
     const s = this.sides[side];
-    for (const it of ITEMS) {
-      const q = s.queues[it.id];
-      if (!q || q.count === 0) continue;
-      q.t += dt;
-      if (q.t >= it.train) {
-        q.t = 0;
-        q.count--;
+    if (s.queue.length) {
+      const it = itemOf(s.queue[0]);
+      s.queueT += dt * s.trainSpeed;
+      if (s.queueT >= it.train) {
+        s.queueT = 0;
+        s.queue.shift();
         this.spawnItem(side, it);
       }
     }
@@ -428,6 +482,7 @@ export class Battle {
       u.x = gate + dirOf(u.side) * 10;
     }
     if (s.stance === 'chekinish') {
+      u.raid = 0;
       if (this.moveTo(u, gate, dt)) u.garrison = true;
       return;
     }
@@ -437,15 +492,21 @@ export class Battle {
     }
 
     const dir = dirOf(u.side);
+    const other: Side = u.side === 0 ? 1 : 0;
     const enemies = this.enemiesOf(u.side);
+    if (u.raid > 0) {
+      u.raid -= dt;
+      if (u.hp < u.maxHp * 0.4) u.raid = 0; // yarador — qaytadi
+    }
+    const raiding = u.raid > 0;
     let target: Unit | null = null;
     let best = Infinity;
-    const aggro = s.stance === 'hujum' ? 320 : u.range + 240;
+    const aggro = s.stance === 'hujum' || raiding ? 320 : u.range + 240;
     const zoneEdge = CASTLE_X[u.side] + dir * (FORMATION_FRONT + 220);
     for (const e of enemies) {
       const d = Math.abs(e.x - u.x);
       if (d > aggro || d >= best) continue;
-      if (s.stance === 'tur' && (e.x - zoneEdge) * dir > 0 && d > u.range) continue; // himoya hududidan tashqarida
+      if (!raiding && s.stance === 'tur' && (e.x - zoneEdge) * dir > 0 && d > u.range) continue; // himoya hududidan tashqarida
       best = d;
       target = e;
     }
@@ -455,7 +516,11 @@ export class Battle {
       if (u.anim !== 'walk') this.drift(u, target.y, dt);
       return;
     }
-    const other: Side = u.side === 0 ? 1 : 0;
+    if (raiding) {
+      // Reyd: dushman konlari tomon, konchilarni izlab
+      this.moveTo(u, mineX(other), dt);
+      return;
+    }
     if (s.stance === 'hujum') {
       const front = this.castleFront(other);
       const d = Math.max(0, (front - u.x) * dir);
@@ -494,7 +559,7 @@ export class Battle {
       this.fireArrow(u.side, u.kind, u.dmg, u.x + u.facing * 20, 70, t, -1, false);
       return;
     }
-    this.hurt(t, u.dmg * (BEATS[u.kind] === t.kind ? BEATS_MULT : 1));
+    this.hurt(t, u.dmg * vsMult(u.kind, t.kind));
     for (let i = 0; i < 3; i++) this.particles.push(this.dust(t.x, t.y, 50 + this.rand() * 30, 'spark'));
   }
 
@@ -542,7 +607,7 @@ export class Battle {
       case 'toMine':
         if (this.moveTo(u, spot, dt)) {
           u.task = 'mining';
-          u.mineT = MINE_TIME;
+          u.mineT = MINE_TIME / s.minerSpeed;
           u.facing = dir;
         }
         break;
@@ -646,7 +711,10 @@ export class Battle {
       if (p >= 1) {
         if (sh.target >= 0) {
           const t = byId.get(sh.target);
-          if (t && !t.dead && !t.garrison) this.hurt(t, sh.dmg * (sh.kind && BEATS[sh.kind] === t.kind ? BEATS_MULT : 1));
+          if (t && !t.dead && !t.garrison) {
+            const vs = sh.kind ? vsMult(sh.kind, t.kind) : 1;
+            this.hurt(t, sh.dmg * vs * this.sides[t.side].arrowTaken);
+          }
         } else if (sh.castle !== -1) {
           this.hurtCastle(sh.castle, sh.dmg, sh.fire);
           if (sh.fire) for (let i = 0; i < 4; i++) this.smoke(sh.x, sh.z, 1.2);
@@ -654,6 +722,11 @@ export class Battle {
       }
     }
     this.shots = this.shots.filter((sh) => sh.t < sh.dur);
+  }
+
+  // Reyd: AI tanlagan askarlarni dushman konchilariga yuboradi
+  sendRaid(ids: number[], seconds: number): void {
+    for (const u of this.units) if (ids.includes(u.id)) u.raid = seconds;
   }
 
   // ---------------- Effektlar ----------------

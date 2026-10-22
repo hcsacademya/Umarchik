@@ -1,7 +1,14 @@
 import './style.css';
 import { preload } from './assets.ts';
-import { showMenu } from './ui.ts';
+import { loadSave, newSave } from './campaign.ts';
+import { initTelegram } from './telegram.ts';
+import { showHome } from './ui/home.ts';
+import { state } from './ui/state.ts';
 
+initTelegram();
 const app = document.getElementById('app')!;
-app.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#bca98a">Yuklanmoqda…</div>';
-preload().then(showMenu);
+app.innerHTML = '<div class="loading">Yuklanmoqda…</div>';
+Promise.all([preload(), loadSave()]).then(([, save]) => {
+  state.save = save ?? newSave();
+  showHome('oyin');
+});

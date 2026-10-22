@@ -2,6 +2,7 @@
   --bg: #1c140c;
   --panel: rgba(28, 20, 12, 0.88);
   --panel-solid: #2a1e12;
+  --rail: #160f08;
   --line: #6b5230;
   --gold: #e8c060;
   --gold-dim: #a8873e;
@@ -11,6 +12,11 @@
   --bad: #e0604f;
   --btn: #4a3620;
   --btn-hi: #6a4e2c;
+  /* Telegram to'liq ekranda tugmalari egallagan joy (telegram.ts beradi) */
+  --safe-top: 0px;
+  --safe-bottom: 0px;
+  --safe-left: 0px;
+  --safe-right: 0px;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
 }
@@ -40,6 +46,15 @@ body {
   display: none !important;
 }
 
+.loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+
 button {
   font: inherit;
   color: var(--text);
@@ -48,6 +63,10 @@ button {
   border-radius: 8px;
   padding: 10px 16px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 button:hover:not(:disabled) {
   background: var(--btn-hi);
@@ -65,74 +84,191 @@ button.primary:hover:not(:disabled) {
   background: linear-gradient(#c8963f, #9a6f2c);
 }
 
-/* ---------- Bosh menyu ---------- */
+.coin {
+  display: inline-block;
+  width: 0.95em;
+  height: 0.95em;
+  border-radius: 50%;
+  vertical-align: -0.12em;
+  margin-right: 0.3em;
+  flex: 0 0 auto;
+}
+.coin.silver {
+  background: radial-gradient(circle at 35% 30%, #fff, #c9d1d8 45%, #7d8890);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+.coin.gold {
+  background: radial-gradient(circle at 35% 30%, #fff6c8, #e8c060 45%, #9a6f1c);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
 .screen {
   position: absolute;
   inset: 0;
 }
-#menu {
+.muted {
+  color: var(--muted);
+}
+.small {
+  font-size: 13px;
+}
+.spacer {
+  flex: 1;
+}
+.title {
+  font-weight: 700;
+  font-size: 16px;
+}
+.card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  margin-top: 8px;
+}
+.chip {
+  display: inline-block;
+  background: rgba(60, 90, 140, 0.85);
+  border: 1px solid #9cc0ff;
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 12px;
+  margin: 2px 4px 2px 0;
+}
+
+/* ================= Bosh sahifa ================= */
+#home {
+  display: flex;
+  background: #0f0b07;
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+}
+
+#rail {
+  width: 68px;
+  flex: 0 0 auto;
+  background: var(--rail);
+  border-right: 1px solid var(--line);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 14px;
-  background-color: var(--bg);
-  background-position: center;
-  background-size: cover;
+  gap: 8px;
+  padding: 10px 4px;
 }
-#menu h1 {
-  margin: 0;
-  font-size: clamp(48px, 12vh, 110px);
-  letter-spacing: 6px;
-  color: var(--gold);
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8);
-  font-family: Georgia, 'Times New Roman', serif;
-}
-#menu p {
-  margin: 0 0 10px;
-  color: var(--muted);
-  text-shadow: 0 2px 6px #000;
-}
-#menu button {
-  width: 240px;
-  font-size: 18px;
-}
-
-/* ---------- Xarita ---------- */
-#campaign {
-  display: flex;
-  background: #0f0b07;
-}
-.map-area {
-  flex: 1;
-  position: relative;
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(#b8862f, #6a4a1c);
+  border: 2px solid var(--gold);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 800;
+  font-size: 20px;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pid {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.3;
+  word-break: break-all;
+}
+.rail-gold {
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--gold);
+}
+.rail-gold .coin {
+  margin: 0;
+  width: 18px;
+  height: 18px;
+}
+.rail-btn {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
+
+#home-main {
+  flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+#tab-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+#tabs {
+  flex: 0 0 auto;
+  display: flex;
+  background: var(--rail);
+  border-top: 1px solid var(--line);
+}
+#tabs button {
+  flex: 1;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 6px 4px;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+#tabs button.on {
+  color: var(--gold);
+  background: rgba(232, 192, 96, 0.08);
+  box-shadow: inset 0 3px 0 var(--gold);
+}
+
+/* --- Xarita --- */
+.map-area {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .map-wrap {
   position: relative;
-  width: min(100%, calc(100vh * 16 / 9));
+  max-width: 100%;
+  max-height: 100%;
   aspect-ratio: 16 / 9;
+  height: 100%;
 }
 .map-wrap img,
 .map-wrap svg {
-  pointer-events: none;
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 .node {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: clamp(24px, 3.4vw, 40px);
-  height: clamp(24px, 3.4vw, 40px);
+  width: clamp(22px, 3.2vw, 38px);
+  height: clamp(22px, 3.2vw, 38px);
   padding: 0;
   border-radius: 50%;
   font-weight: 800;
-  font-size: clamp(11px, 1.4vw, 16px);
+  font-size: clamp(11px, 1.3vw, 15px);
   border: 2px solid #000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
@@ -159,47 +295,144 @@ button.primary:hover:not(:disabled) {
     box-shadow: 0 0 0 8px rgba(232, 192, 96, 0.35);
   }
 }
-
-#map-panel {
-  width: clamp(220px, 26vw, 320px);
-  background: var(--panel-solid);
-  border-left: 1px solid var(--line);
-  padding: 14px;
+.our-flag {
+  position: absolute;
+  width: clamp(24px, 3.4vw, 42px);
+  height: clamp(30px, 4.1vw, 50px);
+  transform: translate(-15%, -100%);
+  pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.7));
+}
+.battle-card {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: min(290px, 42%);
+  background: var(--panel);
+  border: 1px solid var(--gold-dim);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.45;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  overflow-y: auto;
+  gap: 4px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
 }
-#map-panel h2 {
-  margin: 0;
-  font-size: 20px;
-  color: var(--gold);
+.battle-card .enemy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
 }
-#map-panel .gold {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--gold);
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
-.card {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 10px;
-  font-size: 14px;
-  line-height: 1.45;
-}
-.card .title {
-  font-weight: 700;
-  font-size: 16px;
-}
-.muted {
-  color: var(--muted);
-}
-.spacer {
-  flex: 1;
+.battle-card button {
+  margin-top: 6px;
 }
 
-/* ---------- Jang ---------- */
+/* --- Kuchaytirish / Market --- */
+.panel {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 12px 16px 20px;
+  touch-action: pan-y;
+}
+.panel.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card.big {
+  max-width: 420px;
+  text-align: center;
+  font-size: 15px;
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.panel h2 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 20px;
+}
+.panel h3 {
+  margin: 14px 0 6px;
+  font-size: 15px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.panel p {
+  margin: 4px 0;
+}
+.gold-big {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+.up-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.up-card.locked {
+  opacity: 0.55;
+}
+.up-icon {
+  width: 46px;
+  height: 52px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+.up-icon img {
+  height: 52px;
+}
+.castle-ico {
+  font-size: 30px;
+  align-self: center;
+}
+.up-info {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+}
+.up-info .title {
+  font-size: 14px;
+}
+.up-info .next {
+  color: var(--text);
+}
+.dots {
+  color: var(--gold);
+  letter-spacing: 2px;
+  font-size: 12px;
+}
+.up-card button {
+  min-width: 78px;
+  padding: 8px 10px;
+}
+
+/* ================= Jang ================= */
 #battle canvas {
   position: absolute;
   inset: 0;
@@ -209,104 +442,71 @@ button.primary:hover:not(:disabled) {
 }
 .hud {
   position: absolute;
-  pointer-events: none;
 }
-.hud > * {
-  pointer-events: auto;
-}
-#hud-top {
-  top: 6px;
-  left: 6px;
-  right: 6px;
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-}
-#res {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 14px;
-  line-height: 1.5;
-  white-space: nowrap;
-  pointer-events: none;
-}
-#res .silver {
-  font-size: 20px;
-  font-weight: 800;
-  color: #e6ecf2;
-}
+
+/* Chap yuqori: yollash tugmalari, ekran o'rtasigacha */
 #shop {
+  top: calc(var(--safe-top) + 6px);
+  left: calc(var(--safe-left) + 6px);
+  max-width: 50vw;
   display: flex;
-  gap: 5px;
-  flex: 1;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 2px;
+  flex-wrap: wrap;
+  gap: 4px 6px;
 }
-#shop::-webkit-scrollbar {
-  display: none;
+.slot {
+  position: relative;
+  width: 54px;
 }
 .unit {
   position: relative;
-  flex: 0 0 auto;
-  width: 64px;
-  height: 80px;
+  width: 54px;
+  height: 54px;
   padding: 0;
   overflow: hidden;
   background: var(--panel);
   border-radius: 8px;
+  display: block;
 }
 .unit img {
   position: absolute;
   left: 50%;
-  bottom: 18px;
-  height: 58px;
+  bottom: 1px;
+  height: 50px;
   transform: translateX(-50%);
   pointer-events: none;
 }
-.unit.special {
-  border-color: var(--gold);
-  background: rgba(70, 50, 15, 0.9);
-}
-.unit.special img {
-  filter: drop-shadow(0 0 4px rgba(255, 210, 90, 0.9));
-}
-.unit .cost {
+.unit .fill {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 18px;
-  font-size: 13px;
-  font-weight: 800;
-  background: rgba(0, 0, 0, 0.6);
-  color: #e6ecf2;
+  height: 0;
+  background: linear-gradient(rgba(232, 192, 96, 0.55), rgba(232, 192, 96, 0.3));
+  border-top: 2px solid var(--gold);
+  pointer-events: none;
+}
+.slot.special .unit {
+  border-color: var(--gold);
+  background: rgba(70, 50, 15, 0.9);
 }
 .unit .key {
   position: absolute;
-  top: 2px;
-  left: 4px;
-  font-size: 11px;
+  top: 1px;
+  left: 3px;
+  font-size: 10px;
   color: var(--muted);
 }
 .unit .q {
   position: absolute;
-  top: 2px;
-  right: 4px;
-  font-size: 13px;
+  bottom: 1px;
+  right: 3px;
+  font-size: 14px;
   font-weight: 800;
-  color: var(--gold);
-}
-.unit .pie {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: conic-gradient(transparent calc(var(--p, 0) * 1turn), rgba(0, 0, 0, 0.55) 0);
+  color: #fff;
+  text-shadow: 0 0 3px #000, 0 0 3px #000;
 }
 .unit.off {
-  filter: grayscale(0.8) brightness(0.7);
+  filter: grayscale(0.8) brightness(0.65);
 }
 .unit.flash {
   animation: flash 0.35s;
@@ -316,36 +516,85 @@ button.primary:hover:not(:disabled) {
     background: #7a2a1a;
   }
 }
-
-#hud-right {
-  display: flex;
-  gap: 5px;
+.slot .x {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  background: #8a2a1a;
+  border-color: #f0a090;
+  z-index: 1;
 }
-#hud-right button {
+.price {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 1px;
+  text-shadow: 0 1px 2px #000, 0 0 4px #000;
+}
+
+/* O'ng yuqori: kumush, askar soni, pauza */
+#topbar {
+  top: calc(var(--safe-top) + 6px);
+  right: calc(var(--safe-right) + 6px);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.chip-big {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  height: 40px;
+  padding: 0 10px;
+  font-size: 16px;
+}
+.chip-big svg {
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+}
+.silver-chip b {
+  font-size: 18px;
+}
+.icon-btn {
   width: 44px;
   height: 44px;
   padding: 0;
-  font-size: 18px;
   background: var(--panel);
+}
+#boost-row {
+  top: calc(var(--safe-top) + 52px);
+  right: calc(var(--safe-right) + 6px);
+  pointer-events: none;
 }
 
 #stances {
-  left: 8px;
-  bottom: 8px;
+  left: calc(var(--safe-left) + 8px);
+  bottom: calc(var(--safe-bottom) + 8px);
   display: flex;
   gap: 6px;
 }
 #stances button {
   min-width: 88px;
-  height: 52px;
+  height: 50px;
   padding: 4px 10px;
   font-size: 14px;
   font-weight: 700;
   background: var(--panel);
   line-height: 1.1;
+  flex-direction: column;
+  gap: 0;
 }
 #stances button small {
-  display: block;
   font-size: 10px;
   font-weight: 400;
   color: var(--muted);
@@ -354,19 +603,11 @@ button.primary:hover:not(:disabled) {
   background: linear-gradient(#b8862f, #8a5f1c);
   border-color: var(--gold);
 }
-
 #cam-btns {
-  right: 8px;
-  bottom: 8px;
+  right: calc(var(--safe-right) + 8px);
+  bottom: calc(var(--safe-bottom) + 8px);
   display: flex;
   gap: 6px;
-}
-#cam-btns button {
-  width: 52px;
-  height: 52px;
-  padding: 0;
-  font-size: 20px;
-  background: var(--panel);
 }
 
 #banner {
@@ -384,7 +625,7 @@ button.primary:hover:not(:disabled) {
 }
 #toasts {
   left: 50%;
-  top: 110px;
+  top: calc(var(--safe-top) + 80px);
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
@@ -399,6 +640,7 @@ button.primary:hover:not(:disabled) {
   padding: 6px 14px;
   font-size: 15px;
   animation: fade 3.5s forwards;
+  white-space: nowrap;
 }
 .toast.bad {
   border-color: var(--bad);
@@ -416,8 +658,8 @@ button.primary:hover:not(:disabled) {
   }
 }
 #hint {
-  left: 8px;
-  bottom: 70px;
+  left: calc(var(--safe-left) + 8px);
+  bottom: calc(var(--safe-bottom) + 66px);
   max-width: min(420px, 60vw);
   background: rgba(40, 60, 90, 0.9);
   border: 1px solid #9cc0ff;
@@ -428,7 +670,7 @@ button.primary:hover:not(:disabled) {
   pointer-events: none;
 }
 
-/* ---------- Oynalar ---------- */
+/* ================= Oynalar ================= */
 #modal {
   position: fixed;
   inset: 0;
@@ -448,6 +690,7 @@ button.primary:hover:not(:disabled) {
   max-height: 100%;
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+  touch-action: pan-y;
 }
 #modal h2 {
   margin: 0 0 10px;
@@ -467,22 +710,6 @@ button.primary:hover:not(:disabled) {
   justify-content: center;
   margin-top: 14px;
   flex-wrap: wrap;
-}
-.up {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 2px 10px;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(107, 82, 48, 0.4);
-}
-.up .dots {
-  color: var(--gold);
-  letter-spacing: 2px;
-}
-.up button {
-  grid-row: span 3;
-  min-width: 92px;
 }
 .rules {
   font-size: 14px;
@@ -513,31 +740,77 @@ button.primary:hover:not(:disabled) {
   }
 }
 
-@media (max-height: 500px) {
+/* Kichik (telefon) ekranlar */
+@media (max-height: 460px) {
+  .slot,
   .unit {
-    width: 54px;
-    height: 66px;
+    width: 44px;
+  }
+  .unit {
+    height: 44px;
   }
   .unit img {
-    height: 46px;
+    height: 41px;
+  }
+  .price {
+    font-size: 10px;
+  }
+  .chip-big {
+    height: 34px;
+    font-size: 14px;
+    padding: 0 8px;
+  }
+  .silver-chip b {
+    font-size: 15px;
+  }
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+  }
+  #boost-row {
+    top: calc(var(--safe-top) + 44px);
   }
   #stances button {
-    min-width: 74px;
-    height: 46px;
-    font-size: 13px;
-  }
-  #cam-btns button {
-    width: 46px;
-    height: 46px;
-  }
-  #res {
+    min-width: 72px;
+    height: 44px;
     font-size: 12px;
-  }
-  #res .silver {
-    font-size: 17px;
   }
   #hint {
-    bottom: 60px;
+    bottom: calc(var(--safe-bottom) + 58px);
     font-size: 12px;
+  }
+  #rail {
+    width: 58px;
+  }
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+  #tabs button {
+    font-size: 11px;
+    padding: 4px;
+  }
+  #tabs svg {
+    width: 18px;
+    height: 18px;
+  }
+  .battle-card {
+    font-size: 12px;
+    padding: 6px 10px;
+    width: min(250px, 36%);
+    gap: 2px;
+  }
+  .battle-card .title {
+    font-size: 14px;
+  }
+  .battle-card .extra {
+    display: none;
+  }
+  .battle-card button {
+    padding: 7px 10px;
+    margin-top: 4px;
+  }
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
 }

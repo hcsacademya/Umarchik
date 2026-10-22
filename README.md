@@ -1,7 +1,7 @@
 # Umar
 
 Yon tomondan ko'rinadigan 2D strategiya: qasringizdan askar chiqarib, dushman qasrini yiqitasiz.
-Platforma — veb-sayt (kompyuter va telefon brauzeri, ekran gorizontal).
+Telegram Mini App sifatida ishlaydi (oddiy brauzerda ham ochiladi), ekran **gorizontal**.
 
 ## Ishga tushirish
 
@@ -11,27 +11,47 @@ npm run dev        # http://localhost:5173 (telefonda: kompyuter IP manzili orqa
 npm run build      # tayyor sayt dist/ papkasida
 ```
 
+## Ekranlar
+
+- **Bosh sahifa:** chapda ingichka panel (profil rasmi, ID, oltin, sozlamalar), markazda xarita va bizning
+  bayroq, pastda tablar: **O'yin**, **PvP** (keyin), **Kuchaytirish**, **Market**.
+- **Jang:** chap yuqorida yollash tugmalari (ichida jangchi, ostida narxi), o'ng yuqorida kumush, askar soni
+  va pauza; pastda Chekinish / Joyida tur / Hujum, kichik xarita, kamera tugmalari.
+
 ## O'yin qoidalari
 
 - **Maqsad:** dushman qasrini yiqitish. O'z qasringiz yiqilsa, jang shu joyning o'zida qayta o'ynaladi —
   ochilgan askarlar va kuchaytirishlar saqlanadi.
-- **Kumush:** konchilar kondan kumush olib, qasr yoniga to'playdi. Qasr yonidagi doirani bosib olasiz.
+- **Kumush:** konchilar kondan kumush olib, qasr yoniga to'playdi; doirani bosib olasiz.
   Ombor to'lsa konchilar kutib qoladi. Dushman kumushni avtomatik oladi, hisobi ko'rinmaydi.
-- **Yollash:** tepadagi tugmalar; doira aylanib bo'lgach askar qasrdan chiqadi.
-- **Holatlar:** *Chekinish* (hamma qasrga kiradi, ichkaridagi kamonchilar qasrdan otadi),
-  *Joyida tur* (qasr oldida saf: sarkardalar, otliq, Amir, qilichli, nayzachi, kamonchi — qatorda 5 tadan),
-  *Hujum*.
+- **Yollash — bitta umumiy navbat:** qaysi tugma birinchi bosilsa, o'sha birinchi tayyorlanadi (tugma pastdan
+  to'ladi). 10 tagacha bosib qo'yish mumkin, askarlar bittalab chiqadi. Tugmadagi raqam — navbatda nechta
+  kutyapti; × — bittasini olib tashlaydi, puli qaytadi. Qimmatrog'i sekinroq tayyorlanadi.
+- **Holatlar:** *Chekinish* (hamma qasrga kiradi, ichkaridagi kamonchilar otadi), *Joyida tur* (qasr oldida
+  saf: sarkardalar, otliq, Amir, qilichli, nayzachi, kamonchi — qatorda 5 tadan), *Hujum*.
 - **Amir** halok bo'lsa, qo'shin o'zi qasrga chekinadi va 20 soniyadan keyin yangi Amir bilan chiqadi.
   Dushmanda Amir yo'q.
-- **Tur ustunligi:** nayzachi > otliq > kamonchi > qilichli > nayzachi.
+- **Kim kimni yengadi** (real tarixga yaqin, zarba ko'paytmasi):
+
+  | Hujumchi → | Qilichli | Nayzachi | Kamonchi | Otliq |
+  |---|---|---|---|---|
+  | Qilichli | 1.0 | 1.4 | 1.5 | 0.8 |
+  | Nayzachi | 0.8 | 1.0 | 1.0 | 2.0 |
+  | Kamonchi | 0.7 | 1.3 | 1.0 | 1.0 |
+  | Otliq | 1.3 | 0.5 | 1.8 | 1.0 |
+
 - **Ochilish** (har g'alabadan keyin): nayzachi, kamonchi, otliq, 4 sarkarda (har biri 2 askari bilan),
   qo'mondon (3 otliq bilan). Sarkarda va qo'mondon jangda bir marta sotib olinadi.
 - **Askar chegarasi:** 44 → otliq ochilgach 55 → qo'mondon ochilgach 70.
-- **Boshlang'ich qo'shin:** 1-jang Amir + 2 konchi; keyingi janglarda 2 qilichli, 2 nayzachi,
-  2 kamonchi qo'shiladi (4-jangdan keyin o'zgarmaydi). Dushman doim bir pog'ona oldinda.
+- **Dushman:** ikki xalq navbatma-navbat — *Ko'chmanchilar* (yengil, tez, otliq va kamonchi ko'p) va
+  *Sovutlilar* (og'ir zirhli, chidamli, o'qdan kam zarar ko'radi). Kiyim rangi — xaritadagi qal'a bayrog'i
+  rangi. Xarakteri ham har jangda boshqa: shoshqaloq, sabrli yoki reydchi (konchilarga hujum qiladi).
+  Dushman doim bir pog'ona oldinda.
+- **Kuchaytirish** (oltinga, doimiy): har jangchi turi alohida (jon va zarba +10% har daraja; konchi —
+  savat va tezlik), qasr mustahkamligi, qasr o'qi, ombor, boshlang'ich kumush.
+- **Market — tezlatish** (oltinga, bitta jangga): tez konchi, tez yollash, jangovar ruh, tez qadam.
 - **Mukofot:** g'alabada qolgan kumush 10:1 oltinga + bonus; mag'lubiyatda kumushning yarmi.
-  Oltinga: qasr mustahkamligi, qasr o'qi, konchi savati, askar kuchi, boshlang'ich kumush, ombor.
-- **Xarita:** 15 jang — g'arbdagi o'rmondan boshlanib, chetidan aylanib, markazdagi ikki poytaxtda tugaydi.
+- **Saqlash:** Telegram ichida — Telegram bulutida (telefon almashsa ham qoladi), aks holda brauzerda.
 
 Barcha raqamlar bitta faylda: [`src/config.ts`](src/config.ts).
 
@@ -39,41 +59,52 @@ Barcha raqamlar bitta faylda: [`src/config.ts`](src/config.ts).
 
 ```
 src/
-  config.ts      balans, askarlar, kuchaytirishlar, janglar ro'yxati
-  campaign.ts    saqlash, ochilishlar, boshlang'ich qo'shin, mukofot
-  battle.ts      jang mantig'i (grafikasiz)
-  ai.ts          dushman aqli
-  render.ts      jang maydonini chizish (canvas)
-  assets.ts      rasmlarni yuklash
-  ui.ts          menyu, xarita, jang tugmalari, oynalar
+  config.ts          balans, askarlar, zarba jadvali, xalqlar, kuchaytirish, market, janglar ro'yxati
+  campaign.ts        saqlash, ochilishlar, boshlang'ich qo'shin, mukofot
+  battle.ts          jang mantig'i (grafikasiz)
+  ai.ts              dushman aqli (xalq va xarakterga qarab)
+  render.ts          jang maydonini chizish (canvas)
+  assets.ts          rasmlarni yuklash, dushmanni jang rangiga bo'yash
+  telegram.ts        Telegram Mini App: profil, bulutli saqlash, to'liq ekran
+  ui/home.ts         bosh sahifa va tablar
+  ui/battleScreen.ts jang ekrani
 tools/
-  prepare_assets.py   art/ dagi varaqlarni o'yin rasmlariga aylantiradi
-  sim.ts              balans sinovi: bot hamma janglarni o'ynaydi
+  prepare_assets.py  art/ dagi varaqlarni o'yin rasmlariga aylantiradi
+  sim.ts             balans sinovi: bot hamma janglarni o'ynaydi
 ```
 
-Balansni tekshirish: `node tools/sim.ts` (hammasi) yoki `node tools/sim.ts 9 5` (9-jang, 5 marta).
+Balansni tekshirish: `node tools/sim.ts` (hammasi), `node tools/sim.ts 9 5` (9-jang, 5 marta),
+`node tools/sim.ts 15 6 600` (15-jang, qo'shimcha 600 oltin bilan).
 
 ## Rasmlar
 
-Asl varaqlar `art/` papkasida (qasrlar, konlar, shaharlar, jangchilar — yon tomondan, kulrang fonda).
-`art/namuna/` — personajlarning old tomondan chizilgan asl rasmlari (keyingi rasmlar uchun namuna).
+Asl varaqlar `art/` papkasida, rasm yaratuvchi uchun promptlar — [`art/promptlar.md`](art/promptlar.md).
 
 ```bash
 pip install pillow numpy scipy
 python3 tools/prepare_assets.py --preview
 ```
 
-Skript fonni olib tashlaydi, varaqni bo'laklarga ajratadi, dushman uchun qizil nusxa yasaydi va
-`public/assets/` + `src/assets.json` ga yozadi. `--preview` bilan `scratch/preview.png` da natijani ko'rsatadi.
+Skript fonni olib tashlaydi, varaqni bo'laklarga ajratadi va `public/assets/` + `src/assets.json` ga yozadi.
 
-Yangi varaq qo'shish: rasmni `art/` ga qo'yib, `tools/prepare_assets.py` dagi `UNITS` yoki
-`BUILDINGS` ro'yxatiga qator yozing.
+## Telegram'ga joylash
+
+**1. Saytni joylash (Cloudflare Pages, bepul)**
+1. [dash.cloudflare.com](https://dash.cloudflare.com) → Workers & Pages → Create → Pages → *Connect to Git*.
+2. Shu repozitoriyni tanlang. Sozlamalar: Build command `npm run build`, Build output directory `dist`,
+   muhit o'zgaruvchisi `NODE_VERSION = 22`.
+3. Joylangach manzil beriladi, masalan `https://umar.pages.dev`. Har yangi commitda o'zi yangilanadi.
+
+**2. Bot ochish (@BotFather)**
+1. `/newbot` — bot nomi va username. Berilgan tokenni hech kimga ko'rsatmang.
+2. `/newapp` — botni tanlang, nom, tavsif, rasm va 1-qadamdagi manzilni kiriting. Natijada
+   `t.me/<bot>/<qisqa_nom>` havolasi chiqadi.
+3. Ixtiyoriy: `/mybots` → bot → Bot Settings → Menu Button — manzil va "O'ynash" yozuvi.
+
+To'liq ekran va gorizontal qulf Telegram 8.0+ versiyalarida ishlaydi; eskisida "telefonni burang" yozuvi chiqadi.
 
 ## Hali qilinmagan
 
-- **Otliq** — yon tomondan rasmi chizilguncha namuna rasm (bitta holat) ishlatiladi.
-- **Sarkardalar va qo'mondon** — o'z rasmlari yo'q: oddiy askar rasmi kattalashtirilib, oyog'i ostida
-  oltin doira bilan chiziladi.
-- **Jang foni** — hozircha kod bilan chiziladi (7 xil joy), keyin rasm qo'yiladi.
-- **Dushman jangchilari** — o'zimiznikining qizil nusxasi; keyin alohida chizilishi mumkin.
-- Ovoz, 4 bosqichli kuchayish ko'rinishi.
+- Yon tomondan qasrlar, konlar, realistik jang foni va 2 dushman xalqining rasmlari (promptlar tayyor).
+- Bizning otliq, sarkardalar va qo'mondon rasmlari (hozir vaqtincha).
+- Telegram Stars orqali Market, PvP, ovoz.
