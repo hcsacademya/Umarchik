@@ -1,236 +1,178 @@
-import mapData from './world/mapData.json';
-import type { BuildingType, Goods, ResKey, Resources, Terrain, UnitCat, UnitType, WorkerType, Zone } from './types';
+// O'yin balansi va kampaniya. Barcha raqamlar shu yerda — o'zgartirish uchun faqat shu faylga qarang.
 
-/**
- * Barcha balans raqamlari shu yerda. Hujjatdagi "aniq raqamlar" ochiq savol,
- * shuning uchun bular boshlang'ich taxminlar — bemalol o'zgartiring.
- */
-export const GAME = {
-  /** Xarita to'ri umumiy xarita rasmidan yasalgan (tools/build_map.py). */
-  mapW: mapData.grid.n,
-  mapH: mapData.grid.n,
-  /** 1x tezlikda bir o'yin kuni necha soniya. */
-  dayLengthSec: 60,
-  /** Yangi o'yinchi dastlabki kunlari hujumdan himoyalangan. */
-  protectionDays: 5,
-  /** Mag'lubiyatdan keyin dam (kun). */
-  restAfterDefeatDays: 1,
-  /** Jangdan keyin ishxonani egallash taymeri (kun). */
-  captureDays: 0.4,
-  /** Jang davomiyligi (soniya) — tugasa mudofaachi yutadi. */
-  battleTimeSec: 240,
-  /** Jang boshlangach chekinish taqiqlangan vaqt (soniya). */
-  retreatLockSec: 60,
-  /** G'olib oladigan resurs ulushi. */
-  lootMin: 0.2,
-  lootMax: 0.3,
-  maxAiStates: 11,
-  autosaveDays: 1,
-};
+export type Side = 0 | 1; // 0 = o'yinchi (chapda), 1 = dushman (o'ngda)
+export type Kind = 'amir' | 'konchi' | 'qilichli' | 'nayzachi' | 'kamonchi' | 'otliq';
+export type Rank = 'oddiy' | 'sarkarda' | 'qomondon';
+export type Stance = 'chekinish' | 'tur' | 'hujum';
+export type Terrain = 'ormon' | 'kol' | 'ekinzor' | 'tog' | 'yaylov' | 'dasht' | 'chol' | 'shahar';
+export type ItemId =
+  | 'konchi' | 'qilichli' | 'nayzachi' | 'kamonchi' | 'otliq'
+  | 'sarkarda_qilichli' | 'sarkarda_nayzachi' | 'sarkarda_kamonchi' | 'sarkarda_otliq' | 'qomondon';
 
-export const START = {
-  res: { kumush: 260, bronza: 160, don: 60, qoy: 4 } as Resources,
-  workers: { dehqon: 3, chopon: 2, konchi: 4 } as Record<WorkerType, number>,
-  army: { piyoda: 4, amir: 1 } as Partial<Record<UnitType, number>>,
-};
+// ---------- Jang maydoni (o'yin birliklarida) ----------
+export const WORLD_W = 2600;
+export const CASTLE_X: [number, number] = [170, WORLD_W - 170];
+export const CASTLE_FRONT = 115; // qasr markazidan old devorigacha
+export const MINE_OFFSET = 370; // kon markazi qasrdan
+export const FORMATION_FRONT = 560; // "Joyida tur" safining oldingi qatori qasrdan
+export const ROW_GAP = 30;
+export const ROW_SIZE = 5;
+export const DEPTH = 40; // askarlar 0..40 chuqurlikda turadi
 
-export const NAMES = {
-  empireA: 'Rumiya',
-  empireB: 'Parsiya',
-  aiStates: [
-    'Oqtepa', 'Qorasuv', 'Ko\'ksaroy', 'Bo\'ztepa', 'Sayxun', 'Olmazor',
-    'Yashilobod', 'Tillako\'l', 'Qumtepa', 'Shamolsoy', 'Toshqo\'rg\'on', 'Arpaobod',
-  ],
-};
-
-export const FACTION_COLORS = {
-  player: '#2f7fd8',
-  empireA: '#b3262d',
-  empireB: '#7b3fb0',
-  ai: ['#d98a1f', '#2e9e5b', '#c9478f', '#1fa3a3', '#8a6d3b', '#6a7f2a', '#d04f2a', '#4b5fbf', '#9b9b2a', '#7a4a7a', '#3a8f8f', '#a0522d'],
-};
-
-export const TERRAIN_INFO: Record<Terrain, { name: string; color: string; passable: boolean; desc: string }> = {
-  tekislik: { name: 'Tekislik', color: '#9cba62', passable: true, desc: 'Dehqonchilik va chorva uchun yaxshi' },
-  unumdor: { name: 'Unumdor yer', color: '#6f9e45', passable: true, desc: 'Bug\'doy uchun eng yaxshi' },
-  vodiy: { name: 'Vodiy', color: '#a8c96e', passable: true, desc: 'Ekin va chorva' },
-  yaylov: { name: 'Yaylov', color: '#bcc66a', passable: true, desc: 'Qo\'y boqish uchun eng yaxshi' },
-  orman: { name: 'O\'rmon', color: '#4f7a3a', passable: true, desc: 'Kamonchilarga qarshi pana' },
-  tog: { name: 'Tog\'', color: '#9a8a72', passable: true, desc: 'Kumush konlari, himoya ustunligi' },
-  qorli_tog: { name: 'Qorli tog\'', color: '#b9b6b0', passable: true, desc: 'Boy kumush konlari, yurish qiyin' },
-  chol: { name: 'Cho\'l', color: '#dcc58a', passable: true, desc: 'Kambag\'al yer, arpa o\'sadi' },
-  daryo: { name: 'Daryo', color: '#4e8fc4', passable: true, desc: 'Kechuv: qo\'shin sekinlashadi' },
-  kol: { name: 'Ko\'l', color: '#3a73aa', passable: false, desc: 'O\'tib bo\'lmaydi' },
-  tashqi: { name: 'Jarlik', color: '#3b3127', passable: false, desc: 'Xarita chegarasi' },
-};
-
-export function impassable(t: { terrain: Terrain }): boolean {
-  return !TERRAIN_INFO[t.terrain].passable;
-}
-
-export const ZONE_INFO: Record<Zone, { name: string; landPrice: number; garrison: number }> = {
-  chet: { name: 'Chet', landPrice: 40, garrison: 6 },
-  orta: { name: 'O\'rta', landPrice: 110, garrison: 11 },
-  markaz: { name: 'Markaz', landPrice: 350, garrison: 22 },
-};
-
-export const RES_INFO: Record<ResKey, { name: string; icon: string }> = {
-  kumush: { name: 'Kumush', icon: '◈' },
-  bronza: { name: 'Bronza', icon: '●' },
-  don: { name: 'Don', icon: '🌾' },
-  qoy: { name: 'Qo\'y', icon: '🐑' },
-};
-
-export const WORKER_INFO: Record<WorkerType, { name: string; plural: string; hireCost: number }> = {
-  dehqon: { name: 'Dehqon', plural: 'Dehqonlar', hireCost: 20 },
-  chopon: { name: 'Cho\'pon', plural: 'Cho\'ponlar', hireCost: 20 },
-  konchi: { name: 'Konchi', plural: 'Konchilar', hireCost: 30 },
-};
-
-/** Qaysi binoda qaysi ishchi ishlaydi. */
-const WORKPLACE: Partial<Record<BuildingType, WorkerType>> = { farm: 'dehqon', bog: 'dehqon', pasture: 'chopon', mine: 'konchi' };
-export function workerFor(b: BuildingType): WorkerType | null {
-  return WORKPLACE[b] ?? null;
-}
-
-export interface UnitDef {
+// ---------- Askarlar ----------
+export interface Stats {
   name: string;
-  cat: UnitCat;
   hp: number;
-  atk: number;
-  def: number;
-  /** Jang maydonida px/soniya. */
-  speed: number;
+  dmg: number;
   range: number;
-  cooldown: number;
-  costBronza: number;
-  costKumush: number;
-  wage: number;
-  food: number;
-  hero: boolean;
-  /** Xaritada kuniga plita. */
-  march: number;
-  /** Mashg'ulot maydoni darajasi talabi (0 = oddiy yo'l bilan sotib olinmaydi). */
-  barracks: number;
+  cd: number; // zarbalar orasidagi soniya
+  speed: number;
+  pop: number;
 }
 
-export const UNITS: Record<UnitType, UnitDef> = {
-  piyoda: { name: 'Piyoda', cat: 'piyoda', hp: 100, atk: 10, def: 4, speed: 40, range: 16, cooldown: 1.0, costBronza: 30, costKumush: 0, wage: 1, food: 1, hero: false, march: 6, barracks: 1 },
-  kamonchi: { name: 'Kamonchi', cat: 'kamonchi', hp: 70, atk: 9, def: 2, speed: 42, range: 170, cooldown: 1.5, costBronza: 40, costKumush: 6, wage: 1.5, food: 1, hero: false, march: 6, barracks: 2 },
-  nayzachi: { name: 'Nayzachi', cat: 'nayzachi', hp: 110, atk: 11, def: 6, speed: 36, range: 22, cooldown: 1.1, costBronza: 45, costKumush: 8, wage: 1.5, food: 1, hero: false, march: 6, barracks: 3 },
-  otliq: { name: 'Otliq', cat: 'otliq', hp: 150, atk: 14, def: 5, speed: 80, range: 18, cooldown: 1.0, costBronza: 80, costKumush: 20, wage: 3, food: 2, hero: false, march: 10, barracks: 3 },
-  zirhli_otliq: { name: 'Zirhli otliq', cat: 'otliq', hp: 230, atk: 18, def: 11, speed: 68, range: 18, cooldown: 1.0, costBronza: 140, costKumush: 45, wage: 5, food: 2, hero: false, march: 8, barracks: 0 },
-  zirhli_nayzachi: { name: 'Zirhli nayzachi', cat: 'nayzachi', hp: 180, atk: 14, def: 12, speed: 32, range: 22, cooldown: 1.1, costBronza: 90, costKumush: 25, wage: 3, food: 1, hero: false, march: 5, barracks: 0 },
-  amir: { name: 'Amir', cat: 'otliq', hp: 420, atk: 26, def: 13, speed: 72, range: 18, cooldown: 0.9, costBronza: 0, costKumush: 0, wage: 0, food: 2, hero: true, march: 10, barracks: 0 },
-  qomondon: { name: 'Qo\'mondon', cat: 'otliq', hp: 380, atk: 24, def: 13, speed: 70, range: 18, cooldown: 0.9, costBronza: 300, costKumush: 200, wage: 8, food: 2, hero: true, march: 8, barracks: 0 },
-  sarkarda_otliq: { name: 'Otliq sarkarda', cat: 'otliq', hp: 360, atk: 24, def: 12, speed: 74, range: 18, cooldown: 0.9, costBronza: 400, costKumush: 300, wage: 10, food: 2, hero: true, march: 10, barracks: 0 },
-  sarkarda_nayzachi: { name: 'Nayzachi sarkarda', cat: 'nayzachi', hp: 360, atk: 22, def: 15, speed: 40, range: 24, cooldown: 1.0, costBronza: 400, costKumush: 300, wage: 10, food: 2, hero: true, march: 6, barracks: 0 },
-  sarkarda_kamonchi: { name: 'Kamonchi sarkarda', cat: 'kamonchi', hp: 300, atk: 22, def: 9, speed: 46, range: 200, cooldown: 1.2, costBronza: 400, costKumush: 300, wage: 10, food: 2, hero: true, march: 6, barracks: 0 },
-  sarkarda_piyoda: { name: 'Piyoda sarkarda', cat: 'piyoda', hp: 400, atk: 24, def: 14, speed: 44, range: 18, cooldown: 0.9, costBronza: 400, costKumush: 300, wage: 10, food: 2, hero: true, march: 6, barracks: 0 },
+export const STATS: Record<Kind, Stats> = {
+  amir: { name: 'Amir', hp: 550, dmg: 20, range: 40, cd: 0.8, speed: 82, pop: 0 },
+  konchi: { name: 'Konchi', hp: 60, dmg: 0, range: 0, cd: 1, speed: 80, pop: 1 },
+  qilichli: { name: 'Qilichli', hp: 110, dmg: 13, range: 36, cd: 0.9, speed: 78, pop: 1 },
+  nayzachi: { name: 'Nayzachi', hp: 150, dmg: 12, range: 58, cd: 1.1, speed: 72, pop: 1 },
+  kamonchi: { name: 'Kamonchi', hp: 80, dmg: 11, range: 240, cd: 1.4, speed: 74, pop: 1 },
+  otliq: { name: 'Otliq', hp: 280, dmg: 22, range: 44, cd: 1.0, speed: 150, pop: 2 },
 };
 
-export const BASIC_UNITS: UnitType[] = ['piyoda', 'kamonchi', 'nayzachi', 'otliq'];
-export const ALL_UNITS = Object.keys(UNITS) as UnitType[];
-export const SARKARDA_UNITS: UnitType[] = ['sarkarda_otliq', 'sarkarda_nayzachi', 'sarkarda_kamonchi', 'sarkarda_piyoda'];
-/** Sarkarda bilan keladigan maxsus guruh. */
-export const SARKARDA_SQUAD: Record<string, { type: UnitType; count: number }> = {
-  sarkarda_otliq: { type: 'otliq', count: 12 },
-  sarkarda_nayzachi: { type: 'nayzachi', count: 12 },
-  sarkarda_kamonchi: { type: 'kamonchi', count: 12 },
-  sarkarda_piyoda: { type: 'piyoda', count: 12 },
-};
-
-/** Kim kimga kuchli: nayzachi otliqqa, otliq kamonchiga, kamonchi piyodaga. */
-export const COUNTERS: Partial<Record<UnitCat, UnitCat>> = {
+// Tur ustunligi: kalit — kimga qarshi kuchli
+export const BEATS: Partial<Record<Kind, Kind>> = {
   nayzachi: 'otliq',
   otliq: 'kamonchi',
-  kamonchi: 'piyoda',
+  kamonchi: 'qilichli',
+  qilichli: 'nayzachi',
 };
-export const COUNTER_MULT = 1.5;
+export const BEATS_MULT = 1.5;
 
-export const UNLOCK = {
-  qomondon: { coreLevel: 3, kumush: 1500, wins: 5 },
-  sarkarda: { coreLevel: 4, kumush: 3000, wins: 12 },
-  /** Qo'mondon guruhi: 1 qo'mondon, 4 zirhli otliq, 10 zirhli nayzachi. */
-  commanderSquad: { zirhli_otliq: 4, zirhli_nayzachi: 10 },
+export const RANK: Record<Rank, { hp: number; dmg: number; scale: number }> = {
+  oddiy: { hp: 1, dmg: 1, scale: 1 },
+  sarkarda: { hp: 3, dmg: 2, scale: 1.2 },
+  qomondon: { hp: 5.5, dmg: 2.4, scale: 1.25 },
 };
 
-/** Yadro qarorgoh 4 bosqichi. */
-export const CORE_LEVELS = [
-  { name: 'Tosh qal\'acha-uycha', maxTiles: 8, maxWorkers: 14, maxSoldiers: 24, costKumush: 0, costBronza: 0 },
-  { name: 'Minorali uy', maxTiles: 14, maxWorkers: 24, maxSoldiers: 50, costKumush: 450, costBronza: 150 },
-  { name: 'Ikki minorali qo\'rg\'on', maxTiles: 22, maxWorkers: 36, maxSoldiers: 90, costKumush: 1300, costBronza: 400 },
-  { name: 'Kichik qal\'a', maxTiles: 34, maxWorkers: 52, maxSoldiers: 150, costKumush: 3200, costBronza: 900 },
+export interface Item {
+  id: ItemId;
+  name: string;
+  kind: Kind;
+  rank: Rank;
+  cost: number;
+  train: number; // soniya
+  escorts: number; // birga chiqadigan oddiy askarlar
+  unlock: number; // nechanchi g'alabadan keyin ochiladi
+}
+
+export const ITEMS: Item[] = [
+  { id: 'konchi', name: 'Konchi', kind: 'konchi', rank: 'oddiy', cost: 50, train: 3, escorts: 0, unlock: 0 },
+  { id: 'qilichli', name: 'Qilichli', kind: 'qilichli', rank: 'oddiy', cost: 75, train: 4, escorts: 0, unlock: 0 },
+  { id: 'nayzachi', name: 'Nayzachi', kind: 'nayzachi', rank: 'oddiy', cost: 110, train: 5, escorts: 0, unlock: 1 },
+  { id: 'kamonchi', name: 'Kamonchi', kind: 'kamonchi', rank: 'oddiy', cost: 130, train: 5, escorts: 0, unlock: 2 },
+  { id: 'otliq', name: 'Otliq', kind: 'otliq', rank: 'oddiy', cost: 260, train: 7, escorts: 0, unlock: 3 },
+  { id: 'sarkarda_qilichli', name: 'Qilichli sarkarda', kind: 'qilichli', rank: 'sarkarda', cost: 450, train: 10, escorts: 2, unlock: 4 },
+  { id: 'sarkarda_nayzachi', name: 'Nayzachi sarkarda', kind: 'nayzachi', rank: 'sarkarda', cost: 550, train: 10, escorts: 2, unlock: 5 },
+  { id: 'sarkarda_kamonchi', name: 'Kamonchi sarkarda', kind: 'kamonchi', rank: 'sarkarda', cost: 600, train: 10, escorts: 2, unlock: 6 },
+  { id: 'sarkarda_otliq', name: 'Otliq sarkarda', kind: 'otliq', rank: 'sarkarda', cost: 900, train: 12, escorts: 2, unlock: 7 },
+  { id: 'qomondon', name: "Qo'mondon", kind: 'otliq', rank: 'qomondon', cost: 1600, train: 15, escorts: 3, unlock: 8 },
 ];
 
-export const MAX_UPGRADE_LEVEL = 10;
-export function upgradeCost(level: number, hero = false): number {
-  return Math.round((hero ? 80 : 35) * Math.pow(level, 1.7));
-}
-/** Daraja oshgan sari ishlash/jang ko'rsatkichi. */
-export function levelMult(level: number): number {
-  return 1 + 0.08 * (level - 1);
-}
-/** Ko'rinish 4 bosqichda: 1-3, 4-6, 7-9, 10. */
-export function visualTier(level: number): number {
-  if (level >= 10) return 4;
-  if (level >= 7) return 3;
-  if (level >= 4) return 2;
-  return 1;
+export const QUEUE_MAX = 5; // bitta tugmada navbat
+
+// Askar chegarasi (konchi + jangchilar jami): g'alabalar soniga qarab
+export function popCap(step: number): number {
+  if (step >= 8) return 70; // qo'mondon ochilgach
+  if (step >= 3) return 55; // otliq ochilgach
+  return 44;
 }
 
-export interface BuildingDef {
+// ---------- Iqtisod ----------
+export const START_SILVER = 150;
+export const MINER_LOAD = 15;
+export const MINE_TIME = 1.6;
+export const MAX_MINERS = 12;
+export const STOCK_CAP = 250; // qasr yonidagi ombor: to'lsa konchilar kutib turadi
+
+// ---------- Qasr ----------
+export const CASTLE_HP = 3000;
+export const CASTLE_DMG = 14;
+export const CASTLE_CD = 1.5;
+export const CASTLE_RANGE = 420;
+export const FIRE_MULT = 1.5; // olovli o'q qasrga
+export const AMIR_RESPAWN = 20;
+
+// ---------- Mukofot ----------
+export const SILVER_PER_GOLD = 10;
+export function winBonus(level: number): number {
+  return 30 + 10 * level;
+}
+
+// ---------- Dushman kuchi (har jangda sal oshadi) ----------
+export function enemyIncome(level: number): number {
+  return 1.2 + 0.06 * level;
+}
+export function enemyStats(level: number): number {
+  return 1 + 0.04 * level;
+}
+export function enemyCastleHp(level: number): number {
+  return CASTLE_HP + 250 * level;
+}
+
+// ---------- Kuchaytirishlar (oltinga) ----------
+export type UpgradeId = 'qasr' | 'otish' | 'savat' | 'askar' | 'kumush' | 'ombor';
+export interface Upgrade {
+  id: UpgradeId;
   name: string;
-  costKumush: number;
-  maxLevel: number;
-  allowed: Terrain[] | null;
-  needsDeposit?: boolean;
-  desc: string;
+  desc: (lvl: number) => string;
+  costs: number[];
 }
 
-export const BUILDINGS: Record<Exclude<BuildingType, 'none' | 'core' | 'city'>, BuildingDef> = {
-  farm: { name: 'Ekinzor', costKumush: 25, maxLevel: 5, allowed: ['tekislik', 'unumdor', 'vodiy', 'yaylov', 'chol'], desc: 'Dehqonlar don yetishtiradi' },
-  bog: { name: 'Bog\'', costKumush: 45, maxLevel: 5, allowed: ['tekislik', 'unumdor', 'vodiy'], desc: 'Devorli mevali bog\': dehqonlar ekinzordan ko\'proq oziq-ovqat oladi' },
-  pasture: { name: 'Yaylov (qo\'ra)', costKumush: 25, maxLevel: 5, allowed: ['tekislik', 'vodiy', 'yaylov', 'chol', 'unumdor'], desc: 'Cho\'ponlar qo\'y boqadi' },
-  mine: { name: 'Kon', costKumush: 45, maxLevel: 5, allowed: ['tog', 'qorli_tog'], needsDeposit: false, desc: 'Konchilar kumush qazadi (tog\' yoki kon joyi)' },
-  tower: { name: 'Kuzatuv minorasi', costKumush: 70, maxLevel: 5, allowed: null, desc: 'Hujum haqida ertaroq va aniqroq xabar' },
-  fort: { name: 'Devor va qal\'a', costKumush: 120, maxLevel: 5, allowed: null, desc: 'Jangda devor, garnizonga himoya ustunligi' },
-};
+export const UPGRADES: Upgrade[] = [
+  { id: 'qasr', name: 'Qasr mustahkamligi', desc: (l) => `Qasr: ${CASTLE_HP + 500 * l} jon`, costs: [40, 80, 140, 220, 320] },
+  { id: 'otish', name: 'Qasr kamonchilari', desc: (l) => `Qasr o'qi: +${20 * l}%`, costs: [40, 80, 140, 220, 320] },
+  { id: 'savat', name: 'Konchi savati', desc: (l) => `Bir safarda: ${MINER_LOAD + 2 * l} kumush`, costs: [30, 60, 110, 180, 270] },
+  { id: 'askar', name: 'Askar kuchi', desc: (l) => `Jon va zarba: +${8 * l}%`, costs: [50, 100, 170, 260, 380] },
+  { id: 'kumush', name: "Boshlang'ich kumush", desc: (l) => `Jang boshida: ${START_SILVER + 50 * l}`, costs: [25, 50, 90, 140, 200] },
+  { id: 'ombor', name: 'Ombor', desc: (l) => `Sig'imi: ${STOCK_CAP + 100 * l}`, costs: [30, 70, 120] },
+];
 
-export function buildingUpgradeCost(def: BuildingDef, level: number): number {
-  return Math.round(def.costKumush * (0.8 + level * 0.9));
+// ---------- Kampaniya: xarita bo'ylab janglar ----------
+export interface BattleDef {
+  name: string;
+  terrain: Terrain;
+  castle: string; // rasm: buildings kaliti va indeksi, masalan "qasr_dushman:0"
+  ruin?: string; // vayron holati (bo'lsa)
+  mine: number; // kon rasmi indeksi
+  map: [number, number]; // xaritadagi joyi (rasm o'lchamiga nisbatan 0..1)
 }
 
-export const FACTION_UPGRADES = {
-  barracks: { name: 'Mashg\'ulot maydoni', max: 5, cost: (l: number) => Math.round(90 * Math.pow(l, 1.8)), desc: 'Yangi askar turlarini ochadi (2: kamonchi, 3: nayzachi va otliq)' },
-  ombor: { name: 'Ombor', max: 5, cost: (l: number) => Math.round(70 * Math.pow(l, 1.8)), desc: 'Talondan saqlanadigan ulush va buzilishni kamaytiradi' },
-  spy: { name: 'Ayg\'oqchilar', max: 5, cost: (l: number) => Math.round(80 * Math.pow(l, 1.8)), desc: 'Dushman qo\'shini haqida erta va aniq xabar' },
+export const TERRAIN_NAME: Record<Terrain, string> = {
+  ormon: "O'rmon",
+  kol: "Ko'l bo'yi",
+  ekinzor: 'Ekinzor',
+  tog: "Tog'",
+  yaylov: 'Yaylov',
+  dasht: 'Dasht',
+  chol: "Cho'l",
+  shahar: 'Poytaxt',
 };
 
-/** Bozor: AI davlatlar xaridor. */
-export const MARKET = {
-  base: { don: 0.7, qoy: 7, kumush: 1.3 } as Record<Goods, number>,
-  /** Bitta birlik sotilganda to'yinish qancha oshadi (xaridorlar soniga bo'linadi). */
-  satPerUnit: { don: 0.0016, qoy: 0.012, kumush: 0.0012 } as Record<Goods, number>,
-  buyMarkup: 1.7,
-  recoverPerDay: 0.35,
-};
-
-export const ECON = {
-  farmRate: 5,
-  pastureRate: 1.4,
-  mineRate: 3,
-  workerFood: 1,
-  tileTax: 1,
-  repairPerLevel: 0.5,
-  donDecay: 0.02,
-  qoyFoodValue: 4,
-};
-
-export function workersCapacity(level: number): number {
-  return 3 + level;
-}
-
-export function omborProtect(level: number): number {
-  return 0.1 + 0.12 * (level - 1);
-}
+// Yo'l g'arbdagi o'rmondan boshlanib, xarita chetidan soat mili bo'ylab aylanadi va markazdagi ikki poytaxtda tugaydi
+export const BATTLES: BattleDef[] = [
+  { name: "G'arbiy o'rmon qal'asi", terrain: 'ormon', castle: 'qasr_dushman:0', mine: 1, map: [0.2, 0.27] },
+  { name: "G'arbiy tog' koni", terrain: 'tog', castle: 'qasr_dushman:3', mine: 2, map: [0.262, 0.12] },
+  { name: "Shimoliy dalalar qal'asi", terrain: 'ekinzor', castle: 'qasr_dushman:2', mine: 0, map: [0.42, 0.22] },
+  { name: "Yashil bayroqli qal'a", terrain: 'yaylov', castle: 'qasr_dushman:4', mine: 0, map: [0.617, 0.22] },
+  { name: "Sharqiy tog' koni", terrain: 'tog', castle: 'qasr_dushman:3', mine: 2, map: [0.797, 0.13] },
+  { name: "Binafsha bayroqli qal'a", terrain: 'yaylov', castle: 'qasr_dushman:3', mine: 0, map: [0.797, 0.285] },
+  { name: "Ot yaylovi qal'asi", terrain: 'dasht', castle: 'qasr_dushman:4', mine: 0, map: [0.914, 0.52] },
+  { name: "Sariq bayroqli qal'a", terrain: 'chol', castle: 'qasr_dushman:5', mine: 3, map: [0.867, 0.81] },
+  { name: "Cho'l vohasi", terrain: 'chol', castle: 'qasr_dushman:5', mine: 3, map: [0.738, 0.71] },
+  { name: "Janubiy qora qal'a", terrain: 'ekinzor', castle: 'qasr_dushman:0', mine: 0, map: [0.447, 0.77] },
+  { name: 'Orol bandargohi', terrain: 'kol', castle: 'qasr_dushman:1', mine: 0, map: [0.215, 0.64] },
+  { name: "Ko'l bo'yi qal'asi", terrain: 'kol', castle: 'qasr_dushman:1', mine: 1, map: [0.18, 0.49] },
+  { name: "Qizil bayroqli qal'a", terrain: 'ekinzor', castle: 'qasr_dushman:2', mine: 0, map: [0.393, 0.63] },
+  { name: 'Qizil tomli poytaxt', terrain: 'shahar', castle: 'shahar:0', ruin: 'shahar:2', mine: 0, map: [0.383, 0.45] },
+  { name: "Ko'k gumbazli poytaxt", terrain: 'shahar', castle: 'shahar:1', ruin: 'shahar:3', mine: 0, map: [0.648, 0.43] },
+];

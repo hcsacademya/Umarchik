@@ -1,14 +1,14 @@
 """
-art/ papkasidagi asl rasmlarni o'yin uchun tayyorlaydi:
-  - kulrang fonni olib tashlaydi (rembg),
-  - 4 bosqichli varaqlarni alohida figuralarga bo'ladi,
-  - portret (bosh qismi) qirqadi,
-  - WebP (shaffof) qilib public/assets/ ga yozadi va manifest.json ni yangilaydi,
-  - xaritani tayyorlab, src/world/mapData.json ni yasaydi (tools/build_map.py).
+art/ papkasidagi varaq-rasmlarni o'yin uchun tayyorlaydi:
+  - kulrang fonni olib tashlaydi (chekkadan to'ldirish usuli, ichki oq/kulrang joylar saqlanadi),
+  - varaqni alohida bo'laklarga (pozalar, qasrlar, konlar) ajratadi,
+  - o'yin o'lchamiga moslab WebP qilib public/assets/ ga yozadi,
+  - dushman askarlari uchun rangi o'zgartirilgan nusxa yasaydi,
+  - o'lcham va tayanch nuqtalarni src/assets.json ga yozadi.
 
-O'rnatish:  pip install rembg onnxruntime scipy pillow numpy
-Ishga tushirish (loyiha ildizidan):  python tools/prepare_assets.py
-Faqat ayrim rasmlar:                  python tools/prepare_assets.py ishxonalar umumiy_xarita
+O'rnatish:        pip install pillow numpy scipy
+Ishga tushirish:  python3 tools/prepare_assets.py
+Tekshirish rasmi: python3 tools/prepare_assets.py --preview   (scratch/preview.png)
 """
 import json
 import os
@@ -16,246 +16,258 @@ import sys
 
 import numpy as np
 from PIL import Image
-from rembg import new_session, remove
 from scipy import ndimage as ndi
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ART = os.path.join(ROOT, 'art')
 OUT = os.path.join(ROOT, 'public', 'assets')
-sys.path.insert(0, os.path.join(ROOT, 'tools'))
+META = os.path.join(ROOT, 'src', 'assets.json')
 
-UNIT_H = 300
-PORTRAIT = 128
+# O'yindagi 1 birlik necha piksel bo'lib saqlanadi (ekranda ~1.4–2.2 px/birlik)
+PPU = 2.2
 
-# (fayl, turi, kalit). {t} — bosqich raqami (1..4).
-SPEC = [
-    ('amir_4bosqich', 'row4', 'unit_amir_{t}'),
-    ('amir', 'single', 'unit_amir'),
-    ('piyoda_4bosqich', 'row4', 'unit_piyoda_{t}'),
-    ('piyoda', 'single', 'unit_piyoda'),
-    ('kamonchi_4bosqich', 'row4', 'unit_kamonchi_{t}'),
-    ('kamonchi', 'single', 'unit_kamonchi'),
-    ('nayzachi_4bosqich', 'row4', 'unit_nayzachi_{t}'),
-    ('nayzachi', 'single', 'unit_nayzachi'),
-    ('otliq_4bosqich', 'row4', 'unit_otliq_{t}'),
-    ('otliq', 'single', 'unit_otliq'),
-    ('qomondon_4bosqich', 'row4', 'unit_qomondon_{t}'),
-    ('qomondon', 'single', 'unit_qomondon'),
-    ('dehqon_4bosqich', 'row4', 'worker_dehqon_{t}'),
-    ('dehqon', 'single', 'worker_dehqon'),
-    ('chopon_4bosqich', 'row4', 'worker_chopon_{t}'),
-    ('chopon', 'single', 'worker_chopon'),
-    ('konchi_4bosqich', 'row4', 'worker_konchi_{t}'),
-    ('konchi', 'single', 'worker_konchi'),
-    ('sarkardalar', 'row4', ['unit_sarkarda_otliq_1', 'unit_sarkarda_nayzachi_1', 'unit_sarkarda_kamonchi_1', 'unit_sarkarda_piyoda_1']),
-    ('sarkardalar_2bosqich', 'grid2x4', [
-        ['unit_sarkarda_otliq_2', 'unit_sarkarda_nayzachi_2', 'unit_sarkarda_kamonchi_2', 'unit_sarkarda_piyoda_2'],
-        ['unit_sarkarda_otliq_3', 'unit_sarkarda_nayzachi_3', 'unit_sarkarda_kamonchi_3', 'unit_sarkarda_piyoda_3'],
-    ]),
-    ('qarorgoh_4bosqich', 'row4b', 'core_{t}'),
-    ('qarorgoh_1', 'building', 'core_1'),
-    ('poytaxt_rim', 'building', 'capital_rim'),
-    ('poytaxt_fors', 'building', 'capital_fors'),
-    # 2x2 varaq: ekinzor, bog', yaylov, kon — romb plitalar
-    ('ishxonalar.webp', 'tiles2x2', [['farm', 'bog'], ['pasture', 'mine']]),
-]
-
-# Bir rasmni bir nechta kalit ishlatadi.
-ALIASES = {
-    'unit_sarkarda_otliq_4': 'unit_sarkarda_otliq_3',
-    'unit_sarkarda_nayzachi_4': 'unit_sarkarda_nayzachi_3',
-    'unit_sarkarda_kamonchi_4': 'unit_sarkarda_kamonchi_3',
-    'unit_sarkarda_piyoda_4': 'unit_sarkarda_piyoda_3',
-    'unit_zirhli_otliq': 'unit_otliq_4',
-    'unit_zirhli_nayzachi': 'unit_nayzachi_4',
+# Askarlar: (varaq, qatorlar, ustunlar, gavda balandligi o'yin birligida, ko'zgu)
+UNITS = {
+    'amir': ('amir.webp', 1, 4, 118, False),
+    'konchi': ('konchi.webp', 2, 3, 104, False),
+    'qilichli': ('qilichli.webp', 1, 4, 112, False),
+    'nayzachi': ('nayzachi.webp', 1, 4, 112, False),
+    'kamonchi': ('kamonchi.webp', 1, 4, 112, False),
+    # Vaqtincha: yon tomondan otliq rasmi chizilguncha namuna rasm (chapga qaragan, ko'zgu qilinadi)
+    'otliq': ('otliq_vaqtincha.jpg', 1, 1, 160, True),
 }
 
-# Xaritada binolarni plitaga joylash.
-BUILDING_SPEC = {
-    'core_1': dict(scale=1.25, anchorY=0.78),
-    'core_2': dict(scale=1.35, anchorY=0.8),
-    'core_3': dict(scale=1.5, anchorY=0.8),
-    'core_4': dict(scale=1.65, anchorY=0.8),
-    'capital_rim': dict(scale=3.2, anchorY=0.62),
-    'capital_fors': dict(scale=3.2, anchorY=0.62),
+# Binolar: (varaq, qatorlar, ustunlar, o'rtacha kenglik o'yin birligida)
+BUILDINGS = {
+    'qasr_biz': ('qasr_biz.webp', 1, 3, 270),
+    'qasr_dushman': ('qasr_dushman.webp', 2, 3, 280),
+    'kon': ('konlar.webp', 2, 2, 200),
+    'shahar': ('shaharlar.webp', 2, 2, 560),
 }
 
-session = None
+
+def load(name):
+    return np.asarray(Image.open(os.path.join(ART, name)).convert('RGB')).astype(np.float32)
 
 
-def cutout(path):
-    global session
-    if session is None:
-        session = new_session('isnet-general-use')
-    im = Image.open(path).convert('RGB')
-    return remove(im, session=session)
+def remove_bg(rgb):
+    """Kulrang fonni shaffof qiladi. Qaytaradi: RGBA (float, 0..255)."""
+    h, w, _ = rgb.shape
+    border = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
+    bg = np.median(border, axis=0)
+    dist = np.sqrt(((rgb - bg) ** 2).sum(axis=2))
+
+    near = dist < 16
+    labels, n = ndi.label(near)
+    sizes = ndi.sum(np.ones_like(dist), labels, index=np.arange(1, n + 1))
+    edge_ids = np.unique(np.concatenate([labels[0], labels[-1], labels[:, 0], labels[:, -1]]))
+    # chekkaga tegib turgan fon yoki katta yopiq "cho'ntak" (masalan qo'l va gavda orasi)
+    mean_d = ndi.mean(dist, labels, index=np.arange(1, n + 1))
+    keep_bg = np.zeros(n + 1, bool)
+    keep_bg[1:] = (sizes > 2500) | ((sizes > 150) & (mean_d < 6))
+    keep_bg[edge_ids] = True
+    keep_bg[0] = False
+    bgmask = keep_bg[labels]
+
+    alpha = np.where(bgmask, 0.0, 1.0)
+    # Chegaradagi yumshoq o'tish
+    band = ndi.binary_dilation(bgmask, iterations=2) & ~bgmask
+    soft = np.clip((dist - 8) / 26, 0, 1)
+    alpha = np.where(band, np.minimum(alpha, soft), alpha)
+    # Mayda dog'larni olib tashlash
+    solid = alpha > 0.5
+    lab, m = ndi.label(solid)
+    if m:
+        area = ndi.sum(solid, lab, index=np.arange(1, m + 1))
+        small = np.zeros(m + 1, bool)
+        small[1:] = area < 40
+        alpha[small[lab]] = 0
+    # Fon rangini chekkadan tozalash
+    a = alpha[..., None]
+    safe = np.maximum(a, 0.05)
+    col = np.where(a > 0, np.clip((rgb - (1 - a) * bg) / safe, 0, 255), 0)
+    return np.dstack([col, alpha * 255])
 
 
-def bbox_crop(im, pad=4):
-    a = np.asarray(im)[..., 3]
-    ys, xs = np.nonzero(a > 20)
-    if len(xs) == 0:
-        return im
-    return im.crop((max(0, xs.min() - pad), max(0, ys.min() - pad), min(im.width, xs.max() + pad), min(im.height, ys.max() + pad)))
+def segments(profile, want, min_gap=10):
+    """1D proyeksiyadan bo'laklarni topadi va kerakli songa keltiradi."""
+    on = profile > 0
+    segs = []
+    i, n = 0, len(on)
+    while i < n:
+        if on[i]:
+            j = i
+            while j < n and on[j]:
+                j += 1
+            segs.append([i, j])
+            i = j
+        else:
+            i += 1
+    # yaqin bo'laklarni birlashtirish
+    merged = []
+    for s in segs:
+        if merged and s[0] - merged[-1][1] < min_gap:
+            merged[-1][1] = s[1]
+        else:
+            merged.append(s)
+    # mayda shovqin bo'laklarni tashlash
+    merged = [s for s in merged if profile[s[0]:s[1]].sum() > 200]
+    while len(merged) > want:
+        gaps = [merged[k + 1][0] - merged[k][1] for k in range(len(merged) - 1)]
+        k = int(np.argmin(gaps))
+        merged[k][1] = merged[k + 1][1]
+        del merged[k + 1]
+    if len(merged) != want:
+        raise RuntimeError(f'{want} ta bo\'lak kutilgandi, {len(merged)} ta topildi')
+    return merged
 
 
-def split_cols(im, n):
-    """Shaffoflik bo'yicha eng bo'sh ustunlardan n bo'lakka ajratadi."""
-    a = np.asarray(im)[..., 3].astype(float)
-    prof = ndi.uniform_filter1d(a.sum(0), 9)
-    w = im.width
-    cuts = [0]
-    for i in range(1, n):
-        c = int(w * i / n)
-        lo, hi = int(c - w * 0.1), int(c + w * 0.1)
-        cuts.append(lo + int(np.argmin(prof[lo:hi])))
-    cuts.append(w)
-    return [im.crop((cuts[i], 0, cuts[i + 1], im.height)) for i in range(n)]
+def split(rgba, rows, cols):
+    """Varaqni qator va ustunlarga ajratib, har bir bo'lakni qirqib qaytaradi."""
+    solid = rgba[..., 3] > 128
+    out = []
+    for r0, r1 in segments(solid.sum(axis=1), rows, 14):
+        band = solid[r0:r1]
+        for c0, c1 in segments(band.sum(axis=0), cols, 1):
+            piece = rgba[r0:r1, c0:c1]
+            a = piece[..., 3] > 8
+            ys, xs = np.nonzero(a)
+            out.append(piece[ys.min():ys.max() + 1, xs.min():xs.max() + 1].copy())
+    return out
 
 
-def split_rows(im, n):
-    # -90° burilganda pastki qator chapga tushadi — tartibni tiklash uchun teskari.
-    return [p.rotate(90, expand=True) for p in split_cols(im.rotate(-90, expand=True), n)][::-1]
+def body_mask(piece):
+    """Ingichka qurollarsiz gavda (nayza, kamon, bolta dastasi olib tashlanadi)."""
+    m = piece[..., 3] > 128
+    return ndi.binary_opening(m, structure=np.ones((17, 17)))
 
 
-def largest_part(im):
-    """Bo'lakdagi eng katta figurani (va unga yopishganlarni) qoldiradi."""
-    a = np.asarray(im)[..., 3] > 20
-    lab, n = ndi.label(ndi.binary_dilation(a, iterations=6))
-    if n <= 1:
-        return im
-    sizes = ndi.sum(a, lab, index=np.arange(1, n + 1))
-    keep = lab == (1 + int(np.argmax(sizes)))
-    arr = np.asarray(im).copy()
-    arr[..., 3] = np.where(keep, arr[..., 3], 0)
-    return Image.fromarray(arr)
+def body_rows(piece):
+    """Gavda egallagan qatorlar: boshdan oyoqqacha (nayza uchi va qilich hisobga olinmaydi)."""
+    widths = body_mask(piece).sum(axis=1)
+    thr = 0.3 * np.percentile(widths[widths > 0], 75)
+    ys = np.nonzero(widths >= thr)[0]
+    return ys.min(), ys.max()
 
 
-def fit(im, max_w=None, max_h=None):
-    w, h = im.size
-    k = 1.0
-    if max_w:
-        k = min(k, max_w / w)
-    if max_h:
-        k = min(k, max_h / h)
-    if k < 1:
-        im = im.resize((max(1, int(w * k)), max(1, int(h * k))), Image.LANCZOS)
-    return im
+def to_image(arr):
+    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), 'RGBA')
 
 
-def portrait(im):
-    """Figuraning yuqori qismidan kvadrat portret."""
-    a = np.asarray(im)[..., 3] > 40
-    h, w = a.shape
-    side = int(min(w, h * 0.42))
-    top_rows = a[: max(1, int(h * 0.25))]
-    xs = np.nonzero(top_rows.any(0))[0]
-    cx = int(xs.mean()) if len(xs) else w // 2
-    x0 = max(0, min(w - side, cx - side // 2))
-    ys = np.nonzero(a.any(1))[0]
-    y0 = max(0, int(ys.min()) - 4) if len(ys) else 0
-    crop = im.crop((x0, y0, x0 + side, y0 + side))
-    return crop.resize((PORTRAIT, PORTRAIT), Image.LANCZOS)
+def resize(arr, scale):
+    if abs(scale - 1) < 1e-3:
+        return to_image(arr)
+    im = to_image(arr)
+    w, h = max(1, round(im.width * scale)), max(1, round(im.height * scale))
+    return im.resize((w, h), Image.LANCZOS)
 
 
-def tile_spec(im):
-    """Romb plitali rasm: eni plita eniga teng, markazi rombning o'rtasi."""
-    w, h = im.size
-    thick = 0.045 * w  # tuproq qirrasi
-    anchor_from_bottom = thick + w * 0.25
-    return dict(scale=1.04, anchorY=round(1 - anchor_from_bottom / h, 3))
+def enemy_tint(arr):
+    """Dushman nusxasi: och kiyim to'q qizilga, charm va temir to'qroq tusga o'tadi."""
+    rgb = arr[..., :3]
+    lum = (rgb * [0.299, 0.587, 0.114]).sum(axis=2, keepdims=True)
+    light = np.clip((lum - 90) / 120, 0, 1)  # och joylar (kiyim) ko'proq bo'yaladi
+    red = np.concatenate([lum * 0.95, lum * 0.32, lum * 0.3], axis=2) * 0.85
+    dark = rgb * np.array([0.82, 0.74, 0.74])
+    out = dark * (1 - light * 0.75) + red * (light * 0.75)
+    return np.dstack([np.clip(out, 0, 255), arr[..., 3]])
 
 
-def save(im, key, manifest, extra=None):
-    fn = f'{key}.webp'
-    im.save(os.path.join(OUT, fn), 'WEBP', quality=86, method=6)
-    manifest[key] = dict(file=fn, **extra) if extra else fn
+def save(im, rel):
+    path = os.path.join(OUT, rel)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    im.save(path, 'WEBP', quality=88, method=6)
+    return 'assets/' + rel.replace(os.sep, '/')
 
 
-def figure_out(im, key, manifest):
-    fig = fit(bbox_crop(largest_part(im)), max_h=UNIT_H)
-    save(fig, key, manifest)
-    pkey = key.replace('unit_', 'portrait_').replace('worker_', 'portrait_')
-    save(portrait(fig), pkey, manifest)
+def frame_meta(file, im, ax, ppu):
+    # w, h — o'yin birligida; ax — tayanch nuqta (oyoq o'rtasi) chapdan, ulushda
+    return {'f': file, 'w': round(im.width / ppu, 1), 'h': round(im.height / ppu, 1), 'ax': round(ax, 3)}
+
+
+def build_units(meta, preview):
+    meta['units'] = {}
+    for kind, (src, rows, cols, game_h, mirror) in UNITS.items():
+        rgba = remove_bg(load(src))
+        if mirror:
+            rgba = rgba[:, ::-1].copy()
+        pieces = split(rgba, rows, cols)
+        top, bottom = body_rows(pieces[0])
+        body_h = bottom - top + 1
+        scale = game_h * PPU / body_h
+        frames, enemy = [], []
+        for i, p in enumerate(pieces):
+            bm = body_mask(p)
+            cols_w = bm.sum(axis=0) if bm.any() else (p[..., 3] > 128).sum(axis=0)
+            ax = float((cols_w * np.arange(len(cols_w))).sum() / cols_w.sum()) / p.shape[1]
+            im = resize(p, scale)
+            frames.append(frame_meta(save(im, f'units/{kind}_{i}.webp'), im, ax, PPU))
+            ie = resize(enemy_tint(p), scale)
+            enemy.append(frame_meta(save(ie, f'units/{kind}_e_{i}.webp'), ie, ax, PPU))
+            preview.append((im, ax))
+            preview.append((ie, ax))
+        meta['units'][kind] = {'frames': frames, 'enemy': enemy}
+        print(f'{kind}: {len(pieces)} ta poza, gavda {body_h}px -> {game_h} birlik')
+
+
+def build_buildings(meta, preview):
+    meta['buildings'] = {}
+    for key, (src, rows, cols, game_w) in BUILDINGS.items():
+        pieces = split(remove_bg(load(src)), rows, cols)
+        med_w = float(np.median([p.shape[1] for p in pieces]))
+        ppu = min(PPU, med_w / game_w)  # asl o'lchamdan kattalashtirmaymiz
+        scale = game_w * ppu / med_w
+        frames = []
+        for i, p in enumerate(pieces):
+            im = resize(p, scale)
+            frames.append(frame_meta(save(im, f'{key}_{i}.webp'), im, 0.5, ppu))
+            preview.append((im, 0.5))
+        meta['buildings'][key] = frames
+        print(f'{key}: {len(pieces)} ta, kenglik ~{game_w} birlik')
+
+
+def build_map(meta):
+    im = Image.open(os.path.join(ART, 'xarita.jpg')).convert('RGB')
+    im.save(os.path.join(OUT, 'xarita.webp'), 'WEBP', quality=85, method=6)
+    meta['map'] = {'f': 'assets/xarita.webp', 'w': im.width, 'h': im.height}
+
+
+def write_preview(preview):
+    pad, scale = 10, 0.45
+    ims = [im.resize((max(1, int(im.width * scale)), max(1, int(im.height * scale)))) for im, _ in preview]
+    width = 1800
+    x = y = pad
+    row_h = 0
+    places = []
+    for im in ims:
+        if x + im.width > width:
+            x, y = pad, y + row_h + pad
+            row_h = 0
+        places.append((x, y))
+        x += im.width + pad
+        row_h = max(row_h, im.height)
+    sheet = Image.new('RGBA', (width, y + row_h + pad), (60, 140, 90, 255))
+    for (px, py), im, (_, ax) in zip(places, ims, preview):
+        sheet.alpha_composite(im, (px, py))
+        # tayanch nuqta (qizil)
+        cx = px + int(ax * im.width)
+        for d in range(-3, 4):
+            sheet.putpixel((min(width - 1, max(0, cx + d)), py + im.height - 1), (255, 0, 0, 255))
+    os.makedirs(os.path.join(ROOT, 'scratch'), exist_ok=True)
+    sheet.save(os.path.join(ROOT, 'scratch', 'preview.png'))
+    print('scratch/preview.png yozildi')
 
 
 def main():
-    os.makedirs(OUT, exist_ok=True)
-    manifest = {'_izoh': "Avtomatik yaratilgan: tools/prepare_assets.py. Qo'lda qo'shilgan kalitlar ham saqlanadi."}
-    old_path = os.path.join(OUT, 'manifest.json')
-    if os.path.exists(old_path):
-        with open(old_path) as fh:
-            for k, v in json.load(fh).items():
-                if not k.startswith('_'):
-                    manifest[k] = v
-    only = set(sys.argv[1:])
-    for name, kind, keys in SPEC:
-        base = os.path.splitext(name)[0]
-        if only and base not in only:
-            continue
-        path = os.path.join(ART, name if '.' in name else name + '.jpg')
-        print('…', name)
-        im = cutout(path)
-        if kind == 'single':
-            figure_out(im, keys, manifest)
-        elif kind in ('row4', 'row4b'):
-            parts = split_cols(bbox_crop(im), 4)
-            for t, part in enumerate(parts, 1):
-                key = keys[t - 1] if isinstance(keys, list) else keys.format(t=t)
-                if kind == 'row4b':
-                    b = fit(bbox_crop(largest_part(part)), max_w=520)
-                    save(b, key, manifest, BUILDING_SPEC.get(key))
-                else:
-                    figure_out(part, key, manifest)
-        elif kind == 'grid2x4':
-            rows = split_rows(bbox_crop(im), 2)
-            for r, row in enumerate(rows):
-                for c, part in enumerate(split_cols(bbox_crop(row), 4)):
-                    figure_out(part, keys[r][c], manifest)
-        elif kind == 'tiles2x2':
-            rows = split_rows(bbox_crop(im), 2)
-            for r, row in enumerate(rows):
-                for c, part in enumerate(split_cols(bbox_crop(row), 2)):
-                    b = fit(bbox_crop(largest_part(part)), max_w=480)
-                    save(b, keys[r][c], manifest, tile_spec(b))
-        elif kind == 'building':
-            b = fit(bbox_crop(im), max_w=760 if keys.startswith('capital') else 560)
-            save(b, keys, manifest, BUILDING_SPEC.get(keys))
-    # Devor/qal'a va kuzatuv minorasi uchun qarorgoh rasmlari.
-    manifest['fort'] = dict(file='core_3.webp', scale=0.9, anchorY=0.8)
-    manifest['tower'] = dict(file='core_2.webp', scale=0.8, anchorY=0.8)
-    for alias, target in ALIASES.items():
-        manifest[alias] = manifest[target]
-        pa, pt = alias.replace('unit_', 'portrait_'), target.replace('unit_', 'portrait_')
-        if pt in manifest:
-            manifest[pa] = manifest[pt]
-
-    if only and 'umumiy_xarita' not in only:
-        with open(old_path, 'w') as fh:
-            json.dump(manifest, fh, ensure_ascii=False, indent=1)
-        print('tayyor:', len(manifest) - 1, 'kalit')
-        return
-
-    # Xarita
-    print('… umumiy_xarita')
-    m = cutout(os.path.join(ART, 'umumiy_xarita.jpg'))
-    arr = np.asarray(m).copy()
-    filled = ndi.binary_fill_holes(arr[..., 3] > 127)
-    arr[..., 3] = np.where(filled & (arr[..., 3] < 255), 255, arr[..., 3])
-    # rasm ichidagi teshiklar to'ldiriladi, tashqi qirra yumshoq qoladi
-    arr[..., 3] = np.where(filled, 255, arr[..., 3])
-    rgba = Image.fromarray(arr)
-    tmp = os.path.join(OUT, '_map_rgba.png')
-    rgba.save(tmp)
-    rgba.save(os.path.join(OUT, 'map.webp'), 'WEBP', quality=88, method=6)
-    manifest['map_background'] = 'map.webp'
-    import build_map
-    build_map.main(tmp, os.path.join(ROOT, 'src', 'world', 'mapData.json'))
-    os.remove(tmp)
-
-    with open(old_path, 'w') as fh:
-        json.dump(manifest, fh, ensure_ascii=False, indent=1)
-    print('tayyor:', len(manifest) - 1, 'kalit')
+    meta, preview = {'ppu': PPU}, []
+    build_units(meta, preview)
+    build_buildings(meta, preview)
+    build_map(meta)
+    with open(META, 'w', encoding='utf-8') as f:
+        json.dump(meta, f, ensure_ascii=False, indent=1)
+    print('src/assets.json yozildi')
+    if '--preview' in sys.argv:
+        write_preview(preview)
 
 
 if __name__ == '__main__':

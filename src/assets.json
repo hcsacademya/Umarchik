@@ -1,0 +1,434 @@
+{
+ "ppu": 2.2,
+ "units": {
+  "amir": {
+   "frames": [
+    {
+     "f": "assets/units/amir_0.webp",
+     "w": 35.9,
+     "h": 119.5,
+     "ax": 0.493
+    },
+    {
+     "f": "assets/units/amir_1.webp",
+     "w": 65.0,
+     "h": 118.2,
+     "ax": 0.478
+    },
+    {
+     "f": "assets/units/amir_2.webp",
+     "w": 65.0,
+     "h": 119.1,
+     "ax": 0.465
+    },
+    {
+     "f": "assets/units/amir_3.webp",
+     "w": 88.2,
+     "h": 112.7,
+     "ax": 0.383
+    }
+   ],
+   "enemy": [
+    {
+     "f": "assets/units/amir_e_0.webp",
+     "w": 35.9,
+     "h": 119.5,
+     "ax": 0.493
+    },
+    {
+     "f": "assets/units/amir_e_1.webp",
+     "w": 65.0,
+     "h": 118.2,
+     "ax": 0.478
+    },
+    {
+     "f": "assets/units/amir_e_2.webp",
+     "w": 65.0,
+     "h": 119.1,
+     "ax": 0.465
+    },
+    {
+     "f": "assets/units/amir_e_3.webp",
+     "w": 88.2,
+     "h": 112.7,
+     "ax": 0.383
+    }
+   ]
+  },
+  "konchi": {
+   "frames": [
+    {
+     "f": "assets/units/konchi_0.webp",
+     "w": 42.3,
+     "h": 105.9,
+     "ax": 0.558
+    },
+    {
+     "f": "assets/units/konchi_1.webp",
+     "w": 60.9,
+     "h": 105.0,
+     "ax": 0.477
+    },
+    {
+     "f": "assets/units/konchi_2.webp",
+     "w": 63.6,
+     "h": 104.5,
+     "ax": 0.47
+    },
+    {
+     "f": "assets/units/konchi_3.webp",
+     "w": 95.0,
+     "h": 95.5,
+     "ax": 0.407
+    },
+    {
+     "f": "assets/units/konchi_4.webp",
+     "w": 62.3,
+     "h": 101.8,
+     "ax": 0.414
+    },
+    {
+     "f": "assets/units/konchi_5.webp",
+     "w": 66.4,
+     "h": 101.4,
+     "ax": 0.433
+    }
+   ],
+   "enemy": [
+    {
+     "f": "assets/units/konchi_e_0.webp",
+     "w": 42.3,
+     "h": 105.9,
+     "ax": 0.558
+    },
+    {
+     "f": "assets/units/konchi_e_1.webp",
+     "w": 60.9,
+     "h": 105.0,
+     "ax": 0.477
+    },
+    {
+     "f": "assets/units/konchi_e_2.webp",
+     "w": 63.6,
+     "h": 104.5,
+     "ax": 0.47
+    },
+    {
+     "f": "assets/units/konchi_e_3.webp",
+     "w": 95.0,
+     "h": 95.5,
+     "ax": 0.407
+    },
+    {
+     "f": "assets/units/konchi_e_4.webp",
+     "w": 62.3,
+     "h": 101.8,
+     "ax": 0.414
+    },
+    {
+     "f": "assets/units/konchi_e_5.webp",
+     "w": 66.4,
+     "h": 101.4,
+     "ax": 0.433
+    }
+   ]
+  },
+  "qilichli": {
+   "frames": [
+    {
+     "f": "assets/units/qilichli_0.webp",
+     "w": 41.8,
+     "h": 117.3,
+     "ax": 0.452
+    },
+    {
+     "f": "assets/units/qilichli_1.webp",
+     "w": 64.1,
+     "h": 116.4,
+     "ax": 0.539
+    },
+    {
+     "f": "assets/units/qilichli_2.webp",
+     "w": 64.1,
+     "h": 116.4,
+     "ax": 0.543
+    },
+    {
+     "f": "assets/units/qilichli_3.webp",
+     "w": 80.5,
+     "h": 111.4,
+     "ax": 0.49
+    }
+   ],
+   "enemy": [
+    {
+     "f": "assets/units/qilichli_e_0.webp",
+     "w": 41.8,
+     "h": 117.3,
+     "ax": 0.452
+    },
+    {
+     "f": "assets/units/qilichli_e_1.webp",
+     "w": 64.1,
+     "h": 116.4,
+     "ax": 0.539
+    },
+    {
+     "f": "assets/units/qilichli_e_2.webp",
+     "w": 64.1,
+     "h": 116.4,
+     "ax": 0.543
+    },
+    {
+     "f": "assets/units/qilichli_e_3.webp",
+     "w": 80.5,
+     "h": 111.4,
+     "ax": 0.49
+    }
+   ]
+  },
+  "nayzachi": {
+   "frames": [
+    {
+     "f": "assets/units/nayzachi_0.webp",
+     "w": 38.6,
+     "h": 135.5,
+     "ax": 0.451
+    },
+    {
+     "f": "assets/units/nayzachi_1.webp",
+     "w": 62.7,
+     "h": 131.4,
+     "ax": 0.556
+    },
+    {
+     "f": "assets/units/nayzachi_2.webp",
+     "w": 63.2,
+     "h": 130.0,
+     "ax": 0.521
+    },
+    {
+     "f": "assets/units/nayzachi_3.webp",
+     "w": 103.2,
+     "h": 110.5,
+     "ax": 0.367
+    }
+   ],
+   "enemy": [
+    {
+     "f": "assets/units/nayzachi_e_0.webp",
+     "w": 38.6,
+     "h": 135.5,
+     "ax": 0.451
+    },
+    {
+     "f": "assets/units/nayzachi_e_1.webp",
+     "w": 62.7,
+     "h": 131.4,
+     "ax": 0.556
+    },
+    {
+     "f": "assets/units/nayzachi_e_2.webp",
+     "w": 63.2,
+     "h": 130.0,
+     "ax": 0.521
+    },
+    {
+     "f": "assets/units/nayzachi_e_3.webp",
+     "w": 103.2,
+     "h": 110.5,
+     "ax": 0.367
+    }
+   ]
+  },
+  "kamonchi": {
+   "frames": [
+    {
+     "f": "assets/units/kamonchi_0.webp",
+     "w": 43.6,
+     "h": 113.6,
+     "ax": 0.377
+    },
+    {
+     "f": "assets/units/kamonchi_1.webp",
+     "w": 60.0,
+     "h": 112.7,
+     "ax": 0.46
+    },
+    {
+     "f": "assets/units/kamonchi_2.webp",
+     "w": 60.9,
+     "h": 113.2,
+     "ax": 0.469
+    },
+    {
+     "f": "assets/units/kamonchi_3.webp",
+     "w": 80.9,
+     "h": 125.0,
+     "ax": 0.367
+    }
+   ],
+   "enemy": [
+    {
+     "f": "assets/units/kamonchi_e_0.webp",
+     "w": 43.6,
+     "h": 113.6,
+     "ax": 0.377
+    },
+    {
+     "f": "assets/units/kamonchi_e_1.webp",
+     "w": 60.0,
+     "h": 112.7,
+     "ax": 0.46
+    },
+    {
+     "f": "assets/units/kamonchi_e_2.webp",
+     "w": 60.9,
+     "h": 113.2,
+     "ax": 0.469
+    },
+    {
+     "f": "assets/units/kamonchi_e_3.webp",
+     "w": 80.9,
+     "h": 125.0,
+     "ax": 0.367
+    }
+   ]
+  },
+  "otliq": {
+   "frames": [
+    {
+     "f": "assets/units/otliq_0.webp",
+     "w": 106.8,
+     "h": 197.7,
+     "ax": 0.497
+    }
+   ],
+   "enemy": [
+    {
+     "f": "assets/units/otliq_e_0.webp",
+     "w": 106.8,
+     "h": 197.7,
+     "ax": 0.497
+    }
+   ]
+  }
+ },
+ "buildings": {
+  "qasr_biz": [
+   {
+    "f": "assets/qasr_biz_0.webp",
+    "w": 272.2,
+    "h": 283.4,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/qasr_biz_1.webp",
+    "w": 261.6,
+    "h": 251.1,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/qasr_biz_2.webp",
+    "w": 270.0,
+    "h": 197.1,
+    "ax": 0.5
+   }
+  ],
+  "qasr_dushman": [
+   {
+    "f": "assets/qasr_dushman_0.webp",
+    "w": 280.3,
+    "h": 216.1,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/qasr_dushman_1.webp",
+    "w": 269.7,
+    "h": 223.3,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/qasr_dushman_2.webp",
+    "w": 281.4,
+    "h": 215.5,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/qasr_dushman_3.webp",
+    "w": 279.7,
+    "h": 202.1,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/qasr_dushman_4.webp",
+    "w": 271.9,
+    "h": 203.2,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/qasr_dushman_5.webp",
+    "w": 281.4,
+    "h": 201.6,
+    "ax": 0.5
+   }
+  ],
+  "kon": [
+   {
+    "f": "assets/kon_0.webp",
+    "w": 201.8,
+    "h": 122.3,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/kon_1.webp",
+    "w": 191.4,
+    "h": 130.9,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/kon_2.webp",
+    "w": 200.5,
+    "h": 117.3,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/kon_3.webp",
+    "w": 199.5,
+    "h": 108.6,
+    "ax": 0.5
+   }
+  ],
+  "shahar": [
+   {
+    "f": "assets/shahar_0.webp",
+    "w": 570.6,
+    "h": 262.3,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/shahar_1.webp",
+    "w": 546.4,
+    "h": 274.3,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/shahar_2.webp",
+    "w": 569.8,
+    "h": 266.8,
+    "ax": 0.5
+   },
+   {
+    "f": "assets/shahar_3.webp",
+    "w": 550.2,
+    "h": 297.7,
+    "ax": 0.5
+   }
+  ]
+ },
+ "map": {
+  "f": "assets/xarita.webp",
+  "w": 1280,
+  "h": 720
+ }
+}
