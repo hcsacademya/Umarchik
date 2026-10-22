@@ -325,10 +325,11 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     }
     if (side.amirDead) {
       banner.classList.remove('hidden');
-      banner.textContent = `Amir halok bo'ldi — yangi Amir ${Math.ceil(side.amirTimer)} soniyadan keyin`;
+      banner.textContent = `Amir halok bo'ldi — qo'shin qasrda, yangi Amir ${Math.ceil(side.amirTimer)} soniyadan keyin`;
     } else banner.classList.add('hidden');
 
-    for (const ev of b.events.splice(0)) toast(ev.text, ev.good ? 'good' : 'bad');
+    // Amir halok bo'lgani tepadagi yozuvda ko'rinib turadi — alohida xabar shart emas
+    for (const ev of b.events.splice(0)) if (ev.amir !== 'dead') toast(ev.text, ev.good ? 'good' : 'bad');
 
     if (hintStep >= 0 && hintStep < HINTS.length) {
       hint.classList.remove('hidden');

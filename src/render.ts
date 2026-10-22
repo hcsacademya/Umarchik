@@ -97,7 +97,7 @@ export class Renderer {
     const def = BATTLES[level];
     const hex = COLORS[def.color].hex;
     this.enemy = {};
-    for (const k of Object.keys(UNIT_FRAMES) as Kind[]) this.enemy[k] = enemyFrames(k, hex);
+    for (const k of Object.keys(UNIT_FRAMES) as Kind[]) this.enemy[k] = enemyFrames(k, hex, def.faction);
     // Poytaxtlar o'z rangida qoladi, qolgan qasrlarning bayrog'i jang rangiga bo'yaladi
     this.enemyCastle = def.castle.startsWith('shahar') ? null : tintedBuilding(def.castle, hex);
   }
@@ -368,7 +368,7 @@ export class Renderer {
   }
 
   private drawUnit(u: Unit): void {
-    const frames = (u.side === 1 && this.enemy[u.kind]) || UNIT_FRAMES[u.kind][u.side];
+    const frames = (u.side === 1 && this.enemy[u.kind]) || UNIT_FRAMES[u.kind];
     const f = frames[Math.min(this.frameIndex(u), frames.length - 1)];
     const sc = RANK[u.rank].scale;
     let z = 0;

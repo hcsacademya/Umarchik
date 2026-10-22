@@ -108,6 +108,7 @@ export interface SideState {
 export interface BattleEvent {
   text: string;
   good: boolean;
+  amir?: 'dead' | 'back'; // Amir halok bo'ldi / qaytdi (UI buni alohida yozuv bilan ko'rsatadi)
 }
 
 export type BuyError = 'kumush' | 'joy' | 'navbat' | 'konchi' | 'bor' | 'yopiq';
@@ -438,7 +439,7 @@ export class Battle {
         s.amirDead = false;
         s.stance = 'tur';
         this.spawn(side, 'amir', 'oddiy');
-        this.events.push({ text: 'Yangi Amir maydonga chiqdi!', good: true });
+        this.events.push({ text: 'Yangi Amir maydonga chiqdi!', good: true, amir: 'back' });
       }
     }
   }
@@ -594,7 +595,7 @@ export class Battle {
       s.amirDead = true;
       s.amirTimer = AMIR_RESPAWN;
       s.stance = 'chekinish';
-      this.events.push({ text: `Amir halok bo'ldi! Qo'shin qasrga chekinmoqda — ${AMIR_RESPAWN} soniyadan keyin yangi Amir chiqadi`, good: false });
+      this.events.push({ text: `Amir halok bo'ldi! Qo'shin qasrga chekinmoqda — ${AMIR_RESPAWN} soniyadan keyin yangi Amir chiqadi`, good: false, amir: 'dead' });
     }
   }
 

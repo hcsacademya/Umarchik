@@ -86,6 +86,8 @@ python3 tools/prepare_assets.py --preview
 ```
 
 Skript fonni olib tashlaydi, varaqni bo'laklarga ajratadi va `public/assets/` + `src/assets.json` ga yozadi.
+Dushman xalqlari varag'i (`art/dushman_*.webp`): tepada ko'chmanchi, pastda sovutli; mato qismlari toza ko'k —
+o'yin ularni har jangda bayroq rangiga almashtiradi.
 
 ## Telegram'ga joylash
 
@@ -106,6 +108,6 @@ To'liq ekran va gorizontal qulf Telegram 8.0+ versiyalarida ishlaydi; eskisida "
 ## Hali qilinmagan
 
 - Ekinzor va yaylov foni (6-prompt) — hozir vaqtincha dasht va o'rmon foni ishlatiladi.
-- 2 dushman xalqining rasmlari (9–12-promptlar; tepada ko'chmanchi, pastda sovutli) — hozir bizning askarlar jang rangiga bo'yalgan.
+- Dushman otliq rasmi (12-prompt) — hozircha bizning otliq jang rangiga bo'yalgan. Dushman konchilari ham shunday.
 - Bizning otliq, sarkardalar va qo'mondon rasmlari (hozir vaqtincha).
 - Telegram Stars orqali Market, PvP, ovoz.

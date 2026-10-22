@@ -612,13 +612,14 @@ button.primary:hover:not(:disabled) {
 
 #banner {
   left: 50%;
-  top: 34%;
+  top: calc(var(--safe-top) + 64px);
   transform: translateX(-50%);
+  max-width: 60vw;
   background: rgba(120, 25, 20, 0.88);
   border: 1px solid #f0a090;
   border-radius: 10px;
-  padding: 10px 18px;
-  font-size: 18px;
+  padding: 6px 14px;
+  font-size: 15px;
   font-weight: 700;
   text-align: center;
   pointer-events: none;

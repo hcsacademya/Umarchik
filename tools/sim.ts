@@ -53,7 +53,7 @@ for (const level of only) {
     while (b.winner === null && b.time < 900) {
       playBot(b);
       b.step(dt);
-      for (const e of b.events.splice(0)) if (e.text.startsWith('Amir halok')) amirDeaths++;
+      for (const e of b.events.splice(0)) if (e.amir === 'dead') amirDeaths++;
     }
     if (b.winner === 0) wins++;
     const w = b.winner === 0 ? 'YUTDI' : b.winner === 1 ? 'yutqazdi' : 'vaqt';

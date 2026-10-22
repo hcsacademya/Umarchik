@@ -1,6 +1,6 @@
 // Rasmlarni yuklash. O'lchamlar va tayanch nuqtalar tools/prepare_assets.py yasagan assets.json dan.
 import meta from './assets.json';
-import type { Kind, Terrain } from './config.ts';
+import type { FactionId, Kind, Terrain } from './config.ts';
 
 export interface Frame {
   img: HTMLImageElement | HTMLCanvasElement;
@@ -33,13 +33,19 @@ function frames(list: FrameMeta[]): Frame[] {
   return list.map((m) => ({ img: image(m.f), w: m.w, h: m.h, ax: m.ax }));
 }
 
-// key: true — dushman rasmi mato qismlari toza ko'k rangda chizilgan (rang almashtirish uchun)
-const unitMeta = meta.units as Record<Kind, { frames: FrameMeta[]; enemy: FrameMeta[]; key?: boolean }>;
+const unitMeta = meta.units as Record<Kind, FrameMeta[]>;
 const buildingMeta = meta.buildings as Record<string, FrameMeta[]>;
+// Dushman xalqlari: mato qismlari toza ko'k rangda chizilgan (rang almashtirish uchun)
+const factionMeta = (meta as { factions?: Record<string, Record<string, FrameMeta[]>> }).factions ?? {};
 
-export const UNIT_FRAMES = {} as Record<Kind, [Frame[], Frame[]]>; // [o'yinchi, dushman]
-for (const k of Object.keys(unitMeta) as Kind[]) {
-  UNIT_FRAMES[k] = [frames(unitMeta[k].frames), frames(unitMeta[k].enemy)];
+export const UNIT_FRAMES = {} as Record<Kind, Frame[]>;
+for (const k of Object.keys(unitMeta) as Kind[]) UNIT_FRAMES[k] = frames(unitMeta[k]);
+
+const FACTION_FRAMES: Partial<Record<FactionId, Partial<Record<Kind, Frame[]>>>> = {};
+for (const [fac, kinds] of Object.entries(factionMeta)) {
+  const out: Partial<Record<Kind, Frame[]>> = {};
+  for (const [k, list] of Object.entries(kinds)) out[k as Kind] = frames(list);
+  FACTION_FRAMES[fac as FactionId] = out;
 }
 
 export const BUILDINGS: Record<string, Frame[]> = {};
@@ -65,7 +71,7 @@ for (const [k, v] of Object.entries(bgMeta)) BACKGROUNDS[k as Terrain] = { img: 
 
 // Tugma rasmlari uchun: askarning tik turgan holati
 export function unitIcon(kind: Kind): string {
-  return unitMeta[kind].frames[0].f;
+  return unitMeta[kind][0].f;
 }
 
 export function ready(img: Frame['img']): boolean {
@@ -73,8 +79,8 @@ export function ready(img: Frame['img']): boolean {
 }
 
 // ---------- Dushmanni jang rangiga bo'yash ----------
-// Rasm "key" bo'lsa — faqat toza ko'k mato qismlari rangga almashadi (teri, charm, temir o'zgarmaydi).
-// Aks holda (vaqtincha) — o'yinchi rasmidagi och mato qismlari rangga bo'yaladi.
+// key = true: faqat toza ko'k mato qismlari rangga almashadi (teri, charm, temir o'zgarmaydi).
+// key = false (xalq rasmi hali yo'q turlar): o'yinchi rasmidagi och mato qismlari rangga bo'yaladi.
 
 function hexRgb(hex: string): [number, number, number] {
   const n = parseInt(hex.slice(1), 16);
@@ -99,18 +105,29 @@ function recolorImage(img: HTMLImageElement, hex: string, key: boolean): HTMLCan
     let w: number;
     let light: number;
     if (key) {
-      // ko'k: b eng katta, to'yingan
-      w = b === max && b > r * 1.35 && b > g * 1.15 && sat > 0.3 ? 1 : 0;
-      light = max / 200;
+      // ko'k ton (rang doirasida ~205–250°) va to'yinganlik; chegarada yumshoq o'tish
+      let hue = 0;
+      if (max !== min) {
+        if (max === b) hue = 240 + ((r - g) / (max - min)) * 60;
+        else if (max === g) hue = 120 + ((b - r) / (max - min)) * 60;
+        else hue = (((g - b) / (max - min)) * 60 + 360) % 360;
+      }
+      const hw = Math.min(1, Math.max(0, Math.min(hue - 190, 265 - hue) / 15));
+      const sw = Math.min(1, Math.max(0, (sat - 0.22) / 0.15));
+      w = max > 25 ? hw * sw : 0;
+      light = b / 175;
     } else {
       const lum = 0.299 * r + 0.587 * g + 0.114 * b;
       w = Math.min(1, Math.max(0, (lum - 95) / 110)) * Math.min(1, Math.max(0, (0.55 - sat) / 0.3)) * 0.8;
       light = lum / 190;
     }
-    const dark = 0.85;
-    px[i] = r * dark * (1 - w) + Math.min(255, tr * light) * w;
-    px[i + 1] = g * dark * (1 - w) + Math.min(255, tg * light) * w;
-    px[i + 2] = b * dark * (1 - w) + Math.min(255, tb * light) * w;
+    // key rasmda boshqa joylar o'zgarmaydi; vaqtinchalik bo'yashda biroz to'qlashadi
+    const dark = key ? 1 : 0.85;
+    // to'q rang (masalan qora) burmalari ko'rinib tursin
+    const lift = key ? 28 * light : 0;
+    px[i] = r * dark * (1 - w) + Math.min(255, tr * light + lift) * w;
+    px[i + 1] = g * dark * (1 - w) + Math.min(255, tg * light + lift) * w;
+    px[i + 2] = b * dark * (1 - w) + Math.min(255, tb * light + lift) * w;
   }
   ctx.putImageData(data, 0, 0);
   return c;
@@ -130,12 +147,14 @@ export function tintedBuilding(ref: string, hex: string): Frame {
   return out[0];
 }
 
-export function enemyFrames(kind: Kind, hex: string): Frame[] {
-  const k = `${kind}:${hex}`;
+// Dushman jangchisi: xalqining rasmi bo'lsa — o'sha (ko'k mato jang rangiga), bo'lmasa — bizning rasm bo'yalgan
+export function enemyFrames(kind: Kind, hex: string, faction: FactionId): Frame[] {
+  const own = FACTION_FRAMES[faction]?.[kind];
+  const k = `${faction}:${kind}:${hex}`;
   let out = tinted.get(k);
   if (!out) {
-    const key = !!unitMeta[kind].key;
-    const src = key ? UNIT_FRAMES[kind][1] : UNIT_FRAMES[kind][0];
+    const key = !!own;
+    const src = own ?? UNIT_FRAMES[kind];
     out = src.map((f) => ({ ...f, img: ready(f.img) && f.img instanceof HTMLImageElement ? recolorImage(f.img, hex, key) : f.img }));
     tinted.set(k, out);
   }

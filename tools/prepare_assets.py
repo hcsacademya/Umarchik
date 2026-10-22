@@ -3,7 +3,7 @@ art/ papkasidagi varaq-rasmlarni o'yin uchun tayyorlaydi:
   - kulrang fonni olib tashlaydi (chekkadan to'ldirish usuli, ichki oq/kulrang joylar saqlanadi),
   - varaqni alohida bo'laklarga (pozalar, qasrlar, konlar) ajratadi,
   - o'yin o'lchamiga moslab WebP qilib public/assets/ ga yozadi,
-  - dushman askarlari uchun rangi o'zgartirilgan nusxa yasaydi,
+  - dushman xalqlari varaqlarini (tepada ko'chmanchi, pastda sovutli) ajratadi,
   - o'lcham va tayanch nuqtalarni src/assets.json ga yozadi.
 
 O'rnatish:        pip install pillow numpy scipy
@@ -35,6 +35,15 @@ UNITS = {
     'kamonchi': ('kamonchi.webp', 1, 4, 112, False),
     # Vaqtincha: yon tomondan otliq rasmi chizilguncha namuna rasm (chapga qaragan, ko'zgu qilinadi)
     'otliq': ('otliq_vaqtincha.jpg', 1, 1, 160, True),
+}
+
+# Dushman xalqlari: har varaqda 2 qator x 4 poza — tepada ko'chmanchi, pastda sovutli.
+# Mato qismlari toza ko'k: o'yin ularni har jangda bayroq rangiga almashtiradi.
+FACTION_ROWS = ['kochmanchi', 'sovutli']
+FACTION_UNITS = {
+    'qilichli': ('dushman_qilichli.webp', 112),
+    'nayzachi': ('dushman_nayzachi.webp', 112),
+    'kamonchi': ('dushman_kamonchi.webp', 112),
 }
 
 # Binolar (yon tomondan). Kenglik — o'yin birligida.
@@ -173,17 +182,6 @@ def resize(arr, scale):
     return im.resize((w, h), Image.LANCZOS)
 
 
-def enemy_tint(arr):
-    """Dushman nusxasi: och kiyim to'q qizilga, charm va temir to'qroq tusga o'tadi."""
-    rgb = arr[..., :3]
-    lum = (rgb * [0.299, 0.587, 0.114]).sum(axis=2, keepdims=True)
-    light = np.clip((lum - 90) / 120, 0, 1)  # och joylar (kiyim) ko'proq bo'yaladi
-    red = np.concatenate([lum * 0.95, lum * 0.32, lum * 0.3], axis=2) * 0.85
-    dark = rgb * np.array([0.82, 0.74, 0.74])
-    out = dark * (1 - light * 0.75) + red * (light * 0.75)
-    return np.dstack([np.clip(out, 0, 255), arr[..., 3]])
-
-
 def save(im, rel):
     path = os.path.join(OUT, rel)
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -196,29 +194,48 @@ def frame_meta(file, im, ax, ppu):
     return {'f': file, 'w': round(im.width / ppu, 1), 'h': round(im.height / ppu, 1), 'ax': round(ax, 3)}
 
 
+def save_frames(pieces, name, game_h, preview):
+    """Bir personajning pozalarini bir xil masshtabda saqlaydi (gavda balandligi — 1-pozadan)."""
+    top, bottom = body_rows(pieces[0])
+    body_h = bottom - top + 1
+    scale = game_h * PPU / body_h
+    frames = []
+    for i, p in enumerate(pieces):
+        bm = body_mask(p)
+        cols_w = bm.sum(axis=0) if bm.any() else (p[..., 3] > 128).sum(axis=0)
+        ax = float((cols_w * np.arange(len(cols_w))).sum() / cols_w.sum()) / p.shape[1]
+        im = resize(p, scale)
+        frames.append(frame_meta(save(im, f'units/{name}_{i}.webp'), im, ax, PPU))
+        preview.append((im, ax))
+    print(f'{name}: {len(pieces)} ta poza, gavda {body_h}px -> {game_h} birlik')
+    return frames
+
+
 def build_units(meta, preview):
     meta['units'] = {}
     for kind, (src, rows, cols, game_h, mirror) in UNITS.items():
         rgba = remove_bg(load(src))
         if mirror:
             rgba = rgba[:, ::-1].copy()
-        pieces = split(rgba, rows, cols)
-        top, bottom = body_rows(pieces[0])
-        body_h = bottom - top + 1
-        scale = game_h * PPU / body_h
-        frames, enemy = [], []
-        for i, p in enumerate(pieces):
-            bm = body_mask(p)
-            cols_w = bm.sum(axis=0) if bm.any() else (p[..., 3] > 128).sum(axis=0)
-            ax = float((cols_w * np.arange(len(cols_w))).sum() / cols_w.sum()) / p.shape[1]
-            im = resize(p, scale)
-            frames.append(frame_meta(save(im, f'units/{kind}_{i}.webp'), im, ax, PPU))
-            ie = resize(enemy_tint(p), scale)
-            enemy.append(frame_meta(save(ie, f'units/{kind}_e_{i}.webp'), ie, ax, PPU))
-            preview.append((im, ax))
-            preview.append((ie, ax))
-        meta['units'][kind] = {'frames': frames, 'enemy': enemy}
-        print(f'{kind}: {len(pieces)} ta poza, gavda {body_h}px -> {game_h} birlik')
+            # namuna rasmdagi tuyoq ostidagi och yer dog'ini olib tashlaymiz
+            h = rgba.shape[0]
+            rgb = rgba[..., :3]
+            sat = (rgb.max(axis=2) - rgb.min(axis=2)) / np.maximum(rgb.max(axis=2), 1)
+            lum = (rgb * [0.299, 0.587, 0.114]).sum(axis=2)
+            patch = (lum > 120) & (sat < 0.18)
+            patch[:int(h * 0.88)] = False
+            rgba[patch, 3] = 0
+        meta['units'][kind] = save_frames(split(rgba, rows, cols), kind, game_h, preview)
+
+
+def build_factions(meta, preview):
+    meta['factions'] = {f: {} for f in FACTION_ROWS}
+    for kind, (src, game_h) in FACTION_UNITS.items():
+        if not os.path.exists(os.path.join(ART, src)):
+            continue
+        pieces = split(remove_bg(load(src)), 2, 4)
+        for r, fac in enumerate(FACTION_ROWS):
+            meta['factions'][fac][kind] = save_frames(pieces[r * 4:(r + 1) * 4], f'{fac}_{kind}', game_h, preview)
 
 
 def gate_x(piece):
@@ -329,6 +346,7 @@ def write_preview(preview):
 def main():
     meta, preview = {'ppu': PPU}, []
     build_units(meta, preview)
+    build_factions(meta, preview)
     build_buildings(meta, preview)
     build_backgrounds(meta, preview)
     build_map(meta)
