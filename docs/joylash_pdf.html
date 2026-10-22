@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<title>Umar — joylash qo'llanmasi</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+  :root {
+    --ink: #1f1a14;
+    --muted: #6b6257;
+    --line: #e4dccf;
+    --gold: #b8862f;
+    --gold-bg: #fbf4e4;
+    --blue: #2d5fa8;
+    --blue-bg: #edf3fc;
+    --green: #2e7d4f;
+    --green-bg: #eaf6ee;
+    --amber: #a86a12;
+    --amber-bg: #fff4e0;
+    --red: #b03a2e;
+    --red-bg: #fdeceb;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Inter, 'DejaVu Sans', sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.5; margin: 0; }
+  h1, h2, h3 { font-family: 'Inter Display', Inter, sans-serif; line-height: 1.2; }
+  code, .mono { font-family: 'JetBrains Mono', 'DejaVu Sans Mono', monospace; font-size: 0.9em; }
+  code { background: #f3eee5; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; white-space: nowrap; }
+  p { margin: 5px 0; }
+  ul, ol { margin: 5px 0; padding-left: 20px; }
+  li { margin: 3px 0; }
+  b { font-weight: 650; }
+
+  /* Muqova */
+  .cover { border-radius: 14px; padding: 26px 28px 22px; color: #fff;
+    background: linear-gradient(135deg, #2a1d12 0%, #4a3220 55%, #7a5524 100%); margin-bottom: 18px; }
+  .cover .kicker { color: #e8c060; font-weight: 700; letter-spacing: 2px; font-size: 9pt; text-transform: uppercase; }
+  .cover h1 { margin: 6px 0 6px; font-size: 25pt; font-weight: 800; }
+  .cover p { color: #eadfca; margin: 0; font-size: 11pt; }
+  .facts { display: flex; gap: 10px; margin-top: 16px; }
+  .fact { flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 9px; padding: 8px 10px; }
+  .fact .k { font-size: 8pt; color: #e8c060; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+  .fact .v { font-size: 11pt; font-weight: 700; }
+
+  /* Bo'limlar */
+  .part { margin-top: 20px; }
+  .part-head + p, .part-head + ol, .part-head + h3, .part-head + table, .part-head + .two { break-before: avoid; }
+  .part-head { display: flex; align-items: center; gap: 12px; border-bottom: 2px solid var(--gold); padding-bottom: 6px; margin-bottom: 10px; break-after: avoid; }
+  .num { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%; background: var(--gold); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14pt; }
+  .part-head h2 { margin: 0; font-size: 16pt; }
+  .part-head .time { margin-left: auto; color: var(--muted); font-size: 9pt; white-space: nowrap; }
+  h3 { font-size: 12pt; margin: 14px 0 6px; break-after: avoid; color: #3a2a14; }
+  h3 .tag { display: inline-block; background: var(--gold-bg); color: var(--gold); border: 1px solid #ecd9a8; border-radius: 5px;
+    font-size: 8.5pt; padding: 0 6px; margin-left: 6px; vertical-align: 2px; }
+
+  /* Qadamlar */
+  ol.steps { list-style: none; padding: 0; margin: 6px 0; counter-reset: s; }
+  ol.steps > li { counter-increment: s; position: relative; padding: 6px 10px 6px 40px; margin: 0 0 5px;
+    background: #faf8f4; border: 1px solid var(--line); border-radius: 8px; break-inside: avoid; }
+  ol.steps > li::before { content: counter(s); position: absolute; left: 10px; top: 6px; width: 21px; height: 21px; border-radius: 50%;
+    background: #3a2a14; color: #fff; font-size: 9pt; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  ol.steps ul { margin-top: 3px; }
+
+  /* Jadvallar */
+  table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 10pt; break-inside: avoid; }
+  th { background: #3a2a14; color: #fff; text-align: left; padding: 6px 9px; font-weight: 650; }
+  td { border-bottom: 1px solid var(--line); padding: 6px 9px; vertical-align: top; }
+  tr:nth-child(even) td { background: #faf8f4; }
+  th:first-child { border-top-left-radius: 7px; }
+  th:last-child { border-top-right-radius: 7px; }
+
+  /* Belgilangan bloklar */
+  .ok, .note, .warn, .danger { border-radius: 9px; padding: 8px 12px 8px 40px; margin: 8px 0; position: relative; break-inside: avoid; }
+  .ok::before, .note::before, .warn::before, .danger::before { position: absolute; left: 11px; top: 8px; width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 10pt; }
+  .ok .t, .note .t, .warn .t, .danger .t { font-weight: 700; }
+  .ok { background: var(--green-bg); border: 1px solid #bfe2cb; }
+  .ok::before { content: '✓'; background: var(--green); }
+  .ok .t { color: var(--green); }
+  .note { background: var(--blue-bg); border: 1px solid #c9d9f2; }
+  .note::before { content: 'i'; background: var(--blue); font-family: Georgia, serif; font-style: italic; }
+  .note .t { color: var(--blue); }
+  .warn { background: var(--amber-bg); border: 1px solid #f1d7a8; }
+  .warn::before { content: '!'; background: var(--amber); }
+  .warn .t { color: var(--amber); }
+  .danger { background: var(--red-bg); border: 1px solid #f2c4bf; }
+  .danger::before { content: '!'; background: var(--red); }
+  .danger .t { color: var(--red); }
+
+  .url { font-family: 'JetBrains Mono', monospace; font-size: 9.5pt; background: #fff; border: 1px dashed #cbbfa9; border-radius: 6px;
+    padding: 4px 8px; display: inline-block; margin: 3px 0; }
+  .sample { background: #fff; border-left: 3px solid var(--gold); padding: 5px 10px; margin: 4px 0; font-style: italic; color: #4a3f33; }
+
+  .page-break { break-before: page; }
+  .keep { break-inside: avoid; }
+  .part-head { break-inside: avoid; page-break-inside: avoid; }
+  .small { font-size: 9pt; color: var(--muted); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card { border: 1px solid var(--line); border-radius: 9px; padding: 8px 12px; background: #faf8f4; break-inside: avoid; }
+  .card .t { font-weight: 700; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="kicker">Umar o'yini · Qo'llanma</div>
+  <h1>O'yinni internetga joylash va Telegram Mini App qilish</h1>
+  <p>Bosqichma-bosqich: Cloudflare'ga joylash, @BotFather'da bot ochish, botga o'yinni ulash va sinash.</p>
+  <div class="facts">
+    <div class="fact"><div class="k">Vaqt</div><div class="v">20–30 daqiqa</div></div>
+    <div class="fact"><div class="k">Narx</div><div class="v">Bepul</div></div>
+    <div class="fact"><div class="k">Bank kartasi</div><div class="v">Shart emas</div></div>
+    <div class="fact"><div class="k">Natija</div><div class="v">Botda «O'ynash»</div></div>
+  </div>
+</section>
+
+<h3>Nima kerak bo'ladi</h3>
+<div class="two">
+  <div class="card"><div class="t">GitHub akkaunti</div>Bor: <code>hcsacademya</code>, repo <code>umarchik</code>.</div>
+  <div class="card"><div class="t">Cloudflare akkaunti</div>Bepul. Yo'q bo'lsa, 1-qismda ochamiz.</div>
+  <div class="card"><div class="t">Telegram</div>Telefonda o'rnatilgan, iloji bo'lsa eng yangi versiyasi.</div>
+  <div class="card"><div class="t">Kompyuter yoki telefon brauzeri</div>GitHub va Cloudflare sozlamalari uchun. Kompyuterda qulayroq.</div>
+</div>
+
+<h3>Umumiy reja</h3>
+<table>
+  <tr><th style="width:9%">Qism</th><th style="width:43%">Nima qilinadi</th><th>Natija</th></tr>
+  <tr><td><b>0</b></td><td>GitHub'da asosiy branchni almashtirish</td><td>Cloudflare yangi o'yinni oladi</td></tr>
+  <tr><td><b>1</b></td><td>Cloudflare'ga joylash</td><td>Manzil: <code>https://umar.….workers.dev</code></td></tr>
+  <tr><td><b>2</b></td><td>@BotFather'da bot ochish</td><td>Bot: <code>@umar_…_bot</code></td></tr>
+  <tr><td><b>3</b></td><td>Botga o'yinni ulash (Mini App)</td><td>Botda «O'ynash» va «Open» tugmalari</td></tr>
+  <tr><td><b>4</b></td><td>Sinash</td><td>Telefonda gorizontal o'yin</td></tr>
+</table>
+
+<div class="note"><span class="t">Menyu nomlari haqida.</span> Cloudflare va Telegram menyulari vaqt o'tib biroz o'zgarishi mumkin.
+Qo'llanmadagi nom aynan topilmasa, ma'nosi yaqin tugmani bosing yoki shu joyning skrinshotini yuboring.</div>
+
+<!-- ============ 0 ============ -->
+<section class="part">
+  <div class="part-head"><div class="num">0</div><h2>GitHub: asosiy branchni almashtirish</h2><div class="time">≈ 2 daqiqa</div></div>
+  <p>Repoda hozir asosiy (default) branch — <code>claude/bold-planck-jnqmmn</code>, unda <b>eski</b> o'yin turibdi.
+  Yangi o'yin <code>claude/sweet-davinci-4b69a2</code> branchida. Cloudflare asosiy branchni joylaydi, shuning uchun avval uni almashtiramiz.</p>
+  <ol class="steps">
+    <li>Brauzerda oching: <span class="url">https://github.com/hcsacademya/umarchik</span></li>
+    <li>Yuqoridagi <b>Settings</b> (Sozlamalar) bo'limiga kiring.</li>
+    <li><b>General</b> sahifasida <b>Default branch</b> qismini toping.</li>
+    <li>Branch nomi yonidagi <b>⇄</b> (almashtirish) tugmasini bosing.</li>
+    <li>Ro'yxatdan <code>claude/sweet-davinci-4b69a2</code> ni tanlang → <b>Update</b> → ogohlantirishda
+      <b>I understand, update the default branch</b> ni bosing.</li>
+  </ol>
+  <div class="ok"><span class="t">Natija:</span> repo bosh sahifasida yangi o'yin fayllari (<code>wrangler.jsonc</code>, <code>docs</code> papkasi) ko'rinadi.</div>
+  <div class="note"><span class="t">Eski o'yin o'chmaydi.</span> U <code>claude/bold-planck-jnqmmn</code> branchida qoladi.</div>
+</section>
+
+<!-- ============ 1 ============ -->
+<section class="part">
+  <div class="part-head"><div class="num">1</div><h2>Cloudflare: o'yinni internetga joylash</h2><div class="time">≈ 10 daqiqa</div></div>
+
+  <h3>1.1. Akkaunt ochish</h3>
+  <ol class="steps">
+    <li>Oching: <span class="url">https://dash.cloudflare.com/sign-up</span></li>
+    <li>Email va parol kiriting → <b>Sign up</b>.</li>
+    <li>Emailingizga kelgan xatdagi havolani bosib, emailni tasdiqlang.</li>
+    <li>Cloudflare domen qo'shish yoki tarif tanlashni taklif qilsa — <b>o'tkazib yuboring</b> (domen shart emas).</li>
+  </ol>
+
+  <h3>1.2. Loyiha yaratish</h3>
+  <ol class="steps">
+    <li>Chap menyudan <b>Workers &amp; Pages</b> (yoki <b>Compute (Workers)</b>) bo'limiga kiring.</li>
+    <li><b>Create</b> (yoki <b>Create application</b>) tugmasini bosing.</li>
+    <li><b>Import a repository</b> (Git repozitoriyni ulash) ni tanlang.</li>
+    <li><b>Connect GitHub</b> → GitHub oynasi ochiladi:
+      <ul>
+        <li>GitHub'ga kiring (kirmagan bo'lsangiz).</li>
+        <li><b>Only select repositories</b> ni tanlang → <code>hcsacademya/umarchik</code> ni belgilang.</li>
+        <li><b>Install &amp; Authorize</b> (yoki <b>Install</b>) ni bosing.</li>
+      </ul></li>
+    <li>Cloudflare'ga qaytgach, ro'yxatdan <code>umarchik</code> reposini tanlang → <b>Next</b> / <b>Begin setup</b>.</li>
+  </ol>
+
+  <div class="keep">
+  <h3>1.3. Sozlamalar <span class="tag">muhim</span></h3>
+  <p>Quyidagilarni aynan shunday yozing:</p>
+  <table>
+    <tr><th style="width:42%">Maydon</th><th>Qiymat</th></tr>
+    <tr><td><b>Project name</b> (Worker nomi)</td><td><code>umar</code></td></tr>
+    <tr><td><b>Build command</b></td><td><code>npm run build</code></td></tr>
+    <tr><td><b>Deploy command</b></td><td><code>npx wrangler deploy</code> <span class="small">(odatda o'zi yozilgan bo'ladi)</span></td></tr>
+    <tr><td><b>Path</b> / Root directory</td><td>bo'sh qoldiring (yoki <code>/</code>)</td></tr>
+  </table>
+  </div>
+  <div class="warn"><span class="t">Nom aynan «umar» bo'lishi shart.</span> Repodagi <code>wrangler.jsonc</code> faylida ham shu nom yozilgan.
+  Boshqa nom kerak bo'lsa, ayting — faylni o'zgartirib beraman.</div>
+  <p>Keyin <b>Create and deploy</b> (yoki <b>Deploy</b>) ni bosing. Yig'ish 1–3 daqiqa davom etadi,
+  ekranda jarayon yozuvlari chiqadi, oxirida <b>Success</b> chiqishi kerak.</p>
+
+  <h3>1.4. Branchni tekshirish</h3>
+  <ol class="steps">
+    <li>Yaratilgan <code>umar</code> Worker sahifasida <b>Settings</b> → <b>Build</b> bo'limiga kiring.</li>
+    <li><b>Branch control</b> → <b>Production branch</b> <code>claude/sweet-davinci-4b69a2</code> ekanini tekshiring.
+      Boshqa bo'lsa — shuni tanlab <b>Save</b> bosing, keyin <b>Deployments</b> bo'limida qayta yig'ing
+      (<b>Retry build</b> / <b>Redeploy</b>).</li>
+  </ol>
+
+  <h3>1.5. O'yin manzili</h3>
+  <ol class="steps">
+    <li>Worker sahifasida <b>Visit</b> tugmasi yoki <b>Settings → Domains &amp; Routes</b> bo'limida manzil turadi:<br>
+      <span class="url">https://umar.&lt;sizning-nomingiz&gt;.workers.dev</span></li>
+    <li>Shu manzilni <b>nusxalab oling</b> — 3-qismda kerak bo'ladi.</li>
+    <li>Brauzerda ochib ko'ring: xarita va pastda tablar chiqishi kerak.</li>
+  </ol>
+  <div class="note"><span class="t">«Mehmon» yozuvi normal.</span> Oddiy brauzerda chap panelda «Mehmon» chiqadi, chunki o'yin Telegram'dan ochilmagan.
+  Birinchi ochishda «manzil topilmadi» chiqsa, 1–2 daqiqa kutib qayta oching.</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="part">
+  <div class="part-head"><div class="num">2</div><h2>Telegram bot ochish (@BotFather)</h2><div class="time">≈ 5 daqiqa</div></div>
+  <ol class="steps">
+    <li>Telegram'da qidiruvga <code>@BotFather</code> yozing. <b>Ko'k galochkali</b> rasmiy botni oching → <b>Start</b>.</li>
+    <li><code>/newbot</code> buyrug'ini yuboring.</li>
+    <li>BotFather botning <b>nomini</b> so'raydi (odamlar ko'radigan nom). Masalan: <code>Umar</code></li>
+    <li>Keyin <b>username</b> so'raydi — oxiri albatta <code>bot</code> bilan tugashi kerak.
+      Masalan: <code>umar_oyin_bot</code>. Band bo'lsa, boshqasini yozing: <code>umar_qasr_bot</code>, <code>umarchik_bot</code> …</li>
+    <li>BotFather tabrik xabari va <b>token</b> beradi (uzun kod, masalan <span class="mono">1234567890:AA…</span>).</li>
+  </ol>
+  <div class="danger"><span class="t">Tokenni hech kimga bermang</span> va hech qayerga joylamang — u botni boshqarish kaliti.
+  Hozir kerak emas; keyinroq (Telegram Stars, <code>/start</code> javobi) kerak bo'ladi. Xavfsiz joyda saqlang.</div>
+
+  <h3>Bot ko'rinishi <span class="tag">tavsiya qilinadi</span></h3>
+  <table>
+    <tr><th style="width:24%">Buyruq</th><th>Nima qiladi</th></tr>
+    <tr><td><code>/setuserpic</code></td><td>Bot rasmi: botni tanlang → rasm yuboring (masalan qasr yoki Amir).</td></tr>
+    <tr><td><code>/setdescription</code></td><td>Chat ochilganda ko'rinadigan matn. Masalan:
+      <div class="sample">Qasrma-qasr yurish! Kumush yig'ing, qo'shin to'plang, dushman qasrlarini yiqiting. «O'ynash» tugmasini bosing.</div></td></tr>
+    <tr><td><code>/setabouttext</code></td><td>Profildagi qisqa matn: <span class="sample" style="display:inline-block">Tarixiy strategiya o'yini</span></td></tr>
+  </table>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="part">
+  <div class="part-head"><div class="num">3</div><h2>Botga o'yinni ulash (Mini App)</h2><div class="time">≈ 5 daqiqa</div></div>
+
+  <h3>3.1. Asosiy Mini App <span class="tag">eng muhimi</span></h3>
+  <ol class="steps">
+    <li>BotFather'ga <code>/mybots</code> yuboring → botingizni tanlang.</li>
+    <li><b>Bot Settings</b> → <b>Configure Mini App</b> → <b>Enable Mini App</b>.</li>
+    <li>BotFather manzil so'raydi — 1.5-qadamdagi manzilni yuboring:<br>
+      <span class="url">https://umar.&lt;sizning-nomingiz&gt;.workers.dev</span></li>
+  </ol>
+  <div class="ok"><span class="t">Natija:</span> bot profilida <b>Open</b> (Ochish) tugmasi paydo bo'ladi.
+  O'yin havolasi: <span class="mono">https://t.me/&lt;bot_username&gt;?startapp</span> — buni do'stlaringizga yuborsangiz bo'ladi.</div>
+
+  <h3>3.2. Chatdagi «O'ynash» tugmasi</h3>
+  <ol class="steps">
+    <li><code>/mybots</code> → botingiz → <b>Bot Settings</b> → <b>Menu Button</b> → <b>Configure menu button</b>.</li>
+    <li>Manzilni yuboring (o'sha <span class="mono">https://umar….workers.dev</span>).</li>
+    <li>Tugma nomini yuboring: <code>O'ynash</code></li>
+  </ol>
+  <div class="ok"><span class="t">Natija:</span> bot bilan chatda, yozish joyining chap tomonida <b>O'ynash</b> tugmasi chiqadi.</div>
+
+  <div class="keep">
+  <h3>3.3. Alohida havola <span class="tag">ixtiyoriy</span></h3>
+  <p>Chiroyli havola kerak bo'lsa (masalan <span class="mono">t.me/umar_oyin_bot/oyin</span>):</p>
+  <table>
+    <tr><th style="width:28%">BotFather so'raydi</th><th>Nima yozasiz</th></tr>
+    <tr><td><code>/newapp</code></td><td>Botingizni tanlang</td></tr>
+    <tr><td><b>Title</b> (nomi)</td><td><code>Umar</code></td></tr>
+    <tr><td><b>Description</b></td><td>Qisqa tavsif matni</td></tr>
+    <tr><td><b>Photo</b></td><td>640×360 o'lchamli rasm</td></tr>
+    <tr><td><b>GIF</b></td><td>Kerak bo'lmasa <code>/empty</code></td></tr>
+    <tr><td><b>URL</b></td><td>O'sha manzil</td></tr>
+    <tr><td><b>Short name</b></td><td>Masalan <code>oyin</code> → <span class="mono">https://t.me/&lt;bot_username&gt;/oyin</span></td></tr>
+  </table>
+  </div>
+
+  <h3>To'liq ekran va gorizontal holat</h3>
+  <p>O'yin Telegram ichida o'zi <b>to'liq ekranga</b> o'tadi va telefon gorizontal turganda shu holatda <b>qulflanadi</b>
+  (Telegram 8.0 va undan yangi versiyalarda).</p>
+  <div class="note"><span class="t">Yarim ekranda ochilsa,</span> havolaga <code>&amp;mode=fullscreen</code> qo'shib ko'ring:
+  <span class="mono">https://t.me/&lt;bot_username&gt;?startapp&amp;mode=fullscreen</span></div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="part">
+  <div class="part-head"><div class="num">4</div><h2>Sinash</h2><div class="time">≈ 5 daqiqa</div></div>
+  <ol class="steps">
+    <li>Telefonda botingizni oching → <b>O'ynash</b> (yoki profildagi <b>Open</b>).</li>
+    <li>Telefonni <b>gorizontal</b> buring (avtomatik burish yoqilgan bo'lsin).</li>
+    <li>Tekshiring:
+      <ul>
+        <li>Chapdagi panelda <b>Telegram rasmingiz va ID raqamingiz</b> chiqyaptimi («Mehmon» emas).</li>
+        <li>1-jangni o'ynab yuting → oltin qo'shildimi.</li>
+        <li>Telegram'ni butunlay yopib, qayta oching → <b>yutuqlar saqlanib qolganmi</b> (Telegram bulutida).</li>
+        <li>Boshqa telefon yoki kompyuterdagi Telegram'dan kirsangiz ham yutuqlar turishi kerak.</li>
+      </ul></li>
+    <li>Muammo bo'lsa — skrinshot olib yuboring.</li>
+  </ol>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="part">
+  <div class="part-head"><div class="num">5</div><h2>O'yinni yangilash</h2></div>
+  <p>Hech narsa qilish shart emas: yangi o'zgarish branchga yuklanganda Cloudflare uni <b>1–3 daqiqada o'zi qayta yig'ib joylaydi</b>.
+  Telegram'da o'yinni yopib, qayta ochsangiz yangi versiya chiqadi.</p>
+  <p class="small">Yig'ish holatini ko'rish: Cloudflare → <b>Workers &amp; Pages</b> → <code>umar</code> → <b>Deployments</b>.</p>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="part keep">
+  <div class="part-head"><div class="num">6</div><h2>Muammolar va yechimlar</h2></div>
+  <table>
+    <tr><th style="width:34%">Muammo</th><th>Yechim</th></tr>
+    <tr><td>Cloudflare'da build <b>xato</b> bilan tugadi</td><td><b>Project name</b> aynan <code>umar</code> ekanini va branch <code>claude/sweet-davinci-4b69a2</code> ekanini tekshiring. Xato matnining skrinshotini yuboring.</td></tr>
+    <tr><td>Manzil ochilganda <b>eski o'yin</b> chiqyapti</td><td>0-qism (default branch) va 1.4-qadam (Production branch) bajarilganini tekshiring, keyin qayta yig'ing.</td></tr>
+    <tr><td>Telegram'da <b>«Mehmon»</b> yozuvi chiqyapti</td><td>O'yin oddiy brauzerda ochilgan. Bot ichidagi <b>O'ynash</b> yoki <b>Open</b> tugmasidan oching.</td></tr>
+    <tr><td>O'yin <b>gorizontal/to'liq ekranga</b> o'tmayapti</td><td>Telegram'ni yangilang. Telefonning avtomatik burilishi yoqilganini tekshiring. <code>&amp;mode=fullscreen</code> havolasini sinab ko'ring.</td></tr>
+    <tr><td>Botga <code>/start</code> yozsam <b>javob bermayapti</b></td><td>Hozircha normal: botning o'z serveri yo'q. O'yin <b>O'ynash</b> tugmasidan ochiladi. <code>/start</code> javobi keyingi bosqichda qo'shiladi.</td></tr>
+    <tr><td>O'yin <b>eski versiyada</b> turibdi</td><td>Telegram'ni butunlay yopib, qayta oching.</td></tr>
+  </table>
+</section>
+
+<!-- ============ Narx ============ -->
+<section class="part">
+  <div class="part-head"><div class="num" style="font-size:11pt">$</div><h2>Narx va keyingi bosqichlar</h2></div>
+  <div class="two">
+    <div class="card"><div class="t">Narx</div>
+      <ul>
+        <li><b>Cloudflare</b> (bepul tarif): o'yin fayllarini berish bepul va amalda cheklanmagan.</li>
+        <li><b>Telegram, BotFather</b>: bepul.</li>
+        <li><b>Domen</b> (masalan <code>umar.uz</code>): ixtiyoriy, keyin ulash mumkin.</li>
+      </ul></div>
+    <div class="card"><div class="t">Keyingi bosqichlar (shu Worker'ga qo'shiladi)</div>
+      <ul>
+        <li>Botga <code>/start</code> javobi va kutib olish xabari.</li>
+        <li>Market uchun <b>Telegram Stars</b> orqali to'lov.</li>
+        <li><b>PvP</b> — boshqa o'yinchilar bilan jang.</li>
+      </ul></div>
+  </div>
+</section>
+
+</body>
+</html>
