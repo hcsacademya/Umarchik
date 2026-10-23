@@ -448,22 +448,39 @@ function targetPose(u: Unit, rig: Rig): Pose {
   return p;
 }
 
-// Holat almashganda (turish → yurish → zarba) pozalar sakramasin: har askarning oxirgi pozasi
-// yangi holatga tez, lekin silliq yetib boradi. Zarba kechikmasligi uchun tezroq.
-const last = new WeakMap<Unit, { p: Pose; t: number }>();
+// Holat almashganda (turish → yurish → yugurish → zarba → o'lim) pozalar sakramasin: oldingi pozadan
+// yangisiga BLEND soniyada o'tadi. Holat ichida aralashtirilmaydi — aks holda poza kechikib, oyoq yerdan
+// uziladi va sirpanadi (yurish va yugurish qadami allaqachon silliq hisoblanadi)
+const BLEND = 0.15;
+const last = new WeakMap<Unit, { p: Pose; mode: string; from: Pose; t0: number }>();
+
+function modeOf(u: Unit): string {
+  if (u.dead) return 'dead';
+  if (swingPhase(u) >= 0) return 'attack';
+  return `${u.anim}${u.guard ? ':g' : ''}${u.load > 0 ? ':l' : ''}`;
+}
 
 export function rigPose(u: Unit, rig: Rig): Pose {
   const target = targetPose(u, rig);
   const now = performance.now() / 1000;
-  const prev = last.get(u);
+  const mode = modeOf(u);
+  const st = last.get(u);
+  if (!st) {
+    last.set(u, { p: target, mode, from: target, t0: now - BLEND });
+    return target;
+  }
+  if (st.mode !== mode) {
+    st.from = st.p;
+    st.t0 = now;
+    st.mode = mode;
+  }
+  const k = (now - st.t0) / BLEND;
   let p = target;
-  if (prev && !u.dead) {
-    const dt = Math.min(0.1, now - prev.t);
-    const rate = swingPhase(u) >= 0 ? 30 : 14;
-    p = mix(prev.p, target, 1 - Math.exp(-rate * dt));
+  if (k < 1) {
+    p = mix(st.from, target, smooth(Math.max(0, k)));
     p.aux = target.aux; // 0/1 belgilar aralashmaydi
   }
-  last.set(u, { p, t: now });
+  st.p = p;
   return p;
 }
 
