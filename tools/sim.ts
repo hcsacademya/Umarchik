@@ -1,4 +1,5 @@
 // Balansni tekshirish: oddiy "bot-o'yinchi" har bir jangni o'ynaydi.
+declare const process: { argv: string[] };
 // Ishga tushirish: node tools/sim.ts [jang raqami] [urinishlar soni]
 import { Battle } from '../src/battle.ts';
 import { power } from '../src/ai.ts';

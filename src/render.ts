@@ -1,12 +1,10 @@
 // Jang maydonini chizish (canvas). Mantiqqa tegmaydi — faqat Battle holatini o'qiydi.
-import { BACKGROUNDS, BASES, UNIT_FRAMES, baseFront, enemyFrames, enemyRig, ownRig, ready, tintedBase } from './assets.ts';
-import type { Background, Base, Frame, Rig } from './assets.ts';
-import { swingPhase } from './battle.ts';
+import { BACKGROUNDS, ready } from './assets.ts';
+import type { Background } from './assets.ts';
+import { mineX, swingPhase } from './battle.ts';
 import type { Battle, Shot, Snap, Unit } from './battle.ts';
-import { BATTLES, CASTLE_X, COLORS, DEAD_LINGER, DEPTH, FORMATION_FRONT, RANK, WALL_SPOTS, WORLD_W } from './config.ts';
-import type { FactionId, Kind, Side, Terrain } from './config.ts';
-import { drawUnitRig, rigBounds, rigTop } from './skeleton.ts';
-import { drawSpine } from './spine.ts';
+import { BATTLES, CASTLE_DEPTH, CASTLE_X, COLORS, DEAD_LINGER, DEPTH, FORMATION_FRONT, RANK, WALL_SPOTS, WORLD_W } from './config.ts';
+import type { Kind, Side, Terrain } from './config.ts';
 
 export const VIEW_H = 560; // ekran balandligiga sig'adigan o'yin birligi
 // Kamera: yer chizig'i ekran balandligining shu ulushida; chuqurlik (y) ekranda shuncha cho'ziladi —
@@ -51,6 +49,13 @@ const PALETTE: Record<Terrain, Palette> = {
   shahar: { sky: ['#9ab4cf', '#f0d9bd'], far: '#b9a58a', near: '#9c8a70', ground: ['#8c7a5c', '#665840'], tuft: '#a8977a', city: '#a08e76' },
 };
 
+// Ikki rangni aralashtiradi (k — ikkinchisining ulushi), dark — qorong'ilashtirish
+function mixHex(a: string, b: string, k: number, dark = 1): string {
+  const p = (h: string): number[] => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const [x, y] = [p(a), p(b)];
+  return `rgb(${x.map((v, i) => Math.round((v + (y[i] - v) * k) * dark)).join(',')})`;
+}
+
 // Takrorlanadigan "tasodif" — fon har kadrda bir xil chiqishi uchun
 function hash(n: number): number {
   const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
@@ -77,12 +82,7 @@ export class Renderer {
   dpr = 1;
   minimap: Rect = { x: 0, y: 0, w: 0, h: 0 };
   safe = { left: 0, right: 0, top: 0 }; // tugmalar egallamagan joy (UI beradi)
-  private enemy: Partial<Record<Kind, Frame[]>> = {};
-  private enemyRigs = new Map<string, Rig>();
-  private enemyLook: { hex: string; faction: FactionId } | null = null;
-  private enemyBase: Base | null = null;
-  private flash = document.createElement('canvas'); // urilgan askarni qizartirish uchun
-  private rigCanvas = document.createElement('canvas'); // shaffof yoki qizargan skeletli askar
+  private enemyHex = '#c0392b'; // dushman kiyimi va bayroqlari — jang rangida
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -102,16 +102,9 @@ export class Renderer {
     this.clampCam();
   }
 
-  // Dushman jangchilari shu jang rangida chiziladi
+  // Dushman jangchilari va bayroqlari shu jang rangida chiziladi
   setEnemyColor(level: number): void {
-    const def = BATTLES[level];
-    const hex = COLORS[def.color].hex;
-    this.enemy = {};
-    this.enemyRigs = new Map();
-    this.enemyLook = { hex, faction: def.faction };
-    for (const k of Object.keys(UNIT_FRAMES) as Kind[]) this.enemy[k] = enemyFrames(k, hex, def.faction);
-    // Dushman tayanchining bayroqlari jang rangiga bo'yaladi
-    this.enemyBase = tintedBase(def.castle, hex);
+    this.enemyHex = COLORS[BATTLES[level].color].hex;
   }
 
   viewWidth(): number {
@@ -404,23 +397,8 @@ export class Renderer {
   }
 
   // ---------------- Binolar ----------------
-
-  private drawSprite(f: Frame, x: number, y: number, z: number, flip: boolean, scale = 1, alpha = 1, rot = 0): void {
-    const { ctx } = this;
-    if (!ready(f.img)) return;
-    const w = f.w * this.scale * scale;
-    const h = f.h * this.scale * scale;
-    const px = this.sx(x);
-    const py = this.sy(y, z);
-    if (px + w < -50 || px - w > this.W + 50) return;
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.translate(px, py);
-    if (rot) ctx.rotate(rot);
-    if (flip) ctx.scale(-1, 1);
-    ctx.drawImage(f.img, -f.ax * w, -h, w, h);
-    ctx.restore();
-  }
+  // Vaqtincha: qasr, kon va askarlar yangi dizayn bilan qayta chiziladi. Hozir ular kod bilan oddiy shaklda,
+  // joylari va o'lchamlari jang mantig'iga mos (darvoza — CASTLE_X, kon — mineX, devor tepasi — WALL_SPOTS)
 
   private groundShadow(x: number, y: number, rx: number, ry: number, alpha = 0.28): void {
     const { ctx } = this;
@@ -430,193 +408,138 @@ export class Renderer {
     ctx.fill();
   }
 
-  // Devor tepasidagi kamonchilar: qasrniki + Chekinishda qasrga kirgan kamonchilar.
-  // 0–2 darvoza ustida, 3–5 chap devorda (u yer pastroq)
-  private drawWallArchers(b: Battle, side: Side): void {
-    if (b.sides[side].castleHp <= 0) return;
-    const frames = (side === 1 && this.enemy.kamonchi) || UNIT_FRAMES.kamonchi;
-    const f = frames[frames.length >= 24 ? 14 : frames.length >= 16 ? 10 : frames.length - 1];
-    const dir = side === 0 ? 1 : -1;
-    const n = b.wallArchers(side);
-    const wz = this.castleFrame(b, side).f.wzGate;
-    for (let i = 0; i < n; i++) {
-      const [dx] = WALL_SPOTS[i];
-      const feet = wz - (i < 3 ? 16 : 34);
-      this.drawSprite(f, CASTLE_X[side] + dir * dx, -9 - (i % 2) * 2, feet, side === 1, 0.85);
-    }
+  // Dunyo koordinatasida to'rtburchak: x0..x1, yerdan z0..z1 balandlikda, y chuqurlikda
+  private box(x0: number, x1: number, z0: number, z1: number, y: number, fill: string): void {
+    const a = this.sx(Math.min(x0, x1));
+    const c = this.sx(Math.max(x0, x1));
+    this.ctx.fillStyle = fill;
+    this.ctx.fillRect(a, this.sy(y, z1), c - a, (z1 - z0) * this.scale);
   }
 
-  // Tayanch: bizniki; dushmanniki bayroqlari jang rangida
-  private castleFrame(b: Battle, side: Side): { f: Base; alpha: number; sink: number } {
-    if (side === 0) return { f: BASES.biz, alpha: 1, sink: 0 };
-    return { f: this.enemyBase ?? BASES[BATTLES[b.level].castle], alpha: 1, sink: 0 };
+  // Tepadagi tishlar
+  private crenels(x0: number, x1: number, z: number, y: number, fill: string): void {
+    const l = Math.min(x0, x1);
+    const r = Math.max(x0, x1);
+    for (let x = l; x < r - 4; x += 14) this.box(x, Math.min(r, x + 8), z, z + 9, y, fill);
   }
 
-  private drawBase(b: Battle, side: Side): void {
-    const { f, alpha } = this.castleFrame(b, side);
-    if (b.sides[side].castleHp <= 0) this.drawCollapse(b, side, f);
-    else this.drawSprite(f, CASTLE_X[side], -6, 0, side === 1, 1, alpha);
-  }
-
-  // Yiqilish: tayanch ustunlarga va bo'laklarga bo'linadi; yuqoridan boshlab ag'dariladi, yerga tushib chang
-  // bo'lib so'nadi; pastida notekis xarobalar qoladi. Tayyor rasm kerak emas — hamma tayanch uchun bir xil
-  private static COLS = 26;
-  private static PIECES = 3;
-  private ruins = new Map<Frame['img'], HTMLCanvasElement>();
-
-  private ruinFrac(c: number): number {
-    const n = Renderer.COLS;
-    const edge = Math.min(c, n - 1 - c) / 4;
-    return 0.07 + 0.17 * noise(c * 0.55, 7) + 0.07 * hash(c + 31) + 0.04 * Math.min(1, edge);
-  }
-
-  // Xarobalar: pastki qismi (har ustun har xil balandlikda), qoraygan
-  private ruinOf(img: Frame['img']): HTMLCanvasElement | null {
-    if (!ready(img)) return null;
-    let c = this.ruins.get(img);
-    if (c) return c;
-    const iw = img instanceof HTMLImageElement ? img.naturalWidth : img.width;
-    const ih = img instanceof HTMLImageElement ? img.naturalHeight : img.height;
-    c = document.createElement('canvas');
-    c.width = iw;
-    c.height = ih;
-    const g = c.getContext('2d')!;
-    const sw = iw / Renderer.COLS;
-    for (let i = 0; i < Renderer.COLS; i++) {
-      const rh = this.ruinFrac(i) * ih;
-      g.drawImage(img, i * sw, ih - rh, sw + 1, rh, i * sw, ih - rh, sw + 1, rh);
-    }
-    g.globalCompositeOperation = 'source-atop';
-    g.fillStyle = 'rgba(28,20,12,0.4)';
-    g.fillRect(0, 0, iw, ih);
-    this.ruins.set(img, c);
-    return c;
-  }
-
-  private drawCollapse(b: Battle, side: Side, f: Base): void {
+  private flag(x: number, z: number, y: number, color: string, dir: number, t: number): void {
     const { ctx } = this;
-    const img = f.img;
-    const ruin = this.ruinOf(img);
-    if (!ruin || !ready(img)) return;
-    const t = b.overT;
+    const px = this.sx(x);
+    const py = this.sy(y, z);
     const k = this.scale;
-    const wpx = f.w * k;
-    const hpx = f.h * k;
-    const iw = ruin.width;
-    const ih = ruin.height;
-    const px = this.sx(CASTLE_X[side]);
-    if (px + wpx < -50 || px - wpx > this.W + 50) return;
-    const COLS = Renderer.COLS;
-    const PIECES = Renderer.PIECES;
-    const x0 = -f.ax * wpx;
-    const cw = wpx / COLS;
-    const sw = iw / COLS;
-    const G = 950 * k;
-    ctx.save();
-    ctx.translate(px, this.sy(-6, 0));
-    if (side === 1) ctx.scale(-1, 1);
-    // xarobalar doim shu yerda
-    ctx.drawImage(ruin, x0, -hpx, wpx, hpx);
-    const shake = Math.max(0, 1 - t / 1.4) * 1.6 * k;
-    for (let c = 0; c < COLS; c++) {
-      const ruinTop = this.ruinFrac(c) * hpx; // xarobaning tepasi yerdan
-      const upper = (1 - this.ruinFrac(c)) * ih;
-      const pieceSrc = upper / PIECES;
-      const ph = ((1 - this.ruinFrac(c)) * hpx) / PIECES;
-      const centre = Math.abs(c - COLS / 2) / (COLS / 2);
-      for (let p = 0; p < PIECES; p++) {
-        const delay = 0.25 + p * 0.28 + hash(c * 7 + p * 3) * 0.55 + centre * 0.35;
-        const ti = t - delay;
-        const left = x0 + c * cw;
-        const yTop = -hpx + p * ph; // bo'lakning asl joyi (yuqori chap)
-        // yerga tushganda bo'lakning pasti xarobaning tepasida bo'ladi (tepadagilar biroz yuqorida to'planadi)
-        const yLand = -ruinTop - ph - (PIECES - 1 - p) * ph * 0.15;
-        const D = yLand - yTop;
-        let dx = 0;
-        let dy = 0;
-        let rot = 0;
-        let alpha = 1;
-        let sq = 1;
-        if (ti < 0) {
-          // hali turibdi, lekin qasr titrayapti
-          dx = Math.sin(t * 60 + c * 1.7 + p) * shake;
-          dy = Math.cos(t * 51 + c * 2.3) * shake * 0.6;
-        } else {
-          const T = Math.sqrt((2 * Math.max(D, 1)) / G);
-          const u = Math.min(1, ti / T);
-          dy = Math.min(D, 0.5 * G * ti * ti);
-          dx = (hash(c * 3 + p) - 0.5) * 60 * k * u;
-          rot = (hash(c * 5 + p * 2) - 0.5) * 1.1 * u;
-          if (ti > T) {
-            alpha = Math.max(0, 1 - (ti - T) / 0.8);
-            sq = 0.8;
-          }
-        }
-        if (alpha <= 0) continue;
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.translate(left + cw / 2 + dx, yTop + dy + ph / 2);
-        ctx.rotate(rot);
-        ctx.scale(1, sq);
-        ctx.drawImage(img, c * sw, p * pieceSrc, sw + 0.5, pieceSrc + 0.5, -cw / 2 - 0.3, -ph / 2, cw + 0.6, ph + 0.6);
-        ctx.restore();
-      }
-    }
-    ctx.restore();
+    ctx.strokeStyle = '#3a2a14';
+    ctx.lineWidth = Math.max(1, 1.5 * k);
+    ctx.beginPath();
+    ctx.moveTo(px, py);
+    ctx.lineTo(px, py - 34 * k);
+    ctx.stroke();
+    const w = Math.sin(t * 4 + x) * 2 * k;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(px, py - 34 * k);
+    ctx.quadraticCurveTo(px + dir * 10 * k, py - 36 * k + w, px + dir * 20 * k, py - 31 * k);
+    ctx.lineTo(px + dir * 20 * k, py - 22 * k);
+    ctx.quadraticCurveTo(px + dir * 10 * k, py - 24 * k + w, px, py - 21 * k);
+    ctx.closePath();
+    ctx.fill();
   }
 
-  // Ustki qatlam (teshiklari o'yilgan) va yopiq darvoza — kirayotgan askarlarni devor va ramka yopadi
-  private drawBaseFront(b: Battle, side: Side): void {
-    const s = b.sides[side];
-    if (s.castleHp <= 0) return;
-    const { f } = this.castleFrame(b, side);
-    const front = baseFront(f, f.img);
-    if (front) this.drawSprite({ ...f, img: front }, CASTLE_X[side], -6, 0, side === 1);
-    if (s.stance === 'chekinish' && b.allInside(side)) this.drawClosedGate(f, side);
-  }
-
-  // Yopiq darvoza: ravoqsimon yog'och eshik, temir tasmalar
-  private drawClosedGate(f: Base, side: Side): void {
+  // Ravoq (darvoza yoki kon og'zi): x markazda, kengligi w, balandligi h
+  private arch(x: number, w: number, h: number, y: number, fill: string): void {
     const { ctx } = this;
-    const [x0, x1, y0, y1] = f.gate;
-    const dir = side === 0 ? 1 : -1;
-    // tayanch rasmidagi teshik joyi (o'yin birligida, darvozaga nisbatan)
-    const ux0 = (x0 - f.ax) * f.w;
-    const ux1 = (x1 - f.ax) * f.w;
-    const a = this.sx(CASTLE_X[side] + dir * ux0);
-    const c = this.sx(CASTLE_X[side] + dir * ux1);
-    const l = Math.min(a, c);
-    const r = Math.max(a, c);
-    const bot = this.sy(-6, y0 * f.h);
-    const top = this.sy(-6, y1 * f.h);
+    const l = this.sx(x - w / 2);
+    const r = this.sx(x + w / 2);
+    const bot = this.sy(y, 0);
+    const top = this.sy(y, h);
     const rad = (r - l) / 2;
-    ctx.save();
+    ctx.fillStyle = fill;
     ctx.beginPath();
     ctx.moveTo(l, bot);
-    ctx.lineTo(l, top + rad * 0.6);
-    ctx.ellipse(l + rad, top + rad * 0.6, rad, rad * 0.6, 0, Math.PI, 0);
+    ctx.lineTo(l, top + rad);
+    ctx.arc(l + rad, top + rad, rad, Math.PI, 0);
     ctx.lineTo(r, bot);
     ctx.closePath();
-    const g = ctx.createLinearGradient(l, 0, r, 0);
-    g.addColorStop(0, '#4a2f17');
-    g.addColorStop(0.5, '#7a5230');
-    g.addColorStop(1, '#4a2f17');
-    ctx.fillStyle = g;
     ctx.fill();
-    ctx.clip();
-    ctx.strokeStyle = 'rgba(30,18,8,0.7)';
-    ctx.lineWidth = Math.max(1, this.scale);
-    for (let i = 1; i < 6; i++) {
-      const x = l + ((r - l) * i) / 6;
-      ctx.beginPath();
-      ctx.moveTo(x, top);
-      ctx.lineTo(x, bot);
-      ctx.stroke();
+  }
+
+  private sideColor(side: Side): string {
+    return side === 0 ? '#2346c8' : this.enemyHex;
+  }
+
+  private static GATE_TOP = 165; // darvoza minorasi tepasi (devordagi kamonchilar shu yerda)
+  private static REAR_TOP = 130; // orqa devor tepasi
+
+  // Kon: tosh tepalik, yog'och ramkali og'iz (konchilar shu yerga kirib-chiqadi)
+  private drawMine(side: Side): void {
+    const { ctx } = this;
+    const mx = mineX(side);
+    const k = this.scale;
+    const base = this.sy(-8, 0);
+    ctx.fillStyle = '#7d7262';
+    ctx.beginPath();
+    ctx.moveTo(this.sx(mx - 85), base);
+    ctx.quadraticCurveTo(this.sx(mx - 60), base - 70 * k, this.sx(mx), base - 88 * k);
+    ctx.quadraticCurveTo(this.sx(mx + 60), base - 70 * k, this.sx(mx + 85), base);
+    ctx.closePath();
+    ctx.fill();
+    this.arch(mx, 36, 50, -8, '#1d1712');
+    this.box(mx - 22, mx - 17, 0, 52, -7, '#6b4a2a');
+    this.box(mx + 17, mx + 22, 0, 52, -7, '#6b4a2a');
+    this.box(mx - 24, mx + 24, 50, 56, -7, '#6b4a2a');
+  }
+
+  // Qal'a: darvoza minorasi, orqa devor va minora, tishlar, bayroqlar; old tomonda kon
+  private drawBase(b: Battle, side: Side): void {
+    const dir = side === 0 ? 1 : -1;
+    const gx = CASTLE_X[side];
+    const G = Renderer.GATE_TOP;
+    const R = Renderer.REAR_TOP;
+    if (b.sides[side].castleHp <= 0) {
+      // xarobalar: notekis past devor, asta cho'kadi
+      const t = Math.min(1, b.overT / 1.2);
+      for (let i = 0; i < 16; i++) {
+        const x0 = gx - dir * (CASTLE_DEPTH + 25) + dir * i * 22;
+        const hgt = (18 + hash(i + side * 50) * 30) + (1 - t) * (R - 30);
+        this.box(x0, x0 + dir * 22, 0, hgt, -7, i % 2 ? '#6d6455' : '#5f5749');
+      }
+      this.drawMine(side);
+      return;
     }
-    ctx.fillStyle = '#2b2622';
-    for (const k of [0.35, 0.75]) ctx.fillRect(l, top + (bot - top) * k, r - l, Math.max(2, 3 * this.scale));
-    ctx.fillRect((l + r) / 2 - 1, top, 2, bot - top);
-    ctx.restore();
+    const stone = '#9a8f7c';
+    const dark = '#7a705f';
+    this.box(gx - dir * CASTLE_DEPTH, gx - dir * 40, 0, R, -8, dark);
+    this.crenels(gx - dir * CASTLE_DEPTH, gx - dir * 40, R, -8, dark);
+    this.box(gx - dir * (CASTLE_DEPTH + 25), gx - dir * (CASTLE_DEPTH - 25), 0, R + 45, -7, stone);
+    this.crenels(gx - dir * (CASTLE_DEPTH + 25), gx - dir * (CASTLE_DEPTH - 25), R + 45, -7, stone);
+    this.box(gx - dir * 45, gx + dir * 28, 0, G, -6, stone);
+    this.crenels(gx - dir * 45, gx + dir * 28, G, -6, stone);
+    this.arch(gx, 40, 66, -6, '#1d1712');
+    const c = this.sideColor(side);
+    this.flag(gx - dir * 8, G + 9, -6, c, dir, b.time);
+    this.flag(gx - dir * CASTLE_DEPTH, R + 54, -7, c, dir, b.time);
+    this.drawMine(side);
+  }
+
+  // Chekinishda hamma ichkarida bo'lsa darvoza yopiladi
+  private drawBaseFront(b: Battle, side: Side): void {
+    const s = b.sides[side];
+    if (s.castleHp <= 0 || s.stance !== 'chekinish' || !b.allInside(side)) return;
+    this.arch(CASTLE_X[side], 40, 66, -6, '#6b4a2a');
+    const gx = CASTLE_X[side];
+    for (const dx of [-12, 0, 12]) this.box(gx + dx - 1, gx + dx + 1, 0, 60, -5.9, '#3e2a16');
+  }
+
+  // Devor tepasidagi kamonchilar: qasrniki + Chekinishda qasrga kirgan kamonchilar
+  private drawWallArchers(b: Battle, side: Side): void {
+    if (b.sides[side].castleHp <= 0) return;
+    const dir = side === 0 ? 1 : -1;
+    const n = b.wallArchers(side);
+    for (let i = 0; i < n; i++) {
+      const [dx] = WALL_SPOTS[i];
+      const z = i < 3 ? Renderer.GATE_TOP : Renderer.REAR_TOP;
+      this.figure(CASTLE_X[side] + dir * dx, -9, z, dir, 'kamonchi', 0.85, this.sideColor(side), {});
+    }
   }
 
   // "Joyida tur" safi qayerda turishini ko'rsatadigan bayroq
@@ -646,38 +569,13 @@ export class Renderer {
     ctx.stroke();
   }
 
-  // Qasr jon chizig'i darvoza minoralari ustida turadi
-  private castleTop(b: Battle, side: Side): number {
-    return this.castleFrame(b, side).f.wzGate + 80;
+  // Qasr jon chizig'i darvoza minorasi ustida
+  private castleTop(_b: Battle, _side: Side): number {
+    return Renderer.GATE_TOP + 40;
   }
 
   // ---------------- Askarlar ----------------
-
-  // 24 kadrli varaq: 0–7 yurish, 8–9 turish, 10–11 zarba yeyish, 12–15 1-zarba, 16–19 2-zarba, 20–23 o'lim.
-  // Konchi: 0–7 bo'sh yurish, 8–15 savat bilan yurish, 16–17 turish, 18–19 zarba yeyish, 20–23 o'lim.
-  // Eski 4 kadrli varaq: 0 turish, 1–2 yurish, 3 zarba.
-  private frameIndex(u: Unit, n: number): number {
-    const phase = swingPhase(u);
-    if (n >= 24) {
-      const walk8 = Math.floor(u.walkDist / 9) % 8;
-      if (u.dead) return u.deadT < 0.16 ? 20 : u.deadT < 0.34 ? 21 : u.deadT < 0.55 ? 22 : 23;
-      if (u.kind === 'konchi') {
-        if (u.hitT > 0.08) return u.hitT > 0.16 ? 18 : 19;
-        if (u.anim === 'walk' || u.anim === 'run' || u.anim === 'carry') return (u.load > 0 ? 8 : 0) + walk8;
-        return Math.floor((u.animT + u.id * 0.37) / 1.4) % 3 === 2 ? 17 : 16;
-      }
-      if (phase >= 0) return (u.swingAlt ? 16 : 12) + Math.min(3, Math.floor(phase * 4));
-      if (u.hitT > 0.08) return u.hitT > 0.16 ? 10 : 11;
-      if (u.anim === 'walk' || u.anim === 'run') return walk8;
-      return Math.floor((u.animT + u.id * 0.37) / 1.1) % 2 ? 9 : 8;
-    }
-    if (n >= 4) {
-      if (u.dead) return 0;
-      if (phase >= 0) return phase > 0.25 && phase < 0.8 ? 3 : 0;
-      if (u.anim === 'walk' || u.anim === 'run') return [1, 0, 2, 0][Math.floor(u.walkDist / 14) % 4];
-    }
-    return 0;
-  }
+  // Vaqtincha oddiy odamcha: kiyimi tomon rangida (bizniki ko'k, Amir tilla, dushman — jang rangida), tur quroli bilan
 
   private drawShadow(u: Unit): void {
     const sc = RANK[u.rank].scale;
@@ -686,119 +584,166 @@ export class Renderer {
     this.groundShadow(u.x, u.y, w, 3.5 * sc, 0.3 * fade);
   }
 
-  // alpha < 1 va y — darvoza yoki konga kirib-chiqayotgan askar uchun (qorong'ilikka singadi)
+  // alpha < 1 va y — darvoza yoki konga kirib-chiqayotgan askar uchun
   private drawUnit(u: Unit, alpha = 1, y = u.y): void {
-    const frames = (u.side === 1 && this.enemy[u.kind]) || UNIT_FRAMES[u.kind];
-    const n = frames.length;
-    const f = frames[Math.min(this.frameIndex(u, n), n - 1)];
-    const stand = frames[n >= 24 ? (u.kind === 'konchi' ? 16 : 8) : 0];
-    const sc = RANK[u.rank].scale;
-    let z = 0;
-    // kam kadrli rasmlarda yurish tebranishini kod beradi
-    if (n < 16 && (u.anim === 'walk' || u.anim === 'run') && !u.dead) z = Math.abs(Math.sin(u.walkDist / 9)) * (u.kind === 'otliq' ? 3 : 2);
-    const flip = u.facing < 0;
     const { ctx } = this;
-    // skeletli jangchi (otliq hali kadr bilan); dushman skeleti jang rangiga bo'yalgan
-    const rig = this.rigOf(u);
-
+    const sc = RANK[u.rank].scale;
+    const hgt = (u.kind === 'otliq' ? 92 : 70) * sc;
+    const color = u.kind === 'amir' && u.side === 0 ? '#c9962e' : this.sideColor(u.side);
     if (u.rank !== 'oddiy' && !u.dead) {
       ctx.strokeStyle = u.side === 0 ? 'rgba(255,205,80,0.9)' : 'rgba(200,40,30,0.85)';
       ctx.lineWidth = Math.max(1.5, 2 * this.scale);
       ctx.beginPath();
-      ctx.ellipse(this.sx(u.x), this.sy(u.y, 0), stand.w * 0.42 * sc * this.scale, 5 * this.scale, 0, 0, Math.PI * 2);
+      ctx.ellipse(this.sx(u.x), this.sy(u.y, 0), 18 * sc * this.scale, 5 * this.scale, 0, 0, Math.PI * 2);
       ctx.stroke();
     }
-    if (u.dead) {
-      const alpha = Math.max(0, 1 - Math.max(0, u.deadT - DEAD_LINGER));
-      // varaqda o'lim kadrlari bo'lmasa — yiqilib tushishni burish bilan ko'rsatamiz
-      const rot = n >= 24 ? 0 : -u.facing * Math.min(1, u.deadT * 3) * 1.4;
-      if (rig) this.drawRigged(u, rig, u.y, alpha, 0);
-      else this.drawSprite(f, u.x, u.y, 0, flip, sc, alpha, rot);
-      return;
-    }
-    if (alpha < 1) {
-      if (rig) this.drawRigged(u, rig, y, alpha, 0);
-      else this.drawSprite(f, u.x, y, z, flip, sc, alpha);
-      return;
-    }
-    if (u.promoteT > 0) {
+    if (u.promoteT > 0 && !u.dead) {
       // yangi Amir: oltin nur
       const k = Math.min(1, u.promoteT / 1.5);
-      const g = ctx.createRadialGradient(this.sx(u.x), this.sy(u.y, stand.h * 0.5), 2, this.sx(u.x), this.sy(u.y, stand.h * 0.5), stand.h * this.scale);
+      const g = ctx.createRadialGradient(this.sx(u.x), this.sy(u.y, hgt * 0.5), 2, this.sx(u.x), this.sy(u.y, hgt * 0.5), hgt * this.scale);
       g.addColorStop(0, `rgba(255,220,110,${0.75 * k})`);
       g.addColorStop(1, 'rgba(255,220,110,0)');
       ctx.fillStyle = g;
-      ctx.fillRect(this.sx(u.x) - stand.h * this.scale, this.sy(u.y, stand.h * 1.5), stand.h * 2 * this.scale, stand.h * 2 * this.scale);
+      ctx.fillRect(this.sx(u.x) - hgt * this.scale, this.sy(u.y, hgt * 1.5), hgt * 2 * this.scale, hgt * 2 * this.scale);
     }
-    if (rig) this.drawRigged(u, rig, u.y, 1, u.hitT > 0 ? Math.min(1, u.hitT / 0.22) : 0);
-    else if (u.hitT > 0) this.drawFlash(f, u.x, u.y, z, flip, sc, Math.min(1, u.hitT / 0.22));
-    else this.drawSprite(f, u.x, u.y, z, flip, sc);
-
-    const top = (rig ? rigTop(rig) : stand.h) * sc;
-    if (u.kind === 'amir') this.drawAmirMark(u, top);
+    const fade = u.dead ? Math.max(0, 1 - Math.max(0, u.deadT - DEAD_LINGER)) : alpha;
+    this.figure(u.x, u.dead ? u.y : y, 0, u.facing, u.kind, sc, color, {
+      walk: u.anim === 'walk' || u.anim === 'run' || u.anim === 'carry' ? u.walkDist : undefined,
+      run: u.anim === 'run',
+      swing: swingPhase(u),
+      alt: u.swingAlt,
+      dead: u.dead ? u.deadT : undefined,
+      hit: u.hitT > 0 ? Math.min(1, u.hitT / 0.22) : 0,
+      load: u.load > 0,
+      alpha: fade,
+      plume: u.rank !== 'oddiy',
+    });
+    if (u.dead || alpha < 1) return;
+    if (u.kind === 'amir') this.drawAmirMark(u, hgt);
     if (u.hp < u.maxHp) {
       const w = 26 * this.scale * Math.min(1.6, sc);
       const x = this.sx(u.x) - w / 2;
-      const y = this.sy(u.y, top + 6);
+      const yy = this.sy(u.y, hgt + 6);
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
-      ctx.fillRect(x - 1, y - 1, w + 2, 5);
+      ctx.fillRect(x - 1, yy - 1, w + 2, 5);
       ctx.fillStyle = u.side === 0 ? '#6fd06a' : '#e05a4a';
-      ctx.fillRect(x, y, w * (u.hp / u.maxHp), 3);
+      ctx.fillRect(x, yy, w * (u.hp / u.maxHp), 3);
     }
   }
 
-  private rigOf(u: Unit): Rig | undefined {
-    if (u.side === 0) return ownRig(u.kind, u.rank);
-    const key = `${u.kind}:${u.rank}`;
-    let r = this.enemyRigs.get(key);
-    if (!r && this.enemyLook) {
-      r = enemyRig(u.kind, u.rank, this.enemyLook.hex, this.enemyLook.faction);
-      if (r && Object.values(r.parts).every((p) => ready(p.img))) this.enemyRigs.set(key, r);
-    }
-    return r;
-  }
-
-  // Skeletli askar. Shaffof (darvozada, o'lgach so'nayotgan) yoki zarba yeb qizargan bo'lsa avval alohida
-  // kanvasga chiziladi — bo'laklar bir-biri orqali ko'rinmasin
-  private drawRigged(u: Unit, rig: Rig, y: number, alpha: number, flash: number): void {
-    const s = this.scale * RANK[u.rank].scale;
-    const px = this.sx(u.x);
-    const py = this.sy(y, 0);
-    if (px < -200 || px > this.W + 200) return;
+  // Odamcha: (0, 0) — oyoqlar orasi, yer sathida; birlikda, y yuqoriga manfiy
+  private figure(x: number, y: number, z: number, facing: number, kind: Kind, sc: number, color: string, o: {
+    walk?: number; run?: boolean; swing?: number; alt?: boolean; dead?: number; hit?: number; load?: boolean; alpha?: number; plume?: boolean;
+  }): void {
     const { ctx } = this;
-    const flip = u.facing < 0;
-    if (alpha >= 1 && flash <= 0) {
-      ctx.save();
-      ctx.translate(px, py);
-      ctx.scale(flip ? -s : s, s);
-      if (!drawSpine(ctx, u)) drawUnitRig(ctx, rig, u);
-      ctx.restore();
-      return;
-    }
-    const bd = rigBounds(rig);
-    const k = s * this.dpr;
-    const w = Math.ceil((bd.r - bd.l) * k);
-    const h = Math.ceil((bd.b - bd.t) * k);
-    const c = this.rigCanvas;
-    if (c.width < w || c.height < h) {
-      c.width = Math.max(c.width, w);
-      c.height = Math.max(c.height, h);
-    }
-    const g = c.getContext('2d')!;
-    g.setTransform(1, 0, 0, 1, 0, 0);
-    g.globalCompositeOperation = 'source-over';
-    g.clearRect(0, 0, w, h);
-    g.setTransform(flip ? -k : k, 0, 0, k, -bd.l * k, -bd.t * k);
-    if (!drawSpine(g, u)) drawUnitRig(g, rig, u);
-    if (flash > 0) {
-      g.setTransform(1, 0, 0, 1, 0, 0);
-      g.globalCompositeOperation = 'source-atop';
-      g.fillStyle = `rgba(255,40,30,${0.4 * flash})`;
-      g.fillRect(0, 0, w, h);
-    }
+    const px = this.sx(x);
+    if (px < -150 || px > this.W + 150) return;
+    const s = this.scale * sc;
+    const hit = o.hit ?? 0;
+    const tint = (c: string, dark = 1): string => mixHex(c, '#ff3020', hit * 0.5, dark);
+    const line = (ax: number, ay: number, bx: number, by: number, w: number, c: string): void => {
+      ctx.strokeStyle = c;
+      ctx.lineWidth = w;
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+    };
     ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.drawImage(c, 0, 0, w, h, px + bd.l * s, py + bd.t * s, w / this.dpr, h / this.dpr);
+    ctx.globalAlpha = o.alpha ?? 1;
+    ctx.translate(px, this.sy(y, z));
+    ctx.scale(facing * s, s);
+    if (o.dead !== undefined) ctx.rotate(-Math.min(1, o.dead * 3) * 1.45);
+    ctx.lineCap = 'round';
+    const horse = kind === 'otliq';
+    const ph = o.walk !== undefined ? (o.walk / (o.run ? 34 : 28)) * Math.PI : 0;
+    const sw = o.swing ?? -1;
+    // zarba: qo'l ko'tariladi (0..0.3), tushadi (0.3..0.45 — tegish), qaytadi
+    const strike = sw < 0 ? 0 : sw < 0.3 ? -(sw / 0.3) : sw < 0.45 ? -1 + ((sw - 0.3) / 0.15) * 1.6 : 0.6 * (1 - (sw - 0.45) / 0.55);
+    let hipY = -34;
+    if (horse) {
+      // ot: tana, bo'yin-bosh, to'rt oyoq
+      const brown = tint('#7a5230');
+      const legA = o.walk !== undefined ? Math.sin(ph) * 0.5 : 0;
+      for (const [lx, a, d] of [[-18, legA, 0.75], [16, -legA, 0.75], [-14, -legA, 1], [20, legA, 1]] as [number, number, number][]) {
+        line(lx, -30, lx - Math.sin(a) * 30, -30 + Math.cos(a) * 30, 5, tint('#7a5230', d));
+      }
+      ctx.fillStyle = brown;
+      ctx.beginPath();
+      ctx.ellipse(0, -36, 27, 11, 0, 0, Math.PI * 2);
+      ctx.fill();
+      line(22, -40, 32, -58, 8, brown);
+      ctx.beginPath();
+      ctx.ellipse(36, -58, 8, 5, 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = color;
+      ctx.fillRect(-14, -48, 22, 8);
+      hipY = -46;
+    } else {
+      const a = o.walk !== undefined ? Math.sin(ph) * (o.run ? 0.7 : 0.45) : 0.12;
+      for (const [ang, d] of [[-a, 0.75], [a, 1]] as [number, number][]) {
+        const kx = Math.sin(ang) * 17;
+        const ky = hipY + Math.cos(ang) * 17;
+        const knee = o.walk !== undefined ? Math.max(0, -Math.sin(ang)) * 0.6 : 0.05;
+        const fx = kx + Math.sin(ang - knee) * 17;
+        const fy = ky + Math.cos(ang - knee) * 17;
+        line(0, hipY, kx, ky, 6, tint('#4e4337', d));
+        line(kx, ky, fx, fy, 5, tint('#5b3c24', d));
+        line(fx - 2, fy, fx + 5, fy, 4, tint('#3e2a16', d));
+      }
+    }
+    const neckY = hipY - 23;
+    // uzoq qo'l (qalqon yoki kamon, yoki ikkinchi qilich)
+    const farA = -0.5 - (kind === 'amir' ? strike * 0.6 : 0);
+    const fhx = Math.sin(-farA) * 22;
+    const fhy = neckY + 3 + Math.cos(farA) * 22;
+    line(0, neckY + 3, fhx, fhy, 4, tint(color, 0.75));
+    if (kind === 'amir') line(fhx, fhy, fhx + 18, fhy - 10, 2, '#c8ccd2');
+    // gavda va bosh
+    line(0, hipY, 0, neckY, 10, tint(color));
+    if (o.load) {
+      ctx.fillStyle = tint('#8a6a3a');
+      ctx.fillRect(-12, neckY + 2, 8, 14);
+    }
+    ctx.fillStyle = tint('#c49a74');
+    ctx.beginPath();
+    ctx.arc(1, neckY - 7, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = kind === 'konchi' ? tint('#d8c6a0') : kind === 'amir' ? tint('#f0e6cc') : tint('#8b8f96');
+    ctx.beginPath();
+    ctx.arc(1, neckY - 9, 6.8, Math.PI, 0);
+    ctx.fill();
+    if (o.plume) line(0, neckY - 15, -3, neckY - 24, 3, '#c8282a');
+    if (kind === 'qilichli') {
+      ctx.fillStyle = tint('#7a5230');
+      ctx.beginPath();
+      ctx.ellipse(fhx + 3, fhy - 4, 3, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (kind === 'kamonchi') {
+      ctx.strokeStyle = tint('#6b4a2a');
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(fhx - 4, fhy, 13, -1.1, 1.1);
+      ctx.stroke();
+    }
+    // yaqin qo'l va qurol
+    const nearA = kind === 'konchi' ? -2.4 : kind === 'kamonchi' ? (sw >= 0 ? -1.4 : 0.3) : -0.4 + strike * 1.6;
+    const hx = Math.sin(-nearA) * 22;
+    const hy = neckY + 3 + Math.cos(nearA) * 22;
+    line(0, neckY + 3, hx, hy, 4.5, tint(color));
+    const dirx = Math.sin(-nearA);
+    const diry = Math.cos(nearA);
+    if (kind === 'qilichli' || kind === 'amir') line(hx, hy, hx + dirx * 20 + 8, hy + diry * 20 - 6, 2.2, '#d0d4da');
+    if (kind === 'nayzachi' || horse) {
+      const ang = horse ? -0.05 : -0.35 + Math.max(0, -strike) * 0.3;
+      line(hx - Math.cos(ang) * 20, hy - Math.sin(ang) * 20, hx + Math.cos(ang) * 50, hy + Math.sin(ang) * 50, 2, '#7a5a34');
+      line(hx + Math.cos(ang) * 50, hy + Math.sin(ang) * 50, hx + Math.cos(ang) * 58, hy + Math.sin(ang) * 58, 3, '#c8ccd2');
+    }
+    if (kind === 'konchi') {
+      line(hx, hy, hx - 14, hy + 10, 2.2, '#6b4a2a');
+      line(hx - 18, hy + 5, hx - 10, hy + 15, 2.5, '#8a8f96');
+    }
     ctx.restore();
   }
 
@@ -822,34 +767,6 @@ export class Renderer {
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-  }
-
-  // Urilgan askar qisqa vaqt qizarib chaqnaydi
-  private drawFlash(f: Frame, x: number, y: number, z: number, flip: boolean, scale: number, k: number): void {
-    if (!ready(f.img)) return;
-    const c = this.flash;
-    const w = Math.max(1, Math.ceil(f.w * this.scale * scale * this.dpr));
-    const h = Math.max(1, Math.ceil(f.h * this.scale * scale * this.dpr));
-    if (c.width < w || c.height < h) {
-      c.width = Math.max(c.width, w);
-      c.height = Math.max(c.height, h);
-    }
-    const fc = c.getContext('2d')!;
-    fc.globalCompositeOperation = 'source-over';
-    fc.clearRect(0, 0, w, h);
-    fc.drawImage(f.img, 0, 0, w, h);
-    fc.globalCompositeOperation = 'source-atop';
-    fc.fillStyle = `rgba(255,40,30,${0.55 * k})`;
-    fc.fillRect(0, 0, w, h);
-    const tmp: Frame = { img: c, w: f.w, h: f.h, ax: f.ax };
-    const { ctx } = this;
-    ctx.save();
-    const px = this.sx(x);
-    const py = this.sy(y, z);
-    ctx.translate(px, py);
-    if (flip) ctx.scale(-1, 1);
-    ctx.drawImage(c, 0, 0, w, h, -tmp.ax * (w / this.dpr), -(h / this.dpr), w / this.dpr, h / this.dpr);
-    ctx.restore();
   }
 
   // ---------------- O'qlar va effektlar ----------------
