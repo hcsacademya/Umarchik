@@ -150,6 +150,33 @@ function renderMap(body: HTMLElement): void {
   card.append(go);
   area.append(card);
   body.append(area);
+  placeCard(card, wrap);
+  // ekran aylansa yoki o'lchami o'zgarsa qaytadan joylanadi
+  new ResizeObserver(() => placeCard(card, wrap)).observe(area);
+}
+
+// Karta xaritadagi jang tugunlarini yopmasin: to'rt burchakdan eng kam tugun yopadiganini tanlaymiz
+// (tanlangan jangni yopish — eng yomoni). Yopilib qolgani bo'lsa ham tugun karta ustida turadi va bosiladi.
+function placeCard(card: HTMLElement, wrap: HTMLElement): void {
+  const nodes = [...wrap.querySelectorAll<HTMLElement>('.node')].map((n) => ({ r: n.getBoundingClientRect(), sel: n.classList.contains('sel') }));
+  let best: [boolean, boolean] = [false, false];
+  let bestScore = Infinity;
+  for (const pos of [[false, false], [true, false], [false, true], [true, true]] as [boolean, boolean][]) {
+    card.classList.toggle('at-left', pos[0]);
+    card.classList.toggle('at-top', pos[1]);
+    const c = card.getBoundingClientRect();
+    let score = 0;
+    for (const { r, sel } of nodes) {
+      const hit = r.right > c.left - 4 && r.left < c.right + 4 && r.bottom > c.top - 4 && r.top < c.bottom + 4;
+      if (hit) score += sel ? 100 : 1;
+    }
+    if (score < bestScore) {
+      bestScore = score;
+      best = pos;
+    }
+  }
+  card.classList.toggle('at-left', best[0]);
+  card.classList.toggle('at-top', best[1]);
 }
 
 function namesFor(side: 0 | 1, level: number): string {

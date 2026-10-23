@@ -3,7 +3,7 @@
 import { Battle } from '../src/battle.ts';
 import { power } from '../src/ai.ts';
 import { buyUpgrade, newSave, upgradeCost, upgradeOpen } from '../src/campaign.ts';
-import { BATTLES, UPGRADES, itemOf } from '../src/config.ts';
+import { BATTLES, SPECIAL_MAX, UPGRADES, itemOf } from '../src/config.ts';
 import type { ItemId } from '../src/config.ts';
 
 declare const process: { argv: string[] };
@@ -14,7 +14,7 @@ function playBot(b: Battle): void {
     if (b.minerCount(0) < 8) b.buy(0, 'konchi');
     else {
       const opts = s.items.filter((id) => id !== 'konchi');
-      const special = opts.find((id) => itemOf(id).rank !== 'oddiy' && !s.bought.has(id));
+      const special = opts.find((id) => itemOf(id).rank !== 'oddiy' && (s.bought[id] ?? 0) < SPECIAL_MAX);
       const pick: ItemId = special && s.silver > 700 ? special : opts[Math.floor(b.rand() * opts.length)];
       b.buy(0, pick);
     }

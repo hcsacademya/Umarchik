@@ -1,7 +1,7 @@
 // Dushman: o'yinchi bilan bir xil qoidalarda o'ynaydi — konchi yollaydi, kumushga askar oladi,
 // kuchi yetganda o'zi hujumga o'tadi, yengilayotganda qasriga qaytadi.
 // Xalqi (qaysi turlarni yoqtiradi) va xarakteri (tez / sabrli / reyd) har jangda boshqacha.
-import { CASTLE_X, DEFENSIVE_FRONT, EASY_FIRST_ATTACK, FORMATION_FRONT, EASY_LEVELS, EASY_NEXT_UNIT, FACTIONS, MAX_MINERS, itemOf, vsMult } from './config.ts';
+import { CASTLE_X, DEFENSIVE_FRONT, EASY_FIRST_ATTACK, FORMATION_FRONT, EASY_LEVELS, EASY_NEXT_UNIT, FACTIONS, MAX_MINERS, SPECIAL_MAX, itemOf, vsMult } from './config.ts';
 import type { FactionId, ItemId, Kind, Temper } from './config.ts';
 import type { Battle, Unit } from './battle.ts';
 
@@ -80,7 +80,7 @@ export class EnemyAI {
     if (!opts.length) return null;
     // Sarkarda/qo'mondon: ba'zan shunga kumush yig'adi
     // Sarkarda/qo'mondon: faqat puli yetganda (kutib, oddiy askar yollashni to'xtatmaydi)
-    const special = opts.filter((id) => itemOf(id).rank !== 'oddiy' && !s.bought.has(id) && itemOf(id).cost <= s.silver);
+    const special = opts.filter((id) => itemOf(id).rank !== 'oddiy' && (s.bought[id] ?? 0) < SPECIAL_MAX && itemOf(id).cost <= s.silver);
     if (special.length && b.rand() < 0.35) return special[Math.floor(b.rand() * special.length)];
 
     // O'yinchi qo'shiniga qarshi qaysi tur foydali (zarba jadvali bo'yicha) + xalqning yoqtirgan turlari

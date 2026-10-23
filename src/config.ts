@@ -103,6 +103,7 @@ export function itemOf(id: ItemId): Item {
 }
 
 export const QUEUE_MAX = 10; // bitta umumiy navbatda
+export const SPECIAL_MAX = 4; // sarkarda va qo'mondon: har biridan bir jangda shuncha
 
 // Askar chegarasi (konchi + jangchilar jami): g'alabalar soniga qarab
 export function popCap(step: number): number {

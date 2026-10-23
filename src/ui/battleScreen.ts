@@ -3,7 +3,7 @@
 import { unitIcon } from '../assets.ts';
 import { Battle } from '../battle.ts';
 import type { BuyError } from '../battle.ts';
-import { BATTLES, BOOSTS, ITEMS, MAX_MINERS, WORLD_W } from '../config.ts';
+import { BATTLES, BOOSTS, ITEMS, MAX_MINERS, SPECIAL_MAX, WORLD_W } from '../config.ts';
 import type { BoostId, ItemId, Stance } from '../config.ts';
 import { campaignDone, finishBattle, takeBoosts } from '../campaign.ts';
 import { Renderer } from '../render.ts';
@@ -19,7 +19,7 @@ const BUY_ERR: Record<BuyError, string> = {
   joy: "Askar chegarasi to'lgan",
   navbat: "Navbat to'lgan (10 ta)",
   konchi: `Konchilar soni chegarada (${MAX_MINERS})`,
-  bor: 'Bu jangda allaqachon olingan',
+  bor: `Bu jangda ${SPECIAL_MAX} tasi ham olingan`,
   yopiq: 'Hali ochilmagan',
 };
 
@@ -292,8 +292,9 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     const tr = b.training(0);
     for (const sl of slots) {
       const n = b.queued(0, sl.it.id);
-      const done = sl.it.rank !== 'oddiy' && side.bought.has(sl.it.id) && n === 0;
-      const qt = n > 0 ? String(n) : done ? '✓' : '';
+      // sarkarda/qo'mondon: navbatda bo'lmasa — bu jangda nechtasi olingani (masalan 2/4)
+      const got = sl.it.rank !== 'oddiy' ? side.bought[sl.it.id] ?? 0 : 0;
+      const qt = n > 0 ? String(n) : got > 0 ? `${got}/${SPECIAL_MAX}` : '';
       if (sl.q.textContent !== qt) sl.q.textContent = qt;
       sl.x.classList.toggle('hidden', n === 0);
       // Tayyorlanayotgan tur pastdan yuqoriga to'ladi

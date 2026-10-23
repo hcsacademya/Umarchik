@@ -58,7 +58,8 @@ npm run build      # tayyor sayt dist/ papkasida
   | Otliq | 1.3 | 0.5 | 1.8 | 1.0 |
 
 - **Ochilish** (har g'alabadan keyin): nayzachi, kamonchi, otliq, 4 sarkarda (har biri 2 askari bilan),
-  qo'mondon (3 otliq bilan). Sarkarda va qo'mondon jangda bir marta sotib olinadi.
+  qo'mondon (3 otliq bilan). Sarkarda va qo'mondonning har biridan bir jangda 4 tagacha sotib olinadi
+  (tugmada nechtasi olingani ko'rinadi, masalan 2/4).
 - **Askar chegarasi:** 44 → otliq ochilgach 55 → qo'mondon ochilgach 70.
 - **Dushman:** ikki xalq navbatma-navbat — *Ko'chmanchilar* (yengil, tez, otliq va kamonchi ko'p) va
   *Sovutlilar* (og'ir zirhli, chidamli, o'qdan kam zarar ko'radi). Kiyim rangi — xaritadagi qal'a bayrog'i

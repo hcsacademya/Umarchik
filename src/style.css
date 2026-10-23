@@ -262,6 +262,7 @@ button.primary:hover:not(:disabled) {
 }
 .node {
   position: absolute;
+  z-index: 3; /* karta ustida: hech bir jang yopilib qolmasin */
   transform: translate(-50%, -50%);
   width: clamp(22px, 3.2vw, 38px);
   height: clamp(22px, 3.2vw, 38px);
@@ -305,6 +306,7 @@ button.primary:hover:not(:disabled) {
 }
 .battle-card {
   position: absolute;
+  z-index: 2;
   right: 10px;
   bottom: 10px;
   width: min(290px, 42%);
@@ -318,6 +320,14 @@ button.primary:hover:not(:disabled) {
   flex-direction: column;
   gap: 4px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+}
+.battle-card.at-left {
+  right: auto;
+  left: 10px;
+}
+.battle-card.at-top {
+  bottom: auto;
+  top: 10px;
 }
 .battle-card .enemy {
   display: flex;

@@ -2,7 +2,7 @@
 import {
   AMIR_RESPAWN, BATTLES, BLOCK_GAP, BOOST_EFFECT, CARRY_SLOW, CASTLE_CD, CASTLE_DEPTH, CASTLE_DMG, CASTLE_FRONT, CASTLE_HP,
   CASTLE_RANGE, CASTLE_X, COL_GAP, DEAD_LINGER, DEPTH, DIG_UP, DOOR_TIME, FACTIONS, FIRE_MULT, FORMATION_FRONT, HEAL_RATE,
-  MAX_MINERS, MINE_OFFSET, MINE_TIME, MINER_LOAD, MINER_UP, QUEUE_MAX, RANK, ROW_SIZE, START_SILVER, STATS, UNIT_UP_STEP,
+  MAX_MINERS, MINE_OFFSET, SPECIAL_MAX, MINE_TIME, MINER_LOAD, MINER_UP, QUEUE_MAX, RANK, ROW_SIZE, START_SILVER, STATS, UNIT_UP_STEP,
   WALL_SPOTS, enemyCastleHp, enemyIncome, enemyStats, enemyTrain, itemOf, popCap, vsMult,
 } from './config.ts';
 import type { BoostId, Item, ItemId, Kind, Rank, Side, Stance } from './config.ts';
@@ -142,7 +142,7 @@ export interface SideState {
   popCap: number;
   queue: ItemId[]; // umumiy navbat: birinchi bosilgan birinchi chiqadi
   queueT: number; // navbatdagi birinchisining tayyorlanish vaqti
-  bought: Set<ItemId>; // sarkarda/qo'mondon: jangda bir marta
+  bought: Partial<Record<ItemId, number>>; // sarkarda/qo'mondon: bu jangda nechta olingan (SPECIAL_MAX tagacha)
   hpMult: Record<Kind, number>;
   dmgMult: Record<Kind, number>;
   speedMult: number; // jangchilar yurishi
@@ -248,7 +248,7 @@ export class Battle {
         popCap: popCap(stepFor(0, level)),
         queue: [],
         queueT: 0,
-        bought: new Set(),
+        bought: {},
         hpMult: perKind((k) => (k === 'konchi' ? 1 : 1 + UNIT_UP_STEP * up[k])),
         dmgMult: perKind((k) => (k === 'konchi' ? 1 : 1 + UNIT_UP_STEP * up[k])),
         speedMult: 1 + (has('tez_qadam') ? BOOST_EFFECT.tez_qadam : 0),
@@ -274,7 +274,7 @@ export class Battle {
         popCap: popCap(stepFor(1, level)),
         queue: [],
         queueT: 0,
-        bought: new Set(),
+        bought: {},
         hpMult: perKind((k) => eMult * (k === 'konchi' ? 1 : fac.hp)),
         dmgMult: perKind(() => eMult),
         speedMult: fac.speed,
@@ -342,7 +342,7 @@ export class Battle {
     const s = this.sides[side];
     const it = itemOf(id);
     if (!s.items.includes(id)) return 'yopiq';
-    if (it.rank !== 'oddiy' && s.bought.has(id)) return 'bor';
+    if (it.rank !== 'oddiy' && (s.bought[id] ?? 0) >= SPECIAL_MAX) return 'bor';
     if (id === 'konchi' && this.minerCount(side) >= MAX_MINERS) return 'konchi';
     if (s.queue.length >= QUEUE_MAX) return 'navbat';
     if (this.popUsed(side) + itemPop(it) > s.popCap) return 'joy';
@@ -356,7 +356,7 @@ export class Battle {
     const s = this.sides[side];
     const it = itemOf(id);
     s.silver -= it.cost;
-    if (it.rank !== 'oddiy') s.bought.add(id);
+    if (it.rank !== 'oddiy') s.bought[id] = (s.bought[id] ?? 0) + 1;
     s.queue.push(id);
     return null;
   }
@@ -370,7 +370,7 @@ export class Battle {
     if (i === 0) s.queueT = 0;
     const it = itemOf(id);
     s.silver += it.cost;
-    if (it.rank !== 'oddiy') s.bought.delete(id);
+    if (it.rank !== 'oddiy') s.bought[id] = Math.max(0, (s.bought[id] ?? 0) - 1);
     return true;
   }
 
