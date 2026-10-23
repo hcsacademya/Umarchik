@@ -57,7 +57,8 @@ const STANCE: Record<Kind, Pose> = {
   // ikki egri qilich oldinga, uchlari biroz yuqoriga
   amir: { ...BASE, sh: -0.25, el: -1.0, bl: -0.9, shF: -0.35, elF: -1.2, blF: -0.7 },
   // qilich oldinga-pastga, qalqon ko'krak oldida
-  qilichli: { ...BASE, sh: -0.2, el: -0.5, bl: -0.55, shF: -0.55, elF: -0.9 },
+  // jangovar turish (24 kadrli rasmdagidek): oyoqlar keng, old oyoq oldinda, tizzalar biroz bukik
+  qilichli: { ...BASE, body: 0.08, y: 1.5, sh: -0.2, el: -0.5, bl: -0.55, shF: -0.55, elF: -0.9, hipN: 0.25, kneeN: 0.1, hipF: -0.28, kneeF: 0.3 },
   // nayza tik, uchi biroz oldinga
   nayzachi: { ...BASE, sh: -0.15, el: -0.3, bl: -2.7, shF: -0.55, elF: -0.9 },
   // kamon pastda uzoq qo'lda
@@ -70,7 +71,7 @@ const STANCE: Record<Kind, Pose> = {
 // Dushman yaqin: jangovar holat — oyoqlar keng, gavda egilgan, qurol tayyor
 const GUARD: Record<Kind, Key> = {
   amir: { body: 0.12, sh: -0.5, el: -1.3, bl: -0.8, shF: -0.55, elF: -1.4, blF: -0.5, hipN: 0.3, kneeN: 0.3, hipF: -0.3, kneeF: 0.3 },
-  qilichli: { body: 0.12, sh: -0.45, el: -0.9, bl: -0.45, shF: -0.95, elF: -1.2, hipN: 0.3, kneeN: 0.3, hipF: -0.3, kneeF: 0.3 },
+  qilichli: { body: 0.14, sh: -0.45, el: -0.9, bl: -0.45, shF: -0.95, elF: -1.2 }, // oyoqlar turish holatida qoladi
   nayzachi: { body: 0.12, sh: -0.5, el: -0.6, bl: -1.9, shF: -0.95, elF: -1.2, hipN: 0.3, kneeN: 0.3, hipF: -0.3, kneeF: 0.3 },
   kamonchi: { body: 0.1, sh: -0.2, el: -0.7, shF: -0.6, elF: -0.8, hipN: 0.25, kneeN: 0.25, hipF: -0.25, kneeF: 0.25 },
   konchi: {},
@@ -103,22 +104,24 @@ const AMIR: Track[] = [
   ],
 ];
 
-// Qilichli: A — boshdan chopish, B — ko'ndalang, C — oldinga sanchish (qalqon bilan itarib)
+// Qilichli: A — boshdan chopish, B — ko'ndalang, C — oldinga sanchish (qalqon bilan itarib).
+// Oyoqlarni plantedLegs o'zi hisoblaydi (hamla qadami): bu yerda faqat gavda, qo'llar, oldinga siljish (x)
+// va cho'kish (y). Zarbada gavda ~25° oldinga egiladi, bosh esa dushmanga qaragan holda qoladi
 const SWORD: Track[] = [
   [
-    [0.3, { sh: -3.2, el: -0.5, bl: -0.5, body: -0.12, head: -0.05, x: -1.5, hipN: 0.2, hipF: -0.25, shF: -0.7, elF: -1.0 }],
-    [HIT_M, { sh: -1.15, el: -0.2, bl: 0.15, body: 0.2, head: 0.08, x: 3.5, hipN: 0.35, kneeN: 0.25, hipF: -0.45, kneeF: 0.2, shF: -0.5, elF: -0.8 }],
-    [0.62, { sh: -0.8, el: -0.35, bl: -0.2, body: 0.16, head: 0.05, x: 3, hipN: 0.3, kneeN: 0.2, hipF: -0.4, kneeF: 0.15 }],
+    [0.3, { sh: -3.2, el: -0.5, bl: -0.5, body: -0.15, head: 0.05, x: -2.5, y: 1, shF: -0.7, elF: -1.0 }],
+    [HIT_M, { sh: -1.0, el: -0.15, bl: 0.2, body: 0.42, head: -0.18, x: 6, y: 6, shF: -0.35, elF: -0.7 }],
+    [0.62, { sh: -0.75, el: -0.3, bl: -0.1, body: 0.34, head: -0.14, x: 5.5, y: 5.5 }],
   ],
   [
-    [0.3, { sh: 0.9, el: -0.4, bl: 0, body: -0.12, x: -1.5, hipN: 0.15, hipF: -0.2 }],
-    [HIT_M, { sh: -1.5, el: -0.12, bl: -0.1, body: 0.2, head: 0.06, x: 3.5, hipN: 0.35, kneeN: 0.2, hipF: -0.4, kneeF: 0.15 }],
-    [0.62, { sh: -1.2, el: -0.3, bl: -0.2, body: 0.15, x: 3, hipN: 0.3, kneeN: 0.15, hipF: -0.35 }],
+    [0.3, { sh: 0.9, el: -0.4, bl: 0, body: -0.14, head: 0.05, x: -2, y: 1 }],
+    [HIT_M, { sh: -1.5, el: -0.12, bl: -0.1, body: 0.38, head: -0.16, x: 5.5, y: 5.5 }],
+    [0.62, { sh: -1.2, el: -0.3, bl: -0.2, body: 0.3, head: -0.12, x: 5, y: 5 }],
   ],
   [
-    [0.3, { sh: 0.4, el: -1.3, bl: -0.4, body: -0.08, x: -2, hipN: 0.2, hipF: -0.3, shF: -0.8, elF: -1.1 }],
-    [HIT_M, { sh: -1.45, el: -0.1, bl: 0.05, body: 0.24, head: 0.06, x: 4.5, hipN: 0.45, kneeN: 0.25, hipF: -0.5, kneeF: 0.15, shF: -1.2, elF: -0.9 }],
-    [0.62, { sh: -1.3, el: -0.25, bl: -0.1, body: 0.18, x: 4, hipN: 0.4, kneeN: 0.2, hipF: -0.45, shF: -0.9, elF: -1.0 }],
+    [0.3, { sh: 0.4, el: -1.3, bl: -0.4, body: -0.1, x: -2.5, y: 1, shF: -0.8, elF: -1.1 }],
+    [HIT_M, { sh: -1.45, el: -0.1, bl: 0.05, body: 0.45, head: -0.2, x: 7, y: 6.5, shF: -1.2, elF: -0.9 }],
+    [0.62, { sh: -1.3, el: -0.25, bl: -0.1, body: 0.36, head: -0.15, x: 6.5, y: 6, shF: -0.9, elF: -1.0 }],
   ],
 ];
 
@@ -445,12 +448,13 @@ function targetPose(u: Unit, rig: Rig): Pose {
     const dir = u.hitDir !== 0 && u.hitDir === u.facing ? 1 : -1;
     p = { ...p, body: p.body + dir * 0.22 * k, head: p.head + dir * 0.16 * k, x: p.x + dir * 1.6 * k, kneeN: p.kneeN + 0.25 * k, y: p.y + 0.8 * k };
   }
-  if (sw >= 0 && PLANTED.has(u.kind)) p = plantedAttack(p, base, rig, sw);
+  // turish, himoya va zarbada oyoqlar yerga mahkam (yurish, yugurish, o'limda emas)
+  if (PLANTED.has(u.kind) && (sw >= 0 || (u.anim !== 'walk' && u.anim !== 'run' && u.anim !== 'carry'))) p = plantedLegs(p, base, rig, Math.max(0, sw));
   return p;
 }
 
 // ---------------- Zarba: oyoqlar yerga mahkam ----------------
-// Zarba paytida oyoqlar yerda sirpanmaydi: ikki oyoq turish holatidagi joyida qoladi, old (uzoq) oyoq zarbadan
+// Turish va zarba paytida oyoqlar yerda sirpanmaydi: ikki oyoq turish holatidagi joyida qoladi, old (uzoq) oyoq zarbadan
 // oldin bir qadam oldinga tashlanadi va zarbadan keyin qaytadi; orqa oyoq tovoni ko'tarilib uchidan itariladi.
 // Son va tizza IK bilan hisoblanadi, gavda kalit pozadagi x ga suriladi va y ga cho'kadi.
 const PLANTED = new Set<Kind>(['qilichli']); // avval qilichlida sinaladi
@@ -469,7 +473,7 @@ function ankleX(rig: Rig, at: [number, number], hip: number, knee: number): numb
 
 const window01 = (t: number, a: number, len: number): number => Math.max(0, Math.min(1, (t - a) / len));
 
-function plantedAttack(p: Pose, base: Pose, rig: Rig, sw: number): Pose {
+function plantedLegs(p: Pose, base: Pose, rig: Rig, sw: number): Pose {
   const J = rig.joints;
   if (!J.ankle) return p;
   const H = rig.h;
