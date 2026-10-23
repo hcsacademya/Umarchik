@@ -198,6 +198,7 @@ export function itemPop(it: Item): number {
 }
 
 const ARROW_SPEED = 650;
+const RUN_FAST = 1.45; // yugurganda yurishdan shuncha tez
 const KINDS: Kind[] = ['amir', 'konchi', 'qilichli', 'nayzachi', 'kamonchi', 'otliq'];
 
 function perKind(f: (k: Kind) => number): Record<Kind, number> {
@@ -652,7 +653,7 @@ export class Battle {
       return true;
     }
     const carry = u.kind === 'konchi' && u.load > 0;
-    const speed = u.speed * (carry ? CARRY_SLOW : 1) * (mode === 'slow' ? 0.6 : 1); // savat og'ir
+    const speed = u.speed * (carry ? CARRY_SLOW : 1) * (mode === 'slow' ? 0.6 : mode === 'run' ? RUN_FAST : 1); // savat og'ir
     const step = Math.min(Math.abs(d), speed * dt);
     u.x += Math.sign(d) * step;
     u.walkDist += step;

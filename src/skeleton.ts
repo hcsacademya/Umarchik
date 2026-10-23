@@ -7,6 +7,7 @@ import type { Rig, RigPart } from './assets.ts';
 import { ready } from './assets.ts';
 import { swingPhase } from './battle.ts';
 import type { Unit } from './battle.ts';
+import { RANK } from './config.ts';
 import type { Kind } from './config.ts';
 
 // Burchaklar radianda (0 — qo'l/oyoq pastga tushgan holat, manfiy — oldinga/yuqoriga), siljish o'yin birligida.
@@ -30,6 +31,9 @@ export interface Pose {
   cape: number; // plash orqaga hilpirashi
   aux: number; // kamonchi: o'q kamonda (0/1); konchi: kumush yuki (0/1)
   aim: number; // kamonchi: uzoq nishonga o'q yuqoriroq (radian)
+  footN: number; // oyoq kaftlari burchagi (0 — yerga tekis; musbat — tovon ko'tarilgan, uchi pastda)
+  footF: number;
+  ground: number; // 1 — gavda balandligi pastroqdagi oyoq yerga tegadigan qilib o'zi topiladi; 0 — y aniq berilgan (qadam)
 }
 
 type Key = Partial<Pose>;
@@ -45,7 +49,7 @@ const BASE: Pose = {
   x: 0, y: 0, body: 0.04, head: 0,
   sh: 0, el: -0.3, bl: 0, shF: 0, elF: -0.3, blF: 0,
   hipN: 0.1, kneeN: 0.08, hipF: -0.12, kneeF: 0.08,
-  fall: 0, cape: 0.06, aux: 0, aim: 0,
+  fall: 0, cape: 0.06, aux: 0, aim: 0, footN: 0, footF: 0, ground: 1,
 };
 
 // Har bir turning tik turish holati
@@ -173,11 +177,6 @@ const MOVES: Record<Kind, Moves> = {
   otliq: { hit: HIT_M },
 };
 
-const STRIDE = 52; // yurishda bir to'liq qadam sikli (ikki qadam) necha birlik yo'l
-const RUN_STRIDE = 50; // yugurishda
-const LEG_SWING = 0.42;
-const KNEE_LIFT = 0.55;
-
 const smooth = (t: number): number => t * t * (3 - 2 * t);
 
 function mix(a: Pose, b: Key, t: number): Pose {
@@ -200,71 +199,145 @@ function track(base: Pose, keys: Track, p: number, hit: number): Pose {
   return base;
 }
 
-function walkPose(u: Unit, base: Pose): Pose {
-  const stride = STRIDE * (0.9 + 0.2 * rnd(u, 1)); // har kimning qadami boshqacha
-  const ph = (u.walkDist / stride) * Math.PI * 2;
-  const s = Math.sin(ph);
-  const c = Math.cos(ph);
-  const hold = u.kind === 'nayzachi' || u.kind === 'konchi' ? 0.08 : 0.2; // tutib turgan qo'l kam silkinadi
-  const aa = 0.75 + 0.5 * rnd(u, 2);
-  const ls = 0.9 + 0.2 * rnd(u, 4);
-  return {
-    ...base,
-    body: base.body + 0.05 + (rnd(u, 3) - 0.5) * 0.08,
-    head: -0.03 * s * aa,
-    sh: base.sh + hold * s * aa,
-    shF: base.shF - 0.12 * s * aa,
-    hipN: LEG_SWING * s * ls,
-    kneeN: 0.08 + KNEE_LIFT * Math.max(0, -c) ** 1.5,
-    hipF: -LEG_SWING * s * ls,
-    kneeF: 0.08 + KNEE_LIFT * Math.max(0, c) ** 1.5,
-    cape: base.cape + 0.16 + 0.07 * s,
-  };
+// ---------------- Yurish va yugurish: haqiqiy qadam ----------------
+// Har oyoq uchun qadam sikli: yerda turgan oyoq (tayanch) bosib o'tilgan yo'lga aynan teng orqaga suriladi —
+// yerga mahkam turadi, sirpanmaydi; havodagi oyoq ko'tarilib oldinga o'tadi. Son va tizza burchagi oyoq kafti
+// qayerda turishi kerakligidan hisoblanadi (ikki bo'g'inli IK): tizza o'zi bukiladi, tovon avval yerga tegadi,
+// qadam oxirida tovon ko'tarilib oyoq uchidan itariladi. Gavda yurishda tayanch oyoq ustidan "oshib" o'tadi
+// (o'rtada eng baland), yugurishda havoda biroz ko'tariladi. Qo'llar oyoqlarga qarama-qarshi silkinadi.
+
+interface Gait {
+  S: number; // to'liq sikl (ikki qadam) necha birlik yo'l, bo'yga nisbatan
+  beta: number; // sikldan yerda turish ulushi
+  c0: number; // oyoq gavdadan qancha oldinroq qo'yiladi (bo'yga nisbatan)
+  lift: number; // havodagi oyoq ko'tarilishi (bo'yga nisbatan)
+  early: number; // ko'tarilish sikl boshida bo'ladi (yugurishda tovon orqaga ko'tariladi)
+  bend: number; // tizzalar doim biroz bukik (gavda pastroq, bo'yga nisbatan)
 }
 
-// Yugurish: gavda oldinga egiladi, qadam keng, tizzalar baland, qo'llar kuchli silkinadi, qurol oldinga tayyor
-function runPose(u: Unit, base: Pose): Pose {
-  const stride = RUN_STRIDE * (0.92 + 0.16 * rnd(u, 1));
-  const ph = (u.walkDist / stride) * Math.PI * 2;
-  const s = Math.sin(ph);
-  const c = Math.cos(ph);
+const WALK: Gait = { S: 0.84, beta: 0.6, c0: 0.03, lift: 0.07, early: 0.7, bend: 0.004 };
+const RUN: Gait = { S: 1.05, beta: 0.36, c0: 0.05, lift: 0.2, early: 0.35, bend: 0.035 };
+
+// Qo'llar silkinishi (yurish, yugurish): yaqin va uzoq qo'l; qurol ushlagan qo'l kamroq
+const ARMS: Record<Kind, { n: [number, number]; f: [number, number]; freeN?: boolean; freeF?: boolean }> = {
+  amir: { n: [0.22, 0.38], f: [0.22, 0.38] },
+  qilichli: { n: [0.28, 0.42], f: [0.08, 0.12] },
+  nayzachi: { n: [0.06, 0.1], f: [0.08, 0.12] },
+  kamonchi: { n: [0.32, 0.55], f: [0.14, 0.22], freeN: true },
+  konchi: { n: [0.04, 0.06], f: [0.32, 0.5], freeF: true },
+  otliq: { n: [0, 0], f: [0, 0] },
+};
+
+interface Foot {
+  x: number; // tovon (to'piq) gavda ostidan qancha oldinda
+  up: number; // to'piq yerdan qancha baland (oyoq kafti burchagi va ko'tarilishi bilan)
+  ang: number; // oyoq kafti burchagi
+  stance: boolean;
+}
+
+function footAt(p: number, g: Gait, S: number, H: number, rig: Rig): Foot {
+  p = ((p % 1) + 1) % 1;
+  const J = rig.joints;
+  const sole = J.sole ?? 0;
+  const ft = rig.parts.foot;
+  const toe = ft ? ft.w - ft.px : 0.08 * H;
+  const heel = ft ? ft.px : 0.02 * H;
+  const half = (g.beta * S) / 2;
+  const c0 = g.c0 * H;
+  let x: number;
+  let lift = 0;
+  let ang: number;
+  let stance = false;
+  const run = g === RUN;
+  if (p < g.beta) {
+    stance = true;
+    const t = p / g.beta;
+    x = half + c0 - t * g.beta * S;
+    if (run) ang = 0.12 - 0.12 * t + 0.35 * smooth(Math.max(0, (t - 0.65) / 0.35));
+    else ang = t < 0.15 ? -0.2 * (1 - smooth(t / 0.15)) : 0.55 * smooth(Math.max(0, (t - 0.68) / 0.32));
+  } else {
+    const t = (p - g.beta) / (1 - g.beta);
+    const e = smooth(t);
+    x = -half + c0 + g.beta * S * (run ? e ** 1.35 : e);
+    // yurishda oyoq yerdan past o'tadi; yugurishda avval tovon orqaga ko'tariladi, keyin oyoq pasayib oldinga chiqadi
+    lift = run
+      ? g.lift * H * (t < g.early ? Math.sin((Math.PI / 2) * (t / g.early)) : Math.cos((Math.PI / 2) * ((t - g.early) / (1 - g.early))) ** 2.4)
+      : g.lift * H * Math.sin(Math.PI * t ** g.early);
+    const a0 = run ? 0.47 : 0.55;
+    const a1 = run ? 0.1 : -0.2;
+    ang = a0 + (a1 - a0) * smooth(Math.min(1, t * 1.1));
+  }
+  // tovon ko'tarilsa oyoq uchidan, uchi ko'tarilsa tovondan burilib turadi — to'piq shunga qarab ko'tariladi
+  const up = sole * Math.cos(ang) + (ang > 0 ? toe * Math.sin(ang) : heel * Math.sin(-ang)) + lift;
+  if (ang > 0) x += toe * (1 - Math.cos(ang));
+  return { x, up, ang, stance };
+}
+
+// Ikki bo'g'inli IK: son bo'g'inidan (tx, ty) nuqtaga to'piqni yetkazadigan son va tizza burchagi (tizza oldinda)
+function ik(rig: Rig, tx: number, ty: number): [number, number] {
+  const J = rig.joints;
+  const [kx, ky] = J.knee;
+  const [ax, ay] = J.ankle ?? [0, J.foot];
+  const l1 = Math.hypot(kx, ky);
+  const l2 = Math.hypot(ax, ay);
+  const psiK = Math.atan2(-kx, ky);
+  const psiA = Math.atan2(-ax, ay);
+  const d = Math.max(Math.abs(l1 - l2) + 0.5, Math.min(l1 + l2 - 0.02, Math.hypot(tx, ty)));
+  const psiT = Math.atan2(-tx, ty);
+  const g = Math.acos(Math.max(-1, Math.min(1, (l1 * l1 + d * d - l2 * l2) / (2 * l1 * d))));
+  const th1 = psiT - g;
+  const kxw = -Math.sin(th1) * l1;
+  const kyw = Math.cos(th1) * l1;
+  const th2 = Math.atan2(-(-Math.sin(psiT) * d - kxw), Math.cos(psiT) * d - kyw);
+  const hip = th1 - psiK;
+  return [hip, th2 - hip - psiA];
+}
+
+function gaitPose(u: Unit, base: Pose, rig: Rig, run: boolean): Pose {
+  const g = run ? RUN : WALK;
+  const J = rig.joints;
+  const H = rig.h;
+  const sc = RANK[u.rank].scale;
+  const S = g.S * H * (0.94 + 0.12 * rnd(u, 1));
+  const ph = u.walkDist / sc / S; // dunyo yo'li chizish masshtabiga keltiriladi
+  const near = footAt(ph, g, S, H, rig);
+  const far = footAt(ph + 0.5, g, S, H, rig);
+  // gavda (son bo'g'ini) balandligi: tayanch oyoq yetadigan eng baland joy; tizzalar biroz bukik
+  const [kx, ky] = J.knee;
+  const [ax, ay] = J.ankle ?? [0, J.foot];
+  const reach = Math.hypot(kx + ax, ky + ay) * 0.992;
+  const stand = -J.hip[1];
+  let h = stand - g.bend * H;
+  if (run) h += 1.3 * Math.cos(Math.PI * 4 * (ph - g.beta / 2) + Math.PI); // tayanch o'rtasida past, havoda baland
+  for (const [f, at] of [[near, J.hipBack], [far, J.hipFront]] as [Foot, [number, number]][]) {
+    if (!f.stance) continue;
+    const dx = f.x - at[0];
+    h = Math.min(h, f.up + Math.sqrt(Math.max(0, reach * reach - dx * dx)));
+  }
+  const [hipN, kneeN] = ik(rig, near.x - J.hipBack[0], h - near.up - J.hipBack[1]);
+  const [hipF, kneeF] = ik(rig, far.x - J.hipFront[0], h - far.up - J.hipFront[1]);
+  // qo'llar: yaqin oyoq oldinda bo'lsa yaqin qo'l orqada (qarama-qarshi), uzoq qo'l oldinda
+  const sN = near.x / ((g.beta * S) / 2 + 1e-6);
+  const am = ARMS[u.kind];
+  const k = run ? 1 : 0;
   const aa = 0.8 + 0.4 * rnd(u, 2);
-  const lean = 0.2 + (rnd(u, 3) - 0.5) * 0.08;
+  const lean = run ? 0.15 + (rnd(u, 3) - 0.5) * 0.05 : 0.03 + (rnd(u, 3) - 0.5) * 0.03;
   const p: Pose = {
     ...base,
-    y: -1.1 * Math.abs(s) * aa, // yugurishda har qadamda biroz ko'tarilib tushadi
-    x: 1.5,
-    body: lean,
-    head: -0.06 - 0.03 * s,
-    hipN: 0.7 * s,
-    kneeN: 0.25 + 1.0 * Math.max(0, -c) ** 1.3,
-    hipF: -0.7 * s,
-    kneeF: 0.25 + 1.0 * Math.max(0, c) ** 1.3,
-    cape: base.cape + 0.5 + 0.1 * s,
+    ground: 0,
+    y: stand - h,
+    x: run ? 1 : 0,
+    body: base.body + lean,
+    head: -0.6 * lean - 0.02 * sN,
+    hipN, kneeN, hipF, kneeF,
+    footN: near.ang,
+    footF: far.ang,
+    sh: base.sh + am.n[k] * aa * Math.max(-1.2, Math.min(1.2, sN)),
+    shF: base.shF - am.f[k] * aa * Math.max(-1.2, Math.min(1.2, sN)),
+    cape: base.cape + (run ? 0.55 : 0.18) + 0.06 * Math.sin(ph * Math.PI * 4),
   };
-  switch (u.kind) {
-    case 'amir':
-      p.sh = -0.5 + 0.55 * s * aa; p.el = -1.2; p.bl = -0.4;
-      p.shF = -0.5 - 0.55 * s * aa; p.elF = -1.2; p.blF = -0.4;
-      break;
-    case 'qilichli':
-      p.sh = -0.5 + 0.6 * s * aa; p.el = -1.1; p.bl = -0.2;
-      p.shF = -0.7; p.elF = -1.3;
-      break;
-    case 'nayzachi':
-      // nayza oldinga, ko'tarilgan holda; qalqon ko'krakda
-      p.sh = -0.35 + 0.15 * s * aa; p.el = -0.9; p.bl = -1.0;
-      p.shF = -0.7; p.elF = -1.3;
-      break;
-    case 'kamonchi':
-      p.sh = -0.2 + 0.6 * s * aa; p.el = -1.0;
-      p.shF = -0.4 - 0.5 * s * aa; p.elF = -0.9;
-      break;
-    case 'konchi':
-      p.sh = -0.5 + 0.1 * s; p.el = -1.9; p.shF = 0.1 - 0.7 * s * aa; p.elF = -0.6;
-      break;
-    default:
-  }
+  if (am.freeN) p.el = run ? -1.4 : base.el - 0.15;
+  if (am.freeF) p.elF = run ? -1.4 : base.elF - 0.15;
   return p;
 }
 
@@ -323,24 +396,28 @@ function deathPose(u: Unit, base: Pose): Pose {
     aux: base.aux,
   };
   if (kneel && k <= 0) {
-    return { ...common, y: 7 * kn, kneeN: 1.5 * kn, kneeF: 1.4 * kn, hipN: -0.3 * kn, hipF: -0.9 * kn, body: base.body + 0.1 * kn, sh: base.sh * (1 - kn), shF: base.shF * (1 - kn) };
+    return { ...common, y: 7 * kn, kneeN: 1.5 * kn, kneeF: 1.4 * kn, hipN: -0.3 * kn, hipF: -0.9 * kn, footN: 1.2 * kn, footF: 0.5 * kn, body: base.body + 0.1 * kn, sh: base.sh * (1 - kn), shF: base.shF * (1 - kn) };
   }
   const arms = back ? { sh: -2.4, shF: -2.0, el: 0.3, elF: 0.2 } : { sh: -1.2, shF: -1.0, el: -0.4, elF: -0.3 };
+  const kN = (kneel ? 1.5 * (1 - k) : 0) + 0.6 * Math.sin(k * Math.PI);
+  const kF = (kneel ? 1.4 * (1 - k) : 0) + 0.5 * Math.sin(k * Math.PI);
   return {
     ...common,
+    footN: 0.1 + kN,
+    footF: -0.15 + kF,
     y: kneel ? 7 * (1 - k) : 0,
     sh: arms.sh * k + base.sh * (1 - k),
     el: arms.el,
     shF: arms.shF * k + base.shF * (1 - k),
     elF: arms.elF,
-    kneeN: (kneel ? 1.5 * (1 - k) : 0) + 0.6 * Math.sin(k * Math.PI),
-    kneeF: (kneel ? 1.4 * (1 - k) : 0) + 0.5 * Math.sin(k * Math.PI),
+    kneeN: kN,
+    kneeF: kF,
     hipN: 0.1,
     hipF: -0.15,
   };
 }
 
-function targetPose(u: Unit): Pose {
+function targetPose(u: Unit, rig: Rig): Pose {
   let base = STANCE[u.kind];
   if (u.kind === 'konchi' && u.load > 0) {
     // yuk: kumushli savat orqada, ikki qo'l tasmada
@@ -354,13 +431,13 @@ function targetPose(u: Unit): Pose {
   if (sw >= 0 && keys) {
     p = track(base, keys, sw, mv.hit);
     if (u.kind === 'kamonchi') p.aim = 0.38 * Math.max(0, Math.min(1, (u.aimD - 90) / 150)); // uzoqroq nishonga yuqoriroq
-  } else if (u.anim === 'run') p = runPose(u, base);
-  else if (u.anim === 'walk' || u.anim === 'carry') p = walkPose(u, base);
+  } else if (u.anim === 'run') p = gaitPose(u, base, rig, true);
+  else if (u.anim === 'walk' || u.anim === 'carry') p = gaitPose(u, base, rig, false);
   else p = idlePose(u, base);
   // jang holati: dushman yaqin bo'lsa tayyor tur (zarba va yugurish orasida)
   if (u.guard && sw < 0 && u.anim !== 'run') {
     const g = GUARD[u.kind];
-    p = mix(p, u.anim === 'walk' ? { ...g, hipN: p.hipN, hipF: p.hipF, kneeN: p.kneeN, kneeF: p.kneeF } : g, 0.85);
+    p = mix(p, u.anim === 'walk' ? { ...g, hipN: p.hipN, hipF: p.hipF, kneeN: p.kneeN, kneeF: p.kneeF, footN: p.footN, footF: p.footF } : g, 0.85);
   }
   if (u.hitT > 0) {
     // zarba yedi: gavda zarba tomoniga silkinadi (old tomondan bo'lsa orqaga)
@@ -375,8 +452,8 @@ function targetPose(u: Unit): Pose {
 // yangi holatga tez, lekin silliq yetib boradi. Zarba kechikmasligi uchun tezroq.
 const last = new WeakMap<Unit, { p: Pose; t: number }>();
 
-export function rigPose(u: Unit): Pose {
-  const target = targetPose(u);
+export function rigPose(u: Unit, rig: Rig): Pose {
+  const target = targetPose(u, rig);
   const now = performance.now() / 1000;
   const prev = last.get(u);
   let p = target;
@@ -429,14 +506,8 @@ function arm(ctx: Ctx, rig: Rig, at: [number, number], sh: number, el: number, f
   return { m, ang: sh + el };
 }
 
-// Oyoq kafti tovondan burilib, yerga deyarli tekis turadi: oyoq orqada bo'lsa uchi pastga (itarilish),
-// oldinda bo'lsa uchi yuqoriga (tovon bilan tushish). Shin va tizza burilishi shunga qarshi qaytariladi.
-function footAngle(hip: number, knee: number): number {
-  const world = Math.max(-0.3, Math.min(0.4, 0.45 * hip));
-  return world - (hip + knee);
-}
-
-function leg(ctx: Ctx, rig: Rig, at: [number, number], hip: number, knee: number, far: boolean): void {
+// Oyoq: son → tizza → to'piq; oyoq kafti berilgan burchakda (0 — yerga tekis), boldir burilishidan qat'i nazar
+function leg(ctx: Ctx, rig: Rig, at: [number, number], hip: number, knee: number, foot: number, far: boolean): void {
   const P = rig.parts;
   const J = rig.joints;
   const d = far ? '_d' : '';
@@ -449,7 +520,7 @@ function leg(ctx: Ctx, rig: Rig, at: [number, number], hip: number, knee: number
   part(ctx, P['shin' + d]);
   if (J.ankle && P['foot' + d]) {
     ctx.translate(J.ankle[0], J.ankle[1]);
-    ctx.rotate(footAngle(hip, knee));
+    ctx.rotate(foot - (hip + knee));
     part(ctx, P['foot' + d]);
   }
   ctx.restore();
@@ -477,7 +548,7 @@ export function drawRig(ctx: Ctx, rig: Rig, p: Pose, kind: Kind): void {
   const P = rig.parts;
   const full = J.knee[1] + J.foot;
   // oyoqlar bukilganda gavda pastga tushadi — pastroqdagi oyoq tagi yerga tegib turadi
-  const drop = full - Math.max(legDepth(rig, p.hipN, p.kneeN), legDepth(rig, p.hipF, p.kneeF));
+  const drop = p.ground * (full - Math.max(legDepth(rig, p.hipN, p.kneeN), legDepth(rig, p.hipF, p.kneeF)));
   ctx.save();
   if (p.fall) ctx.rotate(p.fall);
   ctx.translate(J.hip[0] + p.x, J.hip[1] + p.y + (p.fall ? 0 : drop));
@@ -491,8 +562,8 @@ export function drawRig(ctx: Ctx, rig: Rig, p: Pose, kind: Kind): void {
   else farHand = arm(ctx, rig, J.shoulderFar, p.shF, p.elF, true);
   ctx.restore();
 
-  leg(ctx, rig, J.hipFront, p.hipF, p.kneeF, true);
-  leg(ctx, rig, J.hipBack, p.hipN, p.kneeN, false);
+  leg(ctx, rig, J.hipFront, p.hipF, p.kneeF, p.footF, true);
+  leg(ctx, rig, J.hipBack, p.hipN, p.kneeN, p.footN, false);
 
   ctx.save();
   ctx.rotate(p.body);
@@ -578,7 +649,7 @@ interface HPose {
 // Chavandoz egarda: son oldinga, boldir pastga; nayzali — nayza qo'ltiqda, qilichli — qilich ko'tarilgan
 const RIDER_LANCE: Pose = {
   ...BASE, body: 0.05, hipN: -1.25, kneeN: 1.4, hipF: -1.2, kneeF: 1.35,
-  sh: 0.3, el: -1.45, shF: -0.4, elF: -1.1, cape: 0.15, aim: 0,
+  sh: 0.3, el: -1.45, shF: -0.4, elF: -1.1, cape: 0.15, aim: 0, footN: -0.12, footF: -0.12,
 };
 const RIDER_SWORD: Pose = { ...RIDER_LANCE, sh: -0.35, el: -1.25, bl: -0.85 };
 
@@ -670,7 +741,7 @@ function horseTarget(u: Unit, rig: Rig): HPose {
   }
   if (u.anim === 'run' || u.anim === 'walk' || u.anim === 'carry') {
     const run = u.anim === 'run';
-    const c = u.walkDist / ((run ? 1.7 : 1.3) * W);
+    const c = u.walkDist / ((run ? 1.7 : 1.0) * W * RANK[u.rank].scale);
     if (run) {
       [hp.fhU, hp.fhL] = gaitLeg(c, 0.42, 0.55, 1.1, false);
       [hp.nhU, hp.nhL] = gaitLeg(c - 0.1, 0.42, 0.55, 1.1, false);
@@ -687,10 +758,10 @@ function horseTarget(u: Unit, rig: Rig): HPose {
       hp.lance = lance ? -0.03 : hp.lance;
       hp.banner = -0.12;
     } else {
-      [hp.nhU, hp.nhL] = gaitLeg(c, 0.62, 0.3, 0.8, false);
-      [hp.nfU, hp.nfL] = gaitLeg(c - 0.25, 0.62, 0.3, 1.0, true);
-      [hp.fhU, hp.fhL] = gaitLeg(c - 0.5, 0.62, 0.3, 0.8, false);
-      [hp.ffU, hp.ffL] = gaitLeg(c - 0.75, 0.62, 0.3, 1.0, true);
+      [hp.nhU, hp.nhL] = gaitLeg(c, 0.62, 0.42, 0.8, false);
+      [hp.nfU, hp.nfL] = gaitLeg(c - 0.25, 0.62, 0.42, 1.0, true);
+      [hp.fhU, hp.fhL] = gaitLeg(c - 0.5, 0.62, 0.42, 0.8, false);
+      [hp.ffU, hp.ffL] = gaitLeg(c - 0.75, 0.62, 0.42, 1.0, true);
       hp.neck = 0.05 + 0.05 * Math.sin(Math.PI * 4 * c);
       hp.tail = 0.4 + 0.08 * Math.sin(Math.PI * 2 * c);
       hp.y = -0.5 * Math.abs(Math.sin(Math.PI * 4 * c));
@@ -789,7 +860,7 @@ function drawHorse(ctx: Ctx, rig: Rig, hp: HPose): void {
   ctx.save();
   seat();
   ctx.rotate(r.body);
-  leg(ctx, rig, J.hipFront, r.hipF, r.kneeF, true);
+  leg(ctx, rig, J.hipFront, r.hipF, r.kneeF, r.footF, true);
   ctx.restore();
   horseLeg(ctx, rig, H.hind, hp.fhU, hp.fhL, false, true);
   horseLeg(ctx, rig, H.fore, hp.ffU, hp.ffL, true, true);
@@ -830,7 +901,7 @@ function drawHorse(ctx: Ctx, rig: Rig, hp: HPose): void {
     ctx.restore();
   }
   part(ctx, P.torso);
-  leg(ctx, rig, J.hipBack, r.hipN, r.kneeN, false);
+  leg(ctx, rig, J.hipBack, r.hipN, r.kneeN, r.footN, false);
   ctx.save();
   ctx.translate(J.neck[0], J.neck[1]);
   ctx.rotate(r.head);
@@ -853,7 +924,7 @@ function drawHorse(ctx: Ctx, rig: Rig, hp: HPose): void {
 // Askarni skeleti bilan chizadi (odam yoki otliq). (0, 0) — oyoqlar orasi, yer sathida; jangchi o'ngga qaragan
 export function drawUnitRig(ctx: Ctx, rig: Rig, u: Unit): void {
   if (rig.joints.horse) drawHorse(ctx, rig, horsePose(u, rig));
-  else drawRig(ctx, rig, rigPose(u), u.kind);
+  else drawRig(ctx, rig, rigPose(u, rig), u.kind);
 }
 
 // Boshining tepasi yerdan (jon chizig'i va Amir belgisi uchun)

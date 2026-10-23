@@ -120,7 +120,9 @@ bo'lishi mumkin — qo'l-oyoq aniq uzunlikka (son bo'g'ini yerdan ~0.51 bo'y), b
 masshtabida (haqiqiy oraliqdan chiqmaydi), qurollar haqiqiy uzunligida (qilich ~0.5, nayza ~1.35 bo'y), ot — yag'rini
 chavandoz bo'yining 0.84 i. Gavdadagi yelka teshigi mato bilan yopiladi, butun chizilgan qo'l yoki ot oyog'idan
 kerakli qismi olinadi. Dushman xalqlarining ko'k mato qismlari jang rangiga bo'yaladi. `src/skeleton.ts` har
-kadrda suyak burchaklarini hisoblaydi: yurish, yugurish (qadam bosib o'tilgan yo'lga mos), turish, uch xil zarba,
+kadrda suyak burchaklarini hisoblaydi: yurish va yugurish — haqiqiy qadam: yerdagi oyoq bosib o'tilgan yo'lga
+teng orqaga suriladi (sirpanmaydi), son va tizza oyoq kafti turgan joydan hisoblanadi (IK), tovon avval tegadi, qadam
+oxirida oyoq uchidan itariladi, qo'llar oyoqlarga qarama-qarshi silkinadi; yugurganda askar 1.45 barobar tez; turish, uch xil zarba,
 zarba yeyish, yiqilish; ot — to'rt zarbli yurish va chopish (galop), turganda bosh silkitish va yer tepish, o'lganda
 cho'kadi, chavandoz egardan yiqiladi; qo'mondon egarida bayroq. Yangi varaq qo'shish: `RIGS` ga yozuv (varaq,
 bo'laklar tartibi, bo'yi, qurol turi) qo'shiladi.
