@@ -91,6 +91,7 @@ src/
   ui/battleScreen.ts jang ekrani
 tools/
   prepare_assets.py  art/ dagi fon va xarita rasmlarini o'yin rasmlariga aylantiradi
+  shablon.py         askar shabloni (bo'lakli qo'g'irchoq) va bo'yalgan varaqni tekshirish
   sim.ts             balans sinovi: bot hamma janglarni o'ynaydi
   duel.ts            kuch nisbati sinovi: 1 Amir N ta askarga qarshi
 ```
@@ -113,6 +114,15 @@ python3 tools/prepare_assets.py --preview
 ```
 
 Skript ularni `public/assets/` + `src/assets.json` ga yozadi.
+
+**Yangi askarlar (shablon usuli).** Askar Stick War Legacy uslubida: tanasi qora, ustida tarixiy kiyim, bo'laklarga
+ajratilgan qo'g'irchoq (bosh, gavda, yeng, bilak, son, etik, etak, plash, qurol). Bo'laklarning o'lchami, joyi va
+bo'g'imlari `tools/shablon.py` da belgilanadi: u `art/shablon/<tur>.png` (ChatGPT bo'yaydigan shablon), `<tur>.json`
+(har bo'lakning qutisi, aylanish nuqtasi, chizish tartibi) va `<tur>_pozalar.png` (yig'ilgan askar uch pozada) ni
+yasaydi hamda pozalarda yashirin uchlar ko'rinib qolmaganini sanaydi. Bo'g'imda pastki bo'lakning uchi yarim doira,
+aylanish nuqtasi — uning markazi; yuqori bo'lak shu doirani to'liq yopadi, shuning uchun qo'l-oyoq qanday bukilsa ham
+tirqish ochilmaydi. Prompt va qo'llanma: [`art/promptlar_v5.md`](art/promptlar_v5.md). Bo'yalgan varaqni tekshirish:
+`python3 tools/shablon.py --tekshir natija.png`.
 Hisob sekundiga 30 marta, ekran esa 60+ marta yangilanadi — ekran ikki hisob qadami orasini to'ldiradi.
 
 ## Telegram'ga joylash

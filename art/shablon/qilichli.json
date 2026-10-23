@@ -1,0 +1,211 @@
+{
+ "size": 1024,
+ "T": 640,
+ "joints": {
+  "neck": [
+   0.01,
+   0.86
+  ],
+  "shoulder": [
+   0.005,
+   0.82
+  ],
+  "elbow": [
+   0.005,
+   0.63
+  ],
+  "fist": [
+   0.012,
+   0.45
+  ],
+  "hip": [
+   0.0,
+   0.52
+  ],
+  "knee": [
+   0.0,
+   0.285
+  ],
+  "clasp": [
+   -0.01,
+   0.845
+  ],
+  "belt": [
+   -0.035,
+   0.555
+  ]
+ },
+ "pieces": {
+  "plash": {
+   "name": "Plash (yelka to'g'nag'ichidan)",
+   "joint": "clasp",
+   "box": [
+    32,
+    202,
+    200,
+    651
+   ],
+   "pivot": [
+    165.2,
+    216.8
+   ]
+  },
+  "etak_old": {
+   "name": "Etakning old yarmi",
+   "joint": "hip",
+   "box": [
+    304,
+    252,
+    409,
+    429
+   ],
+   "pivot": [
+    320.1,
+    292.4
+   ]
+  },
+  "etak_orqa": {
+   "name": "Etakning orqa yarmi",
+   "joint": "hip",
+   "box": [
+    232,
+    461,
+    337,
+    638
+   ],
+   "pivot": [
+    320.4,
+    501.4
+   ]
+  },
+  "bosh": {
+   "name": "Bosh (qora bosh, bo'yin va bosh kiyim)",
+   "joint": "neck",
+   "box": [
+    447,
+    32,
+    560,
+    164
+   ],
+   "pivot": [
+    509.8,
+    139.6
+   ]
+  },
+  "gavda": {
+   "name": "Gavda (yoqadan belbog' ostigacha)",
+   "joint": "hip",
+   "box": [
+    457,
+    196,
+    574,
+    414
+   ],
+   "pivot": [
+    510.2,
+    420.7
+   ]
+  },
+  "son": {
+   "name": "Son (shim, tizzada burma)",
+   "joint": "hip",
+   "box": [
+    455,
+    446,
+    570,
+    682
+   ],
+   "pivot": [
+    510.1,
+    494.1
+   ]
+  },
+  "etik": {
+   "name": "Etik (tizzadan tovongacha)",
+   "joint": "knee",
+   "box": [
+    468,
+    714,
+    606,
+    936
+   ],
+   "pivot": [
+    509.7,
+    751.2
+   ]
+  },
+  "yeng": {
+   "name": "Yeng (yelkadan tirsakkacha, pastida manjet)",
+   "joint": "shoulder",
+   "box": [
+    653,
+    207,
+    728,
+    383
+   ],
+   "pivot": [
+    690.2,
+    236.2
+   ]
+  },
+  "bilak": {
+   "name": "Bilak va musht",
+   "joint": "elbow",
+   "box": [
+    666,
+    415,
+    723,
+    586
+   ],
+   "pivot": [
+    690.4,
+    439.4
+   ]
+  },
+  "qilich": {
+   "name": "Qilich (tig'i yuqorida)",
+   "joint": "fist",
+   "box": [
+    824,
+    62,
+    898,
+    356
+   ],
+   "pivot": [
+    850.3,
+    320.0
+   ]
+  },
+  "qin": {
+   "name": "Qin (bo'sh)",
+   "joint": "belt",
+   "box": [
+    797,
+    388,
+    863,
+    645
+   ],
+   "pivot": [
+    849.6,
+    390.0
+   ]
+  }
+ },
+ "order": [
+  "plash",
+  "bilak2",
+  "yeng2",
+  "etik2",
+  "son2",
+  "etik",
+  "son",
+  "etak_orqa",
+  "etak_old",
+  "bosh",
+  "gavda",
+  "qin",
+  "qilich",
+  "bilak",
+  "yeng"
+ ]
+}
