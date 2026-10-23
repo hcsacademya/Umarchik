@@ -6,6 +6,7 @@ import type { Battle, Shot, Snap, Unit } from './battle.ts';
 import { BATTLES, CASTLE_X, COLORS, DEAD_LINGER, DEPTH, FORMATION_FRONT, RANK, WALL_SPOTS, WORLD_W } from './config.ts';
 import type { FactionId, Kind, Side, Terrain } from './config.ts';
 import { drawUnitRig, rigBounds, rigTop } from './skeleton.ts';
+import { drawSpine } from './spine.ts';
 
 export const VIEW_H = 560; // ekran balandligiga sig'adigan o'yin birligi
 // Kamera: yer chizig'i ekran balandligining shu ulushida; chuqurlik (y) ekranda shuncha cho'ziladi —
@@ -770,7 +771,7 @@ export class Renderer {
       ctx.save();
       ctx.translate(px, py);
       ctx.scale(flip ? -s : s, s);
-      drawUnitRig(ctx, rig, u);
+      if (!drawSpine(ctx, u)) drawUnitRig(ctx, rig, u);
       ctx.restore();
       return;
     }
@@ -788,7 +789,7 @@ export class Renderer {
     g.globalCompositeOperation = 'source-over';
     g.clearRect(0, 0, w, h);
     g.setTransform(flip ? -k : k, 0, 0, k, -bd.l * k, -bd.t * k);
-    drawUnitRig(g, rig, u);
+    if (!drawSpine(g, u)) drawUnitRig(g, rig, u);
     if (flash > 0) {
       g.setTransform(1, 0, 0, 1, 0, 0);
       g.globalCompositeOperation = 'source-atop';

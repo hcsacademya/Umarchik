@@ -6,7 +6,6 @@ import { buyUpgrade, newSave, upgradeCost, upgradeOpen } from '../src/campaign.t
 import { BATTLES, SPECIAL_MAX, UPGRADES, itemOf } from '../src/config.ts';
 import type { ItemId } from '../src/config.ts';
 
-declare const process: { argv: string[] };
 
 function playBot(b: Battle): void {
   const s = b.sides[0];

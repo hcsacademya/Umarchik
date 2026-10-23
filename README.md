@@ -85,6 +85,7 @@ src/
   battle.ts          jang mantig'i (grafikasiz)
   ai.ts              dushman aqli (xalq va xarakterga qarab)
   skeleton.ts        skelet animatsiya: har tur pozalari va bo'laklarni chizish
+  spine.ts           Spine skeletlarini ijro etish (hozircha qilichli)
   render.ts          jang maydonini chizish (canvas)
   assets.ts          rasmlarni yuklash, dushmanni jang rangiga bo'yash
   telegram.ts        Telegram Mini App: profil, bulutli saqlash, to'liq ekran
@@ -93,6 +94,7 @@ src/
 tools/
   prepare_assets.py  art/ dagi varaqlarni o'yin rasmlariga aylantiradi
   rig_sheets.py      skelet bo'laklarini varaqlardan kesib oladi (python3 tools/rig_sheets.py --preview)
+  export_spine.ts    skeletni Spine 4.2 formatiga o'tkazadi (node tools/export_spine.ts qilichli)
   sim.ts             balans sinovi: bot hamma janglarni o'ynaydi
   duel.ts            kuch nisbati sinovi: 1 Amir N ta askarga qarshi
 ```
@@ -131,6 +133,21 @@ zarba yeyish, yiqilish; ot — to'rt zarbli yurish va chopish (galop), turganda 
 cho'kadi, chavandoz egardan yiqiladi; qo'mondon egarida bayroq. Yangi varaq qo'shish: `RIGS` ga yozuv (varaq,
 bo'laklar tartibi, bo'yi, qurol turi) qo'shiladi.
 Hisob sekundiga 30 marta, ekran esa 60+ marta yangilanadi — ekran ikki hisob qadami orasini to'ldiradi.
+
+**Spine (harakatlarni Spine dasturida tahrirlash).** Hozircha bizning oddiy qilichli Spine bilan chiziladi
+(`src/spine.ts`, runtime `@esotericsoftware/spine-canvas` 4.2); qolganlar `src/skeleton.ts` bilan. Spine fayli
+yuklanmasa, o'yin o'zi eski skeletga qaytadi.
+1. `node tools/export_spine.ts qilichli` — o'yindagi skeletni Spine'ga o'tkazadi: `art/spine/qilichli/qilichli.json`
+   va `images/` (Spine dasturi uchun), `public/spine/qilichli/` (o'yin uchun: json, atlas, webp, meta.json).
+   **Diqqat:** qayta ishga tushirilsa, Spine'da qilingan o'zgarishlar ustidan yoziladi.
+2. Spine 4.2 → *Import Data* → `art/spine/qilichli/qilichli.json`. Harakat nomlarini o'zgartirmang: `idle`, `guard`,
+   `walk`, `run`, `attack1..3`, `hit_front`, `hit_back` (ustiga qo'shiladigan), `death_back`, `death_front`,
+   `death_back_kneel`, `death_front_kneel`.
+3. *Export* → JSON + *Texture Atlas* (nomi `qilichli`) → `public/spine/qilichli/`. Agar Spine'ning yangiroq versiyasi
+   bo'lsa, eksportda 4.2 ni tanlang.
+Vaqt qanday bog'langan: `walk`/`run` ning to'liq davomiyligi = bitta qadam sikli (`meta.json` dagi yo'l, birlikda) —
+oyoq sirpanmasligi uchun shu masofani saqlang; `attack*` davomiyligi zarba ulushiga cho'ziladi (tegish lahzasi —
+44.4% da); `death_*` real vaqtda; `idle`/`guard` aylanib takrorlanadi.
 
 Tayanchlar (`art/baza_*.webp`): skript darvoza va kon og'zini (rasmdagi ikki eng katta qorong'i teshik) o'zi
 topadi, rasmni darvoza ostidan kesadi va hamma tayanchni bir xil darvoza balandligiga keltiradi.

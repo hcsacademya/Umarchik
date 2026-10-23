@@ -4,7 +4,7 @@
 // Takrorlanmasligi uchun: har askarning o'z odati (qadam, qo'l silkinishi, egilish), zarbaning 3 xil turi
 // tasodifiy, turganda vaqti-vaqti bilan tasodifiy harakatlar (qarash, oyoq almashtirish, qurolni to'g'rilash).
 import type { Rig, RigPart } from './assets.ts';
-import { ready } from './assets.ts';
+import { ready } from './ready.ts';
 import { swingPhase } from './battle.ts';
 import type { Unit } from './battle.ts';
 import { RANK } from './config.ts';
@@ -37,6 +37,9 @@ export interface Pose {
 }
 
 type Key = Partial<Pose>;
+
+// Spine'ga eksport qilishda (tools/export_spine.ts) turishdagi tasodifiy harakatlar o'chiriladi: toza nafas sikli
+export const bake = { gestures: true };
 
 // Takrorlanmas tasodif: bir askar uchun doim bir xil, askarlar orasida har xil
 const hash = (n: number): number => {
@@ -354,7 +357,7 @@ function idlePose(u: Unit, base: Pose): Pose {
   const i = Math.floor(gt / per);
   const lt = gt - i * per;
   const dur = 1.5;
-  if (lt > dur || hash(u.id * 3.1 + i * 1.7) < 0.25) return p;
+  if (!bake.gestures || lt > dur || hash(u.id * 3.1 + i * 1.7) < 0.25) return p;
   const e = Math.sin((Math.PI * lt) / dur) ** 2;
   const type = Math.floor(hash(u.id * 5.3 + i * 2.9) * 3);
   if (type === 0) {
@@ -605,7 +608,7 @@ function leg(ctx: Ctx, rig: Rig, at: [number, number], hip: number, knee: number
 }
 
 // Son bo'g'inidan oyoq tagigacha tik masofa (oyoq kafti tekis turgani uchun tovondan pastga doim sole)
-function legDepth(rig: Rig, hip: number, knee: number): number {
+export function legDepth(rig: Rig, hip: number, knee: number): number {
   const J = rig.joints;
   if (!J.ankle) return J.knee[1] * Math.cos(hip) + J.foot * Math.cos(hip + knee);
   return J.knee[1] * Math.cos(hip) + J.ankle[1] * Math.cos(hip + knee) + (J.sole ?? 0);

@@ -1,6 +1,7 @@
 // Rasmlarni yuklash. O'lchamlar va tayanch nuqtalar tools/prepare_assets.py yasagan assets.json dan.
 import meta from './assets.json';
 import type { FactionId, Kind, Rank, Terrain } from './config.ts';
+import { ready } from './ready.ts';
 
 export interface Frame {
   img: HTMLImageElement | HTMLCanvasElement;
@@ -193,9 +194,7 @@ export function unitIcon(kind: Kind): string {
   return unitMeta[kind][0].f;
 }
 
-export function ready(img: Frame['img']): boolean {
-  return img instanceof HTMLCanvasElement || (img.complete && img.naturalWidth > 0);
-}
+export { ready };
 
 // ---------- Dushmanni jang rangiga bo'yash ----------
 // key = true: faqat toza ko'k mato qismlari rangga almashadi (teri, charm, temir o'zgarmaydi).
