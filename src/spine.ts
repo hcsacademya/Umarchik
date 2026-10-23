@@ -11,7 +11,8 @@ import { RANK } from './config.ts';
 import type { Kind } from './config.ts';
 
 // Spine bilan chiziladigan turlar (faqat bizning tomon, oddiy askar)
-export const SPINE_UNITS: Kind[] = ['qilichli'];
+// hozircha bo'sh: qilichli kiyimli odamcha bilan sinalmoqda (src/doll.ts)
+export const SPINE_UNITS: Kind[] = [];
 
 interface Meta {
   walkStride: number; // walk harakatining 1 sikli necha birlik yo'l

@@ -85,7 +85,8 @@ src/
   battle.ts          jang mantig'i (grafikasiz)
   ai.ts              dushman aqli (xalq va xarakterga qarab)
   skeleton.ts        skelet animatsiya: har tur pozalari va bo'laklarni chizish
-  spine.ts           Spine skeletlarini ijro etish (hozircha qilichli)
+  doll.ts            kiyimli odamcha: tana va kiyim kod bilan (sinov: Amir, qilichli)
+  spine.ts           Spine skeletlarini ijro etish (hozir o'chirilgan)
   render.ts          jang maydonini chizish (canvas)
   assets.ts          rasmlarni yuklash, dushmanni jang rangiga bo'yash
   telegram.ts        Telegram Mini App: profil, bulutli saqlash, to'liq ekran
@@ -134,7 +135,12 @@ cho'kadi, chavandoz egardan yiqiladi; qo'mondon egarida bayroq. Yangi varaq qo's
 bo'laklar tartibi, bo'yi, qurol turi) qo'shiladi.
 Hisob sekundiga 30 marta, ekran esa 60+ marta yangilanadi — ekran ikki hisob qadami orasini to'ldiradi.
 
-**Spine (harakatlarni Spine dasturida tahrirlash).** Hozircha bizning oddiy qilichli Spine bilan chiziladi
+**Kiyimli odamcha** (`src/doll.ts`, sinov: bizning Amir va oddiy qilichli): tana va kiyim kod bilan chiziladi —
+qo'l-oyoq uchlari dumaloq shakllar, bo'g'inda chok bo'lmaydi; ko'ylak etagi oyoqlarga qarab kengayadi, plash hilpiraydi;
+bosh (dubulg'a/salla), qalqon va qurol — rasmlardan. Pozalar `skeleton.ts` dagi bilan bir xil. Kiyim ranglari va
+buyumlar `LOOKS` da (yangi tur qo'shish — bitta yozuv).
+
+**Spine (harakatlarni Spine dasturida tahrirlash).** Hozir o'chirilgan (`SPINE_UNITS` bo'sh); avval qilichli Spine bilan chizilardi
 (`src/spine.ts`, runtime `@esotericsoftware/spine-canvas` 4.2); qolganlar `src/skeleton.ts` bilan. Spine fayli
 yuklanmasa, o'yin o'zi eski skeletga qaytadi.
 1. `node tools/export_spine.ts qilichli` — o'yindagi skeletni Spine'ga o'tkazadi: `art/spine/qilichli/qilichli.json`

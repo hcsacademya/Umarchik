@@ -5,6 +5,7 @@
 // tasodifiy, turganda vaqti-vaqti bilan tasodifiy harakatlar (qarash, oyoq almashtirish, qurolni to'g'rilash).
 import type { Rig, RigPart } from './assets.ts';
 import { ready } from './ready.ts';
+import { LOOKS, drawDoll } from './doll.ts';
 import { swingPhase } from './battle.ts';
 import type { Unit } from './battle.ts';
 import { RANK } from './config.ts';
@@ -1005,7 +1006,13 @@ function drawHorse(ctx: Ctx, rig: Rig, hp: HPose): void {
 // Askarni skeleti bilan chizadi (odam yoki otliq). (0, 0) — oyoqlar orasi, yer sathida; jangchi o'ngga qaragan
 export function drawUnitRig(ctx: Ctx, rig: Rig, u: Unit): void {
   if (rig.joints.horse) drawHorse(ctx, rig, horsePose(u, rig));
-  else drawRig(ctx, rig, rigPose(u, rig), u.kind);
+  else if (u.side === 0 && u.rank === 'oddiy' && LOOKS[u.kind]) {
+    // kiyimli odamcha (sinov: Amir va qilichli)
+    const p = rigPose(u, rig);
+    const J = rig.joints;
+    const drop = p.ground * (J.knee[1] + J.foot - Math.max(legDepth(rig, p.hipN, p.kneeN), legDepth(rig, p.hipF, p.kneeF)));
+    drawDoll(ctx, rig, p, LOOKS[u.kind]!, drop);
+  } else drawRig(ctx, rig, rigPose(u, rig), u.kind);
 }
 
 // Boshining tepasi yerdan (jon chizig'i va Amir belgisi uchun)
