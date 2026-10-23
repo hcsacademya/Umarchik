@@ -84,7 +84,8 @@ src/
   campaign.ts        saqlash, ochilishlar, boshlang'ich qo'shin, mukofot
   battle.ts          jang mantig'i (grafikasiz)
   ai.ts              dushman aqli (xalq va xarakterga qarab)
-  render.ts          jang maydonini chizish (canvas); qasr, kon va askarlar hozircha kod bilan oddiy shaklda
+  render.ts          jang maydonini chizish (canvas); qasr, kon va rasmi yo'q askarlar hozircha oddiy shaklda
+  puppet.ts          bo'lakli askar (qo'g'irchoq): yig'ish, turish, yurish, yugurish, zarba, yiqilish
   assets.ts          fon va xarita rasmlarini yuklash, tugma belgilari
   telegram.ts        Telegram Mini App: profil, bulutli saqlash, to'liq ekran
   ui/home.ts         bosh sahifa va tablar
@@ -92,6 +93,7 @@ src/
 tools/
   prepare_assets.py  art/ dagi fon va xarita rasmlarini o'yin rasmlariga aylantiradi
   shablon.py         askar shabloni (bo'lakli qo'g'irchoq) va bo'yalgan varaqni tekshirish
+  kesish.py          bo'yalgan varaqdan bo'laklarni kesib, o'yin atlasini yasaydi
   sim.ts             balans sinovi: bot hamma janglarni o'ynaydi
   duel.ts            kuch nisbati sinovi: 1 Amir N ta askarga qarshi
 ```
@@ -123,6 +125,11 @@ yasaydi hamda pozalarda yashirin uchlar ko'rinib qolmaganini sanaydi. Bo'g'imda 
 aylanish nuqtasi — uning markazi; yuqori bo'lak shu doirani to'liq yopadi, shuning uchun qo'l-oyoq qanday bukilsa ham
 tirqish ochilmaydi. Prompt va qo'llanma: [`art/promptlar_v5.md`](art/promptlar_v5.md). Bo'yalgan varaqni tekshirish:
 `python3 tools/shablon.py --tekshir natija.png`.
+
+Bo'yalgan varaq `art/askar/<tur>_varaq.webp` ga qo'yiladi va `python3 tools/kesish.py` bilan kesiladi: fon (va
+popukdagi pushti tus) tozalanadi, bo'g'im nuqtalari har bo'lakning chizilgan o'lchamidan olinadi, natija —
+`public/assets/askar/<tur>.webp` (atlas), `src/askar.json` va tekshirish uchun `art/askar/<tur>_yigilgan.png`.
+Hozir faqat bizning qilichli shu usulda; qolganlari rasmlari kelguncha oddiy shaklda chiziladi.
 Hisob sekundiga 30 marta, ekran esa 60+ marta yangilanadi — ekran ikki hisob qadami orasini to'ldiradi.
 
 ## Telegram'ga joylash

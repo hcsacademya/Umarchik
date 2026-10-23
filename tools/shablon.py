@@ -146,8 +146,9 @@ UNITS = {
             (850, 60, ['qilich', 'qin']),
         ],
         # yig'ishda chizish tartibi (orqadan oldinga); "2" — uzoqdagi qo'l-oyoq (o'sha bo'lak, qoraytirilgan)
-        order=['plash', 'bilak2', 'yeng2', 'etik2', 'son2', 'etik', 'son', 'etak_orqa', 'etak_old', 'bosh',
-               'gavda', 'qin', 'qilich', 'bilak', 'yeng'],
+        # qin chap sonda — tananing narigi tomonida, shuning uchun u ham "2"
+        order=['plash', 'qin2', 'bilak2', 'yeng2', 'etik2', 'son2', 'etik', 'son', 'etak_orqa', 'etak_old', 'bosh',
+               'gavda', 'qilich', 'bilak', 'yeng'],
     ),
 }
 
@@ -243,7 +244,7 @@ def pose_items(pose):
         'bosh': ('bosh', J['neck'], 0, False),
         'gavda': ('gavda', J['hip'], 0, False),
         'plash': ('plash', J['clasp'], a('plash'), False),
-        'qin': ('qin', J['belt'], a('qin'), False),
+        'qin2': ('qin', J['belt'], a('qin'), True),
         'etak_old': ('etak_old', J['hip'], a('etak_old'), False),
         'etak_orqa': ('etak_orqa', J['hip'], a('etak_orqa'), False),
     }

@@ -193,6 +193,7 @@
  },
  "order": [
   "plash",
+  "qin2",
   "bilak2",
   "yeng2",
   "etik2",
@@ -203,7 +204,6 @@
   "etak_old",
   "bosh",
   "gavda",
-  "qin",
   "qilich",
   "bilak",
   "yeng"

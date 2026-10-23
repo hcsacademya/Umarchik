@@ -8,7 +8,7 @@ export { ready };
 
 const cache = new Map<string, HTMLImageElement>();
 
-function image(src: string): HTMLImageElement {
+export function loadImage(src: string): HTMLImageElement {
   let img = cache.get(src);
   if (!img) {
     img = new Image();
@@ -29,7 +29,7 @@ export interface Background {
 
 const bgMeta = (meta as { backgrounds?: Record<string, { f: string; ground: number }> }).backgrounds ?? {};
 export const BACKGROUNDS: Partial<Record<Terrain, Background>> = {};
-for (const [k, v] of Object.entries(bgMeta)) BACKGROUNDS[k as Terrain] = { img: image(v.f), ground: v.ground };
+for (const [k, v] of Object.entries(bgMeta)) BACKGROUNDS[k as Terrain] = { img: loadImage(v.f), ground: v.ground };
 
 // Tugma belgilari: rasm yo'q paytda — tur harfi bilan oddiy belgi (yangi rasmlar kelguncha)
 const ICON_TEXT: Record<Kind, [string, string]> = {

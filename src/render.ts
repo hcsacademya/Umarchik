@@ -5,6 +5,7 @@ import { mineX, swingPhase } from './battle.ts';
 import type { Battle, Shot, Snap, Unit } from './battle.ts';
 import { BATTLES, CASTLE_DEPTH, CASTLE_X, COLORS, DEAD_LINGER, DEPTH, FORMATION_FRONT, RANK, WALL_SPOTS, WORLD_W } from './config.ts';
 import type { Kind, Side, Terrain } from './config.ts';
+import { puppetOf } from './puppet.ts';
 
 export const VIEW_H = 560; // ekran balandligiga sig'adigan o'yin birligi
 // Kamera: yer chizig'i ekran balandligining shu ulushida; chuqurlik (y) ekranda shuncha cho'ziladi —
@@ -575,7 +576,8 @@ export class Renderer {
   }
 
   // ---------------- Askarlar ----------------
-  // Vaqtincha oddiy odamcha: kiyimi tomon rangida (bizniki ko'k, Amir tilla, dushman — jang rangida), tur quroli bilan
+  // Rasmi tayyor turlar bo'lakli qo'g'irchoq bilan chiziladi (src/puppet.ts); qolganlari vaqtincha oddiy odamcha:
+  // kiyimi tomon rangida (bizniki ko'k, Amir tilla, dushman — jang rangida), tur quroli bilan
 
   private drawShadow(u: Unit): void {
     const sc = RANK[u.rank].scale;
@@ -607,7 +609,11 @@ export class Renderer {
       ctx.fillRect(this.sx(u.x) - hgt * this.scale, this.sy(u.y, hgt * 1.5), hgt * 2 * this.scale, hgt * 2 * this.scale);
     }
     const fade = u.dead ? Math.max(0, 1 - Math.max(0, u.deadT - DEAD_LINGER)) : alpha;
-    this.figure(u.x, u.dead ? u.y : y, 0, u.facing, u.kind, sc, color, {
+    const pup = puppetOf(u);
+    const px = this.sx(u.x);
+    if (pup?.ready()) {
+      if (px > -150 && px < this.W + 150) pup.draw(ctx, u, px, this.sy(u.dead ? u.y : y, 0), this.scale, sc, fade);
+    } else this.figure(u.x, u.dead ? u.y : y, 0, u.facing, u.kind, sc, color, {
       walk: u.anim === 'walk' || u.anim === 'run' || u.anim === 'carry' ? u.walkDist : undefined,
       run: u.anim === 'run',
       swing: swingPhase(u),
