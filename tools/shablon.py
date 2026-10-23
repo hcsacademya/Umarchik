@@ -325,29 +325,46 @@ def check(path, unit='qilichli'):
     a = np.asarray(img).astype(int)
     bg = (a[..., 0] > 170) & (a[..., 2] > 170) & (a[..., 1] < 110)
     fg = ndimage.binary_opening(~bg, iterations=2)
-    used = np.zeros_like(fg)
+    # bo'laklar (popuk kabi uzilgan mayda qismlar o'z bo'lagiga qo'shiladi)
+    lab, n = ndimage.label(ndimage.binary_dilation(fg, iterations=5))
+    comps = []
+    for i, sl in enumerate(ndimage.find_objects(lab)):
+        ys, xs = np.nonzero(fg[sl] & (lab[sl] == i + 1))
+        if len(xs) > 1500:
+            comps.append((xs.min() + sl[1].start, ys.min() + sl[0].start,
+                          xs.max() + 1 + sl[1].start, ys.max() + 1 + sl[0].start))
+    tpl = meta['pieces']
+    # butun rasm biroz kattalashgan yoki surilgan bo'lsa zarari yo'q — avval shuni topamiz (s, tx, ty)
+    s, tx, ty = 1.0, 0.0, 0.0
+    for _ in range(3):
+        match = {}
+        for pid, b in tpl.items():
+            cx, cy = s * (b['box'][0] + b['box'][2]) / 2 + tx, s * (b['box'][1] + b['box'][3]) / 2 + ty
+            match[pid] = min(comps, key=lambda c: math.hypot((c[0] + c[2]) / 2 - cx, (c[1] + c[3]) / 2 - cy))
+        src = np.array([v for pid in tpl for v in tpl[pid]['box']], float)
+        dst = np.array([v for pid in tpl for v in match[pid]], float)
+        A = np.zeros((len(src), 3))
+        A[:, 0] = src
+        A[0::2, 1] = 1
+        A[1::2, 2] = 1
+        s, tx, ty = np.linalg.lstsq(A, dst, rcond=None)[0]
+    # ChatGPT shablonni aynan takrorlamaydi: butun rasmni biroz cho'zishi mumkin — bu zararsiz.
+    # Muhimi bo'laklarning bir-biriga nisbati: bo'yi (bo'g'imdan bo'g'imgacha) ±6%, eni ±15%
+    # (bo'g'imdagi yashirin uchlar shuncha farqni yopadi)
+    rh = {pid: (match[pid][3] - match[pid][1]) / (b['box'][3] - b['box'][1]) for pid, b in tpl.items()}
+    rw = {pid: (match[pid][2] - match[pid][0]) / (b['box'][2] - b['box'][0]) for pid, b in tpl.items()}
+    sy, sx = float(np.median(list(rh.values()))), float(np.median(list(rw.values())))
+    print(f"butun rasm: bo'yiga {sy:.2f}, eniga {sx:.2f} barobar (zararsiz)")
     bad = 0
-    for pid, b in meta['pieces'].items():
-        x0, y0, x1, y1 = b['box']
-        m = GAP // 2
-        win = fg[max(0, y0 - m):y1 + m, max(0, x0 - m):x1 + m]
-        used[max(0, y0 - m):y1 + m, max(0, x0 - m):x1 + m] = True
-        if not win.any():
-            print(f"  {pid:9s} TOPILMADI")
-            bad += 1
-            continue
-        ys, xs = np.nonzero(win)
-        px0, py0 = xs.min() + max(0, x0 - m), ys.min() + max(0, y0 - m)
-        px1, py1 = xs.max() + 1 + max(0, x0 - m), ys.max() + 1 + max(0, y0 - m)
-        dw = (px1 - px0) / (x1 - x0) - 1
-        dh = (py1 - py0) / (y1 - y0) - 1
-        edge = max(abs(px0 - x0), abs(py0 - y0), abs(px1 - x1), abs(py1 - y1))
-        ok = abs(dw) <= 0.04 and abs(dh) <= 0.04 and edge <= 8
+    for pid in tpl:
+        dh, dw = rh[pid] / sy - 1, rw[pid] / sx - 1
+        ok = abs(dh) <= 0.06 and abs(dw) <= 0.15
         bad += not ok
-        print(f"  {pid:9s} {'OK ' if ok else 'XATO'} eni {dw:+.0%} bo'yi {dh:+.0%}, chet siljishi {edge}px")
-    extra = int((fg & ~used).sum())
-    print(f"  bo'laklardan tashqaridagi ortiqcha chizilgan joy: {extra} px")
-    print('Hammasi mos.' if not bad and extra < 400 else f"Mos emas: {bad} ta bo'lak.")
+        print(f"  {pid:9s} {'OK ' if ok else 'XATO'} bo'yi {dh:+.0%}, eni {dw:+.0%}")
+    extra = len(comps) - len(set(match.values()))
+    if extra:
+        print(f"  shablonda yo'q ortiqcha narsa: {extra} ta")
+    print('Hammasi mos.' if not bad and not extra else f"Mos emas: {bad} ta bo'lak.")
 
 
 if __name__ == '__main__':
