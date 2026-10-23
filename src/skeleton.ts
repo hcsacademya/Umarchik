@@ -445,7 +445,64 @@ function targetPose(u: Unit, rig: Rig): Pose {
     const dir = u.hitDir !== 0 && u.hitDir === u.facing ? 1 : -1;
     p = { ...p, body: p.body + dir * 0.22 * k, head: p.head + dir * 0.16 * k, x: p.x + dir * 1.6 * k, kneeN: p.kneeN + 0.25 * k, y: p.y + 0.8 * k };
   }
+  if (sw >= 0 && PLANTED.has(u.kind)) p = plantedAttack(p, base, rig, sw);
   return p;
+}
+
+// ---------------- Zarba: oyoqlar yerga mahkam ----------------
+// Zarba paytida oyoqlar yerda sirpanmaydi: ikki oyoq turish holatidagi joyida qoladi, old (uzoq) oyoq zarbadan
+// oldin bir qadam oldinga tashlanadi va zarbadan keyin qaytadi; orqa oyoq tovoni ko'tarilib uchidan itariladi.
+// Son va tizza IK bilan hisoblanadi, gavda kalit pozadagi x ga suriladi va y ga cho'kadi.
+const PLANTED = new Set<Kind>(['qilichli']); // avval qilichlida sinaladi
+const LUNGE = 0.11; // old oyoq qadami, bo'yga nisbatan
+const LUNGE_LIFT = 0.05; // qadamda oyoq ko'tarilishi
+const PUSH = 0.35; // orqa oyoq tovoni ko'tarilishi (radian)
+
+// To'piqning son markazidan gorizontal joyi (FK)
+function ankleX(rig: Rig, at: [number, number], hip: number, knee: number): number {
+  const J = rig.joints;
+  const [kx, ky] = J.knee;
+  const [ax, ay] = J.ankle ?? [0, J.foot];
+  const t = hip + knee;
+  return at[0] + kx * Math.cos(hip) - ky * Math.sin(hip) + ax * Math.cos(t) - ay * Math.sin(t);
+}
+
+const window01 = (t: number, a: number, len: number): number => Math.max(0, Math.min(1, (t - a) / len));
+
+function plantedAttack(p: Pose, base: Pose, rig: Rig, sw: number): Pose {
+  const J = rig.joints;
+  if (!J.ankle) return p;
+  const H = rig.h;
+  const sole = J.sole ?? 0;
+  const ft = rig.parts.foot;
+  const toe = ft ? ft.w - ft.px : 0.08 * H;
+  // turish holatidagi oyoqlar joyi va son balandligi — zarba shu yerdan boshlanib, shu yerga qaytadi
+  const nx0 = ankleX(rig, J.hipBack, base.hipN, base.kneeN);
+  const fx0 = ankleX(rig, J.hipFront, base.hipF, base.kneeF);
+  const h0 = Math.max(legDepth(rig, base.hipN, base.kneeN), legDepth(rig, base.hipF, base.kneeF));
+  // old oyoq: 0.18–0.42 da oldinga qadam (zarba tegishidan oldin yerga tushadi), 0.68–0.95 da qaytadi
+  const go = window01(sw, 0.18, 0.24);
+  const ret = window01(sw, 0.68, 0.27);
+  const step = smooth(go) * (1 - smooth(ret));
+  const air = Math.sin(Math.PI * go) + Math.sin(Math.PI * ret);
+  const fx = fx0 + LUNGE * H * step;
+  const fUp = sole + LUNGE_LIFT * H * air;
+  // orqa oyoq: oyoq uchi atrofida burilib tovoni ko'tariladi
+  const push = PUSH * step;
+  const nx = nx0 + toe * (1 - Math.cos(push));
+  const nUp = sole * Math.cos(push) + toe * Math.sin(push);
+  // son balandligi: turish holatidan kalit pozadagi y ga cho'kadi, lekin ikki oyoq ham yetishi kerak
+  const [kx, ky] = J.knee;
+  const [ax, ay] = J.ankle;
+  const reach = Math.hypot(kx + ax, ky + ay) * 0.99;
+  let h = h0 - p.y;
+  for (const [x, up, at] of [[nx, nUp, J.hipBack], [fx, fUp, J.hipFront]] as [number, number, [number, number]][]) {
+    const dx = x - p.x - at[0];
+    h = Math.min(h, up + at[1] + Math.sqrt(Math.max(0, reach * reach - dx * dx)));
+  }
+  const [hipN, kneeN] = ik(rig, nx - p.x - J.hipBack[0], h - nUp - J.hipBack[1]);
+  const [hipF, kneeF] = ik(rig, fx - p.x - J.hipFront[0], h - fUp - J.hipFront[1]);
+  return { ...p, hipN, kneeN, hipF, kneeF, footN: push, footF: -0.2 * air, ground: 0, y: -J.hip[1] - h };
 }
 
 // Holat almashganda (turish → yurish → yugurish → zarba → o'lim) pozalar sakramasin: oldingi pozadan
