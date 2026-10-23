@@ -8,7 +8,7 @@ export interface Save {
   won: number; // nechta jang yutilgan (keyingi jang indeksi ham shu)
   gold: number;
   up: Record<UpgradeId, number>;
-  boosts: Record<BoostId, number>; // sotib olingan, keyingi jangda ishlatiladigan tezlatishlar
+  boosts: Record<BoostId, number>; // sotib olingan tezlatishlar: jangda ⚡ tugmasi bilan bittalab ishlatiladi
 }
 
 const KEY = 'umar-save-v2';
@@ -137,17 +137,12 @@ export function buyBoost(s: Save, id: BoostId): boolean {
   return true;
 }
 
-// Jang boshlanganda: har bir sotib olingan tezlatishdan bittasi ishlatiladi
-export function takeBoosts(s: Save): BoostId[] {
-  const out: BoostId[] = [];
-  for (const b of BOOSTS) {
-    if (s.boosts[b.id] > 0) {
-      s.boosts[b.id]--;
-      out.push(b.id);
-    }
-  }
-  if (out.length) writeSave(s);
-  return out;
+// Jangda tezlatishni yoqish: zaxiradan bittasi sarflanadi
+export function spendBoost(s: Save, id: BoostId): boolean {
+  if (s.boosts[id] <= 0) return false;
+  s.boosts[id]--;
+  writeSave(s);
+  return true;
 }
 
 // ---------- Jang natijasi ----------

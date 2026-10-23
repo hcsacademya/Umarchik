@@ -1,6 +1,6 @@
 // Jang simulyatsiyasi: grafikasiz, faqat mantiq. Har qadam step(dt) bilan yuradi.
 import {
-  AMIR_RESPAWN, BATTLES, BLOCK_GAP, BOOST_EFFECT, CARRY_SLOW, CASTLE_CD, CASTLE_DEPTH, CASTLE_DMG, CASTLE_FRONT, CASTLE_HP,
+  AMIR_RESPAWN, BATTLES, BLOCK_GAP, BOOSTS, BOOST_EFFECT, BOOST_TIME, CARRY_SLOW, CASTLE_CD, CASTLE_DEPTH, CASTLE_DMG, CASTLE_FRONT, CASTLE_HP,
   CASTLE_RANGE, CASTLE_X, COL_GAP, DEAD_LINGER, DEPTH, DIG_UP, DOOR_TIME, FACTIONS, FIRE_MULT, FORMATION_FRONT, HEAL_RATE,
   MAX_MINERS, MINE_OFFSET, SPECIAL_MAX, MINE_TIME, MINER_LOAD, MINER_UP, QUEUE_MAX, RANK, ROW_SIZE, START_SILVER, STATS, UNIT_UP_STEP,
   WALL_SPOTS, enemyCastleHp, enemyIncome, enemyStats, enemyTrain, itemOf, popCap, vsMult,
@@ -155,6 +155,7 @@ export interface SideState {
   income: number;
   amirDead: boolean;
   amirTimer: number;
+  boostT: Partial<Record<BoostId, number>>; // yoqilgan tezlatishlarning qolgan vaqti (soniya)
 }
 
 export interface BattleEvent {
@@ -231,7 +232,6 @@ export class Battle {
     this.boosts = boosts;
     this.seed = seed >>> 0;
     const up = save.up;
-    const has = (b: BoostId) => boosts.includes(b);
     const def = BATTLES[level];
     const fac = FACTIONS[def.faction];
     const eMult = enemyStats(level);
@@ -251,16 +251,17 @@ export class Battle {
         bought: {},
         hpMult: perKind((k) => (k === 'konchi' ? 1 : 1 + UNIT_UP_STEP * up[k])),
         dmgMult: perKind((k) => (k === 'konchi' ? 1 : 1 + UNIT_UP_STEP * up[k])),
-        speedMult: 1 + (has('tez_qadam') ? BOOST_EFFECT.tez_qadam : 0),
-        attackSpeed: 1 + (has('jangovar_ruh') ? BOOST_EFFECT.jangovar_ruh : 0),
-        trainSpeed: 1 / (1 - (has('tez_yollash') ? BOOST_EFFECT.tez_yollash : 0)),
-        minerSpeed: (1 + MINER_UP.speed * up.konchi) * (1 + (has('tez_konchi') ? BOOST_EFFECT.tez_konchi : 0)),
+        speedMult: 1,
+        attackSpeed: 1,
+        trainSpeed: 1,
+        minerSpeed: 1 + MINER_UP.speed * up.konchi,
         minerLoad: MINER_LOAD + MINER_UP.load * up.konchi,
         mineTime: MINE_TIME * (1 - DIG_UP * (up.qazish ?? 0)),
         arrowTaken: 1,
         income: 1,
         amirDead: false,
         amirTimer: 0,
+        boostT: {},
       },
       {
         silver: START_SILVER,
@@ -287,6 +288,7 @@ export class Battle {
         income: enemyIncome(level),
         amirDead: false,
         amirTimer: 0,
+        boostT: {},
       },
     ];
     for (const side of [0, 1] as Side[]) {
@@ -300,6 +302,7 @@ export class Battle {
       }
     }
     this.ai = new EnemyAI(def.temper, def.faction);
+    for (const id of boosts) this.activateBoost(0, id); // boshidanoq yoqilganlar (sinov uchun)
   }
 
   rand(): number {
@@ -527,11 +530,36 @@ export class Battle {
     }
   }
 
+  // ---------------- Tezlatishlar (Market) ----------------
+
+  // Tezlatishni yoqish: BOOST_TIME soniya ishlaydi; ishlab turganini yana yoqsa — vaqti qo'shiladi
+  activateBoost(side: Side, id: BoostId): void {
+    const s = this.sides[side];
+    s.boostT[id] = (s.boostT[id] ?? 0) + BOOST_TIME;
+  }
+
+  boostLeft(side: Side, id: BoostId): number {
+    return this.sides[side].boostT[id] ?? 0;
+  }
+
+  // Shu tezlatish yoqilgan bo'lsa ko'paytma (masalan 1.5), aks holda 1
+  boostMul(side: Side, id: BoostId): number {
+    return (this.sides[side].boostT[id] ?? 0) > 0 ? 1 + BOOST_EFFECT[id] : 1;
+  }
+
   private updateSide(side: Side, dt: number): void {
     const s = this.sides[side];
+    for (const id of Object.keys(s.boostT) as BoostId[]) {
+      const left = s.boostT[id]! - dt;
+      if (left > 0) s.boostT[id] = left;
+      else {
+        delete s.boostT[id];
+        if (side === 0) this.events.push({ text: `⚡ ${BOOSTS.find((x) => x.id === id)!.name} tugadi`, good: false });
+      }
+    }
     if (s.queue.length) {
       const it = itemOf(s.queue[0]);
-      s.queueT += dt * s.trainSpeed;
+      s.queueT += dt * s.trainSpeed * this.boostMul(side, 'tez_yollash');
       if (s.queueT >= it.train) {
         s.queueT = 0;
         s.queue.shift();
@@ -653,7 +681,8 @@ export class Battle {
       return true;
     }
     const carry = u.kind === 'konchi' && u.load > 0;
-    const speed = u.speed * (carry ? CARRY_SLOW : 1) * (mode === 'slow' ? 0.6 : mode === 'run' ? RUN_FAST : 1); // savat og'ir
+    const speed = u.speed * (carry ? CARRY_SLOW : 1) * (mode === 'slow' ? 0.6 : mode === 'run' ? RUN_FAST : 1) // savat og'ir
+      * this.boostMul(u.side, u.kind === 'konchi' ? 'tez_konchi' : 'tez_qadam');
     const step = Math.min(Math.abs(d), speed * dt);
     u.x += Math.sign(d) * step;
     u.walkDist += step;
@@ -851,7 +880,7 @@ export class Battle {
         return;
       }
       if (u.cdLeft <= 0) {
-        u.cdLeft = u.cd;
+        u.cdLeft = u.cd / this.boostMul(u.side, 'jangovar_ruh');
         u.swingT = 0;
         u.swingDone = false;
         u.swingTarget = target;
@@ -958,7 +987,7 @@ export class Battle {
         }
         break;
       case 'inMine':
-        u.mineT -= dt;
+        u.mineT -= dt * this.boostMul(u.side, 'tez_konchi'); // tez konchi: tezroq qazadi
         if (u.mineT <= 0) {
           u.load = this.sides[u.side].minerLoad;
           u.task = 'toCastle';
@@ -1074,7 +1103,7 @@ export class Battle {
       if (u.side !== side || !u.garrison || u.dead || u.kind !== 'kamonchi') continue;
       const i = spot++;
       if (u.cdLeft > 0) continue;
-      u.cdLeft = u.cd;
+      u.cdLeft = u.cd / this.boostMul(side, 'jangovar_ruh');
       const [wx, wz] = this.wallPoint(side, i);
       this.fireArrow(side, 'kamonchi', u.dmg, wx, wz + 30, nearest(), -1, side === 1);
     }

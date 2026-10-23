@@ -6,7 +6,7 @@ import {
 } from '../config.ts';
 import type { Kind, UpgradeId } from '../config.ts';
 import {
-  buyBoost, buyUpgrade, campaignDone, itemsFor, newSave, stepFor, takeBoosts, upgradeCost, upgradeOpen, writeSave,
+  buyBoost, buyUpgrade, campaignDone, itemsFor, newSave, stepFor, upgradeCost, upgradeOpen, writeSave,
 } from '../campaign.ts';
 import { profile } from '../telegram.ts';
 import { GOLD, ICON, button, closeModal, el, modal } from './common.ts';
@@ -140,12 +140,12 @@ function renderMap(body: HTMLElement): void {
     <div class="small muted">Askar chegarasi: ${popCap(stepFor(0, selected))}</div>`));
   const owned = BOOSTS.filter((b) => save.boosts[b.id] > 0);
   if (owned.length && selected === save.won) {
-    card.append(el('div', 'chips', owned.map((b) => `<span class="chip">⚡ ${b.name}</span>`).join('')));
+    card.append(el('div', 'chips', owned.map((b) => `<span class="chip">${b.icon} ${b.name} ×${save.boosts[b.id]}</span>`).join('')));
   }
   if (campaignDone(save)) {
     card.append(el('div', 'small', '<b style="color:var(--gold)">Barcha viloyatlar zabt etildi!</b>'));
   }
-  const go = button('Jangga kirish', () => startBattle(selected, takeBoosts(state.save)), 'primary');
+  const go = button('Jangga kirish', () => startBattle(selected), 'primary');
   go.disabled = selected !== save.won;
   card.append(go);
   area.append(card);
@@ -243,11 +243,11 @@ function renderMarket(body: HTMLElement): void {
   const save = state.save;
   const panel = el('div', 'panel');
   panel.append(el('div', 'panel-head', `<h2>Market</h2><div class="gold-big">${GOLD}${save.gold}</div>`));
-  panel.append(el('p', 'muted small', "Tezlatish faqat bitta jangga amal qiladi: sotib olganingiz keyingi jang boshlanganda ishlatiladi."));
+  panel.append(el('p', 'muted small', "Tezlatishni jangda ⚡ tugmasi bilan o'zingiz yoqasiz: har biri 1 daqiqa ishlaydi. Bir jangda bir nechtasini, bir xilini ham bir necha marta ishlatish mumkin. Ishlatilmagani keyingi janglarga qoladi."));
   const grid = el('div', 'grid');
   for (const b of BOOSTS) {
     const card = el('div', 'up-card');
-    card.append(el('div', 'up-icon', '<span class="castle-ico">⚡</span>'));
+    card.append(el('div', 'up-icon', `<span class="castle-ico">${b.icon}</span>`));
     card.append(el('div', 'up-info', `<div class="title">${b.name}</div><div class="muted small">${b.desc}</div>
       <div class="small">Sizda: <b>${save.boosts[b.id]}</b></div>`));
     const btn = button(`${GOLD}${b.cost}`, () => {

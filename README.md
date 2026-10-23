@@ -67,7 +67,10 @@ npm run build      # tayyor sayt dist/ papkasida
   Dushman doim bir pog'ona oldinda.
 - **Kuchaytirish** (oltinga, doimiy): har jangchi turi alohida (jon va zarba +10% har daraja; konchi —
   savat va tezlik), qasr mustahkamligi, qasr o'qi, kon tezligi (qazish vaqti qisqaradi), boshlang'ich kumush.
-- **Market — tezlatish** (oltinga, bitta jangga): tez konchi, tez yollash, jangovar ruh, tez qadam.
+- **Market — tezlatish** (oltinga): tez konchi (+50%), tez yollash (+50%), jangovar ruh (zarba +30%), tez qadam
+  (+25%). Jangda yollash tugmalari ostidagi **⚡** tugmasi bosilsa, zaxiradagi tezlatishlar chiqadi; bittasini bosish
+  uni **1 daqiqaga** yoqadi (taymer tugmada va o'ng yuqorida ko'rinadi). Bir jangda bir nechtasini, bir xilini ham
+  qayta-qayta ishlatish mumkin — vaqti qo'shiladi. Ishlatilmagani keyingi janglarga qoladi.
 - **Mukofot:** g'alabada qolgan kumush 10:1 oltinga + bonus; mag'lubiyatda kumushning yarmi.
 - **Saqlash:** Telegram ichida — Telegram bulutida (telefon almashsa ham qoladi), aks holda brauzerda.
 

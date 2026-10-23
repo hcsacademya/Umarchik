@@ -242,27 +242,29 @@ export const UPGRADES: Upgrade[] = [
   { id: 'kumush', name: "Boshlang'ich kumush", group: 'qasr', unlock: 0, costs: costs(0.6), desc: (l) => `Boshida ${START_SILVER + 50 * l} kumush` },
 ];
 
-// ---------- Market: tezlatish (oltinga, bitta jangga) ----------
+// ---------- Market: tezlatish (oltinga). Jangda ⚡ tugmasi bilan yoqiladi, BOOST_TIME soniya ishlaydi ----------
 export type BoostId = 'tez_konchi' | 'tez_yollash' | 'jangovar_ruh' | 'tez_qadam';
 export interface Boost {
   id: BoostId;
   name: string;
+  icon: string;
   desc: string;
   cost: number;
 }
 
 export const BOOSTS: Boost[] = [
-  { id: 'tez_konchi', name: 'Tez konchi', desc: 'Konchilar 30% tez yuradi va qazadi', cost: 30 },
-  { id: 'tez_yollash', name: 'Tez yollash', desc: 'Askarlar 25% tez tayyorlanadi', cost: 30 },
-  { id: 'jangovar_ruh', name: 'Jangovar ruh', desc: 'Askarlar 20% tez zarba beradi', cost: 40 },
-  { id: 'tez_qadam', name: 'Tez qadam', desc: 'Askarlar 15% tez yuradi', cost: 25 },
+  { id: 'tez_konchi', name: 'Tez konchi', icon: '⛏', desc: '1 daqiqa: konchilar 50% tez yuradi va qazadi', cost: 30 },
+  { id: 'tez_yollash', name: 'Tez yollash', icon: '⏱', desc: '1 daqiqa: askarlar 50% tez tayyorlanadi', cost: 30 },
+  { id: 'jangovar_ruh', name: 'Jangovar ruh', icon: '⚔', desc: '1 daqiqa: askarlar 30% tez zarba beradi', cost: 40 },
+  { id: 'tez_qadam', name: 'Tez qadam', icon: '👣', desc: '1 daqiqa: askarlar 25% tez yuradi', cost: 25 },
 ];
 
-export const BOOST_EFFECT = {
-  tez_konchi: 0.3,
-  tez_yollash: 0.25,
-  jangovar_ruh: 0.2,
-  tez_qadam: 0.15,
+export const BOOST_TIME = 60; // bitta tezlatish necha soniya ishlaydi (yana bosilsa vaqti qo'shiladi)
+export const BOOST_EFFECT: Record<BoostId, number> = {
+  tez_konchi: 0.5,
+  tez_yollash: 0.5,
+  jangovar_ruh: 0.3,
+  tez_qadam: 0.25,
 };
 
 // ---------- Kampaniya: xarita bo'ylab janglar ----------

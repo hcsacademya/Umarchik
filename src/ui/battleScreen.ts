@@ -3,9 +3,9 @@
 import { unitIcon } from '../assets.ts';
 import { Battle } from '../battle.ts';
 import type { BuyError } from '../battle.ts';
-import { BATTLES, BOOSTS, ITEMS, MAX_MINERS, SPECIAL_MAX, WORLD_W } from '../config.ts';
+import { BATTLES, BOOSTS, BOOST_TIME, ITEMS, MAX_MINERS, SPECIAL_MAX, WORLD_W } from '../config.ts';
 import type { BoostId, ItemId, Stance } from '../config.ts';
-import { campaignDone, finishBattle, takeBoosts } from '../campaign.ts';
+import { campaignDone, finishBattle, spendBoost } from '../campaign.ts';
 import { Renderer } from '../render.ts';
 import { haptic } from '../telegram.ts';
 import { COIN, GOLD, ICON, button, closeModal, el, hasModal, modal } from './common.ts';
@@ -30,7 +30,7 @@ const HINTS = [
   "Qiyin bo'lsa <b>Chekinish</b>: hamma qasrga kiradi, tuzaladi, kamonchilar devordan otadi. Amir halok bo'lsa, eng yaqin askar yangi Amir bo'ladi.",
 ];
 
-export function startBattle(level: number, boosts: BoostId[] = []): void {
+export function startBattle(level: number): void {
   closeModal();
   const app = document.getElementById('app')!;
   app.innerHTML = '';
@@ -39,7 +39,7 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
   const canvas = el('canvas');
   s.append(canvas);
 
-  const b = new Battle(level, state.save, boosts);
+  const b = new Battle(level, state.save);
   const r = new Renderer(canvas);
   r.setEnemyColor(level);
   // faqat sinov uchun
@@ -69,15 +69,37 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     };
   });
 
+  // --- Uchinchi qator: ⚡ tezlatishlar. Bosilsa Market'da olinganlari chiqadi; bittasini bosish uni
+  // BOOST_TIME soniyaga yoqadi (yana bosilsa vaqti qo'shiladi). Bir jangda bir nechtasini ishlatish mumkin ---
+  const boostBar = el('div', 'boost-bar');
+  const boltBtn = el('button', 'unit bolt', '<span class="ico">⚡</span><span class="q"></span>');
+  boltBtn.title = 'Tezlatishlar (B)';
+  boltBtn.addEventListener('click', () => toggleBoosts());
+  const boltSlot = el('div', 'slot');
+  boltSlot.append(boltBtn, el('div', 'price', 'Tezlatish'));
+  const boostList = el('div', 'boost-list');
+  const boostSlots = BOOSTS.map((bo) => {
+    const slot = el('div', 'slot');
+    const btn = el('button', 'unit boost', `<div class="fill"></div><span class="ico">${bo.icon}</span><span class="t"></span>`);
+    btn.title = `${bo.name} — ${bo.desc}`;
+    btn.addEventListener('click', () => useBoost(bo.id, btn));
+    const cnt = el('div', 'price');
+    slot.append(btn, cnt);
+    boostList.append(slot);
+    return { bo, btn, cnt, fill: btn.querySelector('.fill') as HTMLElement, t: btn.querySelector('.t') as HTMLElement };
+  });
+  boostBar.append(boltSlot, boostList);
+  shop.append(el('div', 'shop-break'), boostBar);
+
   // --- O'ng yuqori: kumush, askar soni, pauza ---
   const top = el('div', 'hud');
   top.id = 'topbar';
   const silverEl = el('div', 'chip-big silver-chip');
   const popEl = el('div', 'chip-big');
   top.append(silverEl, popEl, button(ICON.pause, () => pause(), 'icon-btn'));
+  // yoqilgan tezlatishlar va qolgan vaqti (panel yopiq bo'lsa ham ko'rinadi)
   const boostRow = el('div', 'hud');
   boostRow.id = 'boost-row';
-  boostRow.innerHTML = boosts.map((id) => `<span class="chip">⚡ ${BOOSTS.find((x) => x.id === id)!.name}</span>`).join('');
 
   // --- Pastki qism ---
   const stances = el('div', 'hud');
@@ -143,6 +165,29 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     }
   }
 
+  function toggleBoosts(): void {
+    boostBar.classList.toggle('open');
+    haptic('light');
+    onResize();
+  }
+
+  function useBoost(id: BoostId, btn: HTMLElement): void {
+    if (b.winner !== null) return;
+    const bo = BOOSTS.find((x) => x.id === id)!;
+    if (!spendBoost(state.save, id)) {
+      toast(`${bo.name} yo'q — Market'dan sotib oling`, 'bad');
+      btn.classList.remove('flash');
+      void btn.offsetWidth;
+      btn.classList.add('flash');
+      haptic('medium');
+      return;
+    }
+    const was = b.boostLeft(0, id) > 0;
+    b.activateBoost(0, id);
+    toast(`${bo.icon} ${bo.name}: ${was ? '+1 daqiqa' : '1 daqiqa ishlaydi'}`, 'good');
+    haptic('light');
+  }
+
   function setStance(st: Stance): void {
     b.setStance(0, st);
     if (hintStep === 2 && st === 'hujum') {
@@ -166,7 +211,7 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     });
     modal("To'xtatildi", '', [
       button('Davom etish', resume, 'primary'),
-      button('Qaytadan boshlash', () => { stop(); startBattle(level, boosts); }),
+      button('Qaytadan boshlash', () => { stop(); startBattle(level); }),
       button('Bosh sahifaga', () => { stop(); showHome('oyin'); }),
       speedBtn,
     ]);
@@ -205,7 +250,7 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
         el('p', 'muted', "Ochilgan askarlar va kuchaytirishlar saqlanadi. Kuchaytirib, qayta urinib ko'ring!"),
       );
       modal("Mag'lubiyat", body, [
-        button('Qayta urinish', () => { stop(); startBattle(level, takeBoosts(state.save)); }, 'primary'),
+        button('Qayta urinish', () => { stop(); startBattle(level); }, 'primary'),
         button('Kuchaytirish', () => { stop(); showHome('kuchaytirish'); }),
         button('Bosh sahifaga', () => { stop(); showHome('oyin'); }),
       ]);
@@ -225,6 +270,7 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
     else if (k === 'q') setStance('chekinish');
     else if (k === 'w') setStance('tur');
     else if (k === 'e') setStance('hujum');
+    else if (k === 'b') toggleBoosts();
     else if (k === 'p' || k === 'escape') pause();
   }
   function onKeyUp(e: KeyboardEvent): void {
@@ -303,6 +349,30 @@ export function startBattle(level: number, boosts: BoostId[] = []): void {
       const err = b.canBuy(0, sl.it.id);
       sl.btn.classList.toggle('off', err !== null && err !== 'navbat');
     }
+    // tezlatishlar: zaxirada nechta, yoqilganining qolgan vaqti (tugma yuqoridan pastga bo'shaydi)
+    let active = 0;
+    let chips = '';
+    for (const bs of boostSlots) {
+      const left = b.boostLeft(0, bs.bo.id);
+      const have = state.save.boosts[bs.bo.id];
+      const cnt = `×${have}`;
+      if (bs.cnt.textContent !== cnt) bs.cnt.textContent = cnt;
+      const tt = left > 0 ? `${Math.ceil(left)}s` : '';
+      if (bs.t.textContent !== tt) bs.t.textContent = tt;
+      bs.fill.style.height = `${Math.round(Math.min(1, left / BOOST_TIME) * 100)}%`;
+      bs.btn.classList.toggle('active', left > 0);
+      bs.btn.classList.toggle('off', left <= 0 && have <= 0);
+      if (left > 0) {
+        active++;
+        chips += `<span class="chip">${bs.bo.icon} ${bs.bo.name} <b>${Math.ceil(left)}s</b></span>`;
+      }
+    }
+    if (boostRow.innerHTML !== chips) boostRow.innerHTML = chips;
+    const bq = active ? String(active) : '';
+    const bqEl = boltBtn.querySelector('.q')!;
+    if (bqEl.textContent !== bq) bqEl.textContent = bq;
+    boltBtn.classList.toggle('active', active > 0);
+
     for (const st of Object.keys(stanceBtns) as Stance[]) {
       stanceBtns[st].classList.toggle('on', side.stance === st);
     }
