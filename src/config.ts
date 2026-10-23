@@ -70,8 +70,8 @@ export function vsMult(attacker: Kind, target: Kind): number {
 
 export const RANK: Record<Rank, { hp: number; dmg: number; scale: number }> = {
   oddiy: { hp: 1, dmg: 1, scale: 1 },
-  sarkarda: { hp: 3, dmg: 2, scale: 1.2 },
-  qomondon: { hp: 5.5, dmg: 2.4, scale: 1.25 },
+  sarkarda: { hp: 3, dmg: 2, scale: 1.08 }, // o'z bezakli rasmi bor: haqiqiy odam kattaligiga yaqin
+  qomondon: { hp: 5.5, dmg: 2.4, scale: 1.1 },
 };
 
 export interface Item {

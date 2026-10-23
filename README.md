@@ -36,7 +36,7 @@ npm run build      # tayyor sayt dist/ papkasida
   bloklar orasida bo'sh joy). *Hujum*.
 - **Amir** ikki qilichli, kuchi: 1 Amir ≈ 5 qilichli ≈ 4 nayzachi ≈ 3 otliq ≈ 6 kamonchi.
   Amir halok bo'lsa, unga eng yaqin askar yangi Amir bo'ladi (oltin nur bilan); qo'shin o'zi chekinmaydi.
-  Maydonda hech kim qolmasa, yangi Amir 20 soniyadan keyin qasrdan chiqadi. Dushmanda Amir yo'q.
+  Maydonda hech kim qolmasa, yangi Amir 20 soniyadan keyin qasrdan chiqadi. Dushmanda Amir ham, qo'mondon ham yo'q.
 - **Jang:** hujum, chekinish va safga qaytishda askarlar yuguradi (safda joyni sozlashda — sekin qadam). Yaqin jangchi
   dushmanning yoniga (chuqurlikda ham) borib uradi; bitta dushmanga hamma yopirilmaydi (nishonlar taqsimlanadi);
   askarlar bir nuqtaga yig'ilib qolmaydi, zarba dushmanni biroz silkitadi. Dushman yaqin kelsa kamonchi bir necha
@@ -112,14 +112,18 @@ o'yin ularni har jangda bayroq rangiga almashtiradi.
 Animatsiya varaqlari (`art/anim24_*.webp`) — 24 kadr: 1–8 yurish, 9–10 turish, 11–12 zarba yeyish,
 13–16 hujum A, 17–20 hujum B (zarbalar navbatma-navbat), 21–24 o'lim (konchida: 1–8 bo'sh yurish,
 9–16 savat bilan yurish, 17–18 turish, 19–20 zarba yeyish, 21–24 o'lim).
-**Skelet animatsiya** (hamma jangchi, otliqdan boshqa): har bir askar "qismlar varag'i"dan (`art/qismlar_*.webp`:
-bosh, gavda, yuqori qo'l, bilak, son, boldir va qurol-yarog') yig'iladi. `tools/rig_sheets.py` varaqdagi bo'laklarni
-o'zi topib kesadi, o'lchamini jangchi bo'yiga moslaydi, burilish nuqtalarini (yelka, tirsak, son, tizza) bo'lak
-shaklidan topadi va orqadagi qo'l-oyoq uchun qorong'i nusxasini yasaydi. Dushman xalqlarining ko'k mato qismlari
-jang rangiga bo'yaladi. `src/skeleton.ts` har kadrda suyak burchaklarini hisoblaydi: yurish (qadam bosib o'tilgan
-yo'lga mos), turish, ikki xil zarba, zarba yeyish, yiqilish; turga xos harakat: Amir — ikki egri qilich va
-hilpiragan plash, qilichli — qilich va qalqon, nayzachi — sanchish, kamonchi — o'q tortib otish, konchi — kurak
-yelkada va kumushli savat. Yangi varaq qo'shish: `RIGS` ga yozuv (varaq, bo'laklar tartibi, bo'yi) qo'shiladi.
+**Skelet animatsiya** (hamma jangchi, otliq, sarkardalar va qo'mondon): har bir askar "qismlar varag'i"dan
+(`art/qismlar_*.webp`: bosh, gavda, yuqori qo'l, bilak, son, boldir va qurol-yarog'; otliqda yana ot tanasi,
+bo'yin-bosh, dum va to'rt oyoq bo'lagi) yig'iladi. `tools/rig_sheets.py` varaqdagi bo'laklarni o'zi topib kesadi va
+**haqiqiy odam nisbatlariga** keltiradi: varaqlar turli ilovalarda chizilgani uchun bo'laklar har xil kattalikda
+bo'lishi mumkin — qo'l-oyoq aniq uzunlikka (son bo'g'ini yerdan ~0.51 bo'y), bosh va gavda shu varaqning umumiy
+masshtabida (haqiqiy oraliqdan chiqmaydi), qurollar haqiqiy uzunligida (qilich ~0.5, nayza ~1.35 bo'y), ot — yag'rini
+chavandoz bo'yining 0.84 i. Gavdadagi yelka teshigi mato bilan yopiladi, butun chizilgan qo'l yoki ot oyog'idan
+kerakli qismi olinadi. Dushman xalqlarining ko'k mato qismlari jang rangiga bo'yaladi. `src/skeleton.ts` har
+kadrda suyak burchaklarini hisoblaydi: yurish, yugurish (qadam bosib o'tilgan yo'lga mos), turish, uch xil zarba,
+zarba yeyish, yiqilish; ot — to'rt zarbli yurish va chopish (galop), turganda bosh silkitish va yer tepish, o'lganda
+cho'kadi, chavandoz egardan yiqiladi; qo'mondon egarida bayroq. Yangi varaq qo'shish: `RIGS` ga yozuv (varaq,
+bo'laklar tartibi, bo'yi, qurol turi) qo'shiladi.
 Hisob sekundiga 30 marta, ekran esa 60+ marta yangilanadi — ekran ikki hisob qadami orasini to'ldiradi.
 
 Tayanchlar (`art/baza_*.webp`): skript darvoza va kon og'zini (rasmdagi ikki eng katta qorong'i teshik) o'zi
@@ -137,5 +141,5 @@ Qisqasi: o'yin Cloudflare Workers'ga joylanadi (`wrangler.jsonc`, build: `npm ru
 - Tog', cho'l va ikki poytaxt tayanchlari — hozir o'rmon, dasht, ekinzor va ko'l tayanchlari ishlatiladi.
 - Yopiq darvoza rasmi — hozir yog'och eshik kod bilan chiziladi.
 - Ekinzor va yaylov foni — hozir vaqtincha dasht va o'rmon foni ishlatiladi.
-- Otliq skeleti (ot va chavandoz) — hozircha bitta rasm; yon tomondan otliq (bizniki va dushmanniki), sarkardalar va qo'mondon rasmlari (hozir vaqtincha).
+- Dushman konchisi (hozir bizning konchi jang rangiga bo'yalgan).
 - Telegram Stars orqali Market, PvP, ovoz.

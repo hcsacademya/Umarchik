@@ -1,11 +1,11 @@
 // Jang maydonini chizish (canvas). Mantiqqa tegmaydi — faqat Battle holatini o'qiydi.
-import { BACKGROUNDS, BASES, RIGS, UNIT_FRAMES, baseFront, enemyFrames, enemyRig, ready, tintedBase } from './assets.ts';
+import { BACKGROUNDS, BASES, UNIT_FRAMES, baseFront, enemyFrames, enemyRig, ownRig, ready, tintedBase } from './assets.ts';
 import type { Background, Base, Frame, Rig } from './assets.ts';
 import { swingPhase } from './battle.ts';
 import type { Battle, Shot, Snap, Unit } from './battle.ts';
 import { BATTLES, CASTLE_X, COLORS, DEAD_LINGER, DEPTH, FORMATION_FRONT, RANK, WALL_SPOTS, WORLD_W } from './config.ts';
 import type { FactionId, Kind, Side, Terrain } from './config.ts';
-import { drawRig, rigBounds, rigPose } from './skeleton.ts';
+import { drawUnitRig, rigBounds, rigTop } from './skeleton.ts';
 
 export const VIEW_H = 560; // ekran balandligiga sig'adigan o'yin birligi
 // Kamera: yer chizig'i ekran balandligining shu ulushida; chuqurlik (y) ekranda shuncha cho'ziladi —
@@ -77,7 +77,7 @@ export class Renderer {
   minimap: Rect = { x: 0, y: 0, w: 0, h: 0 };
   safe = { left: 0, right: 0, top: 0 }; // tugmalar egallamagan joy (UI beradi)
   private enemy: Partial<Record<Kind, Frame[]>> = {};
-  private enemyRigs: Partial<Record<Kind, Rig>> = {};
+  private enemyRigs = new Map<string, Rig>();
   private enemyLook: { hex: string; faction: FactionId } | null = null;
   private enemyBase: Base | null = null;
   private flash = document.createElement('canvas'); // urilgan askarni qizartirish uchun
@@ -106,7 +106,7 @@ export class Renderer {
     const def = BATTLES[level];
     const hex = COLORS[def.color].hex;
     this.enemy = {};
-    this.enemyRigs = {};
+    this.enemyRigs = new Map();
     this.enemyLook = { hex, faction: def.faction };
     for (const k of Object.keys(UNIT_FRAMES) as Kind[]) this.enemy[k] = enemyFrames(k, hex, def.faction);
     // Dushman tayanchining bayroqlari jang rangiga bo'yaladi
@@ -733,7 +733,7 @@ export class Renderer {
     else if (u.hitT > 0) this.drawFlash(f, u.x, u.y, z, flip, sc, Math.min(1, u.hitT / 0.22));
     else this.drawSprite(f, u.x, u.y, z, flip, sc);
 
-    const top = (rig ? rig.h : stand.h) * sc;
+    const top = (rig ? rigTop(rig) : stand.h) * sc;
     if (u.kind === 'amir') this.drawAmirMark(u, top);
     if (u.hp < u.maxHp) {
       const w = 26 * this.scale * Math.min(1.6, sc);
@@ -747,11 +747,12 @@ export class Renderer {
   }
 
   private rigOf(u: Unit): Rig | undefined {
-    if (u.side === 0) return RIGS[u.kind];
-    let r = this.enemyRigs[u.kind];
+    if (u.side === 0) return ownRig(u.kind, u.rank);
+    const key = `${u.kind}:${u.rank}`;
+    let r = this.enemyRigs.get(key);
     if (!r && this.enemyLook) {
-      r = enemyRig(u.kind, this.enemyLook.hex, this.enemyLook.faction);
-      if (r && Object.values(r.parts).every((p) => ready(p.img))) this.enemyRigs[u.kind] = r;
+      r = enemyRig(u.kind, u.rank, this.enemyLook.hex, this.enemyLook.faction);
+      if (r && Object.values(r.parts).every((p) => ready(p.img))) this.enemyRigs.set(key, r);
     }
     return r;
   }
@@ -759,7 +760,6 @@ export class Renderer {
   // Skeletli askar. Shaffof (darvozada, o'lgach so'nayotgan) yoki zarba yeb qizargan bo'lsa avval alohida
   // kanvasga chiziladi — bo'laklar bir-biri orqali ko'rinmasin
   private drawRigged(u: Unit, rig: Rig, y: number, alpha: number, flash: number): void {
-    const pose = rigPose(u);
     const s = this.scale * RANK[u.rank].scale;
     const px = this.sx(u.x);
     const py = this.sy(y, 0);
@@ -770,7 +770,7 @@ export class Renderer {
       ctx.save();
       ctx.translate(px, py);
       ctx.scale(flip ? -s : s, s);
-      drawRig(ctx, rig, pose, u.kind);
+      drawUnitRig(ctx, rig, u);
       ctx.restore();
       return;
     }
@@ -788,7 +788,7 @@ export class Renderer {
     g.globalCompositeOperation = 'source-over';
     g.clearRect(0, 0, w, h);
     g.setTransform(flip ? -k : k, 0, 0, k, -bd.l * k, -bd.t * k);
-    drawRig(g, rig, pose, u.kind);
+    drawUnitRig(g, rig, u);
     if (flash > 0) {
       g.setTransform(1, 0, 0, 1, 0, 0);
       g.globalCompositeOperation = 'source-atop';

@@ -1439,119 +1439,119 @@
    "parts": {
     "head": {
      "f": "assets/parts/amir_head.webp",
-     "w": 11.13,
-     "h": 20.61,
-     "px": 6.9,
-     "py": 17.73
+     "w": 12.12,
+     "h": 22.46,
+     "px": 7.52,
+     "py": 19.31
     },
     "torso": {
      "f": "assets/parts/amir_torso.webp",
-     "w": 20.81,
-     "h": 46.65,
-     "px": 11.48,
-     "py": 27.99
+     "w": 18.74,
+     "h": 42.0,
+     "px": 10.34,
+     "py": 25.2
     },
     "cape": {
      "f": "assets/parts/amir_cape.webp",
-     "w": 24.88,
-     "h": 49.4,
-     "px": 13.93,
-     "py": 3.95
+     "w": 19.46,
+     "h": 38.64,
+     "px": 10.9,
+     "py": 3.09
     },
     "upper": {
      "f": "assets/parts/amir_upper.webp",
-     "w": 6.47,
-     "h": 20.61,
-     "px": 2.87,
-     "py": 0.62
+     "w": 5.01,
+     "h": 15.96,
+     "px": 2.22,
+     "py": 0.48
     },
     "upper_d": {
      "f": "assets/parts/amir_upper_d.webp",
-     "w": 6.47,
-     "h": 20.61,
-     "px": 2.87,
-     "py": 0.62
+     "w": 5.01,
+     "h": 15.96,
+     "px": 2.22,
+     "py": 0.48
     },
     "fore": {
      "f": "assets/parts/amir_fore.webp",
-     "w": 7.57,
-     "h": 20.61,
-     "px": 3.33,
-     "py": 0.62
+     "w": 6.48,
+     "h": 17.64,
+     "px": 2.85,
+     "py": 0.53
     },
     "fore_d": {
      "f": "assets/parts/amir_fore_d.webp",
-     "w": 7.57,
-     "h": 20.61,
-     "px": 3.33,
-     "py": 0.62
+     "w": 6.48,
+     "h": 17.64,
+     "px": 2.85,
+     "py": 0.53
     },
     "thigh": {
      "f": "assets/parts/amir_thigh.webp",
-     "w": 7.11,
-     "h": 17.36,
-     "px": 3.17,
-     "py": 0.52
+     "w": 8.61,
+     "h": 21.0,
+     "px": 3.84,
+     "py": 0.63
     },
     "thigh_d": {
      "f": "assets/parts/amir_thigh_d.webp",
-     "w": 7.11,
-     "h": 17.36,
-     "px": 3.17,
-     "py": 0.52
+     "w": 8.61,
+     "h": 21.0,
+     "px": 3.84,
+     "py": 0.63
     },
     "shin": {
      "f": "assets/parts/amir_shin.webp",
-     "w": 12.73,
-     "h": 20.5,
-     "px": 4.24,
-     "py": 0.61
+     "w": 12.99,
+     "h": 20.92,
+     "px": 4.33,
+     "py": 0.73
     },
     "shin_d": {
      "f": "assets/parts/amir_shin_d.webp",
-     "w": 12.73,
-     "h": 20.5,
-     "px": 4.24,
-     "py": 0.61
+     "w": 12.99,
+     "h": 20.92,
+     "px": 4.33,
+     "py": 0.73
     },
     "weapon": {
      "f": "assets/parts/amir_weapon.webp",
-     "w": 44.05,
-     "h": 6.9,
-     "px": 3.3,
-     "py": 2.9
+     "w": 42.0,
+     "h": 6.58,
+     "px": 3.15,
+     "py": 2.76
     },
     "foot": {
      "f": "assets/parts/amir_foot.webp",
-     "w": 12.73,
-     "h": 4.36,
-     "px": 5.2,
-     "py": 0.5
+     "w": 12.99,
+     "h": 4.45,
+     "px": 5.31,
+     "py": 0.51
     },
     "foot_d": {
      "f": "assets/parts/amir_foot_d.webp",
-     "w": 12.73,
-     "h": 4.36,
-     "px": 5.2,
-     "py": 0.5
+     "w": 12.99,
+     "h": 4.45,
+     "px": 5.31,
+     "py": 0.51
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -39.22
+     -42.95
     ],
     "neck": [
-     -0.66,
-     -27.06
+     -0.59,
+     -24.36
     ],
     "shoulder": [
-     -3.16,
-     -23.32
+     -2.84,
+     -21.0
     ],
     "shoulderFar": [
-     -2.12,
-     -22.86
+     -1.91,
+     -20.58
     ],
     "hipBack": [
      -1.2,
@@ -1562,26 +1562,26 @@
      0.0
     ],
     "elbow": [
-     0.93,
-     18.96
+     0.72,
+     14.68
     ],
     "hand": [
-     2.01,
-     17.93
+     1.72,
+     15.35
     ],
     "knee": [
      0.0,
-     15.97
+     19.32
     ],
-    "foot": 23.25,
+    "foot": 23.63,
     "ankle": [
-     0.96,
-     19.39
+     0.98,
+     19.69
     ],
-    "sole": 3.86,
+    "sole": 3.94,
     "cape": [
-     -0.66,
-     -25.66
+     -0.59,
+     -23.1
     ]
    }
   },
@@ -1590,119 +1590,119 @@
    "parts": {
     "head": {
      "f": "assets/parts/qilichli_head.webp",
-     "w": 14.75,
-     "h": 19.29,
-     "px": 8.85,
-     "py": 16.98
+     "w": 10.92,
+     "h": 14.28,
+     "px": 6.55,
+     "py": 12.57
     },
     "torso": {
      "f": "assets/parts/qilichli_torso.webp",
-     "w": 22.17,
-     "h": 43.66,
-     "px": 12.05,
-     "py": 26.19
+     "w": 20.06,
+     "h": 39.5,
+     "px": 10.9,
+     "py": 23.7
     },
     "shield": {
      "f": "assets/parts/qilichli_shield.webp",
-     "w": 9.73,
-     "h": 33.14,
-     "px": 4.81,
-     "py": 0.99
+     "w": 6.96,
+     "h": 23.7,
+     "px": 3.48,
+     "py": 10.66
     },
     "upper": {
      "f": "assets/parts/qilichli_upper.webp",
-     "w": 6.71,
-     "h": 19.29,
-     "px": 3.31,
-     "py": 0.58
+     "w": 5.22,
+     "h": 15.01,
+     "px": 2.58,
+     "py": 0.45
     },
     "upper_d": {
      "f": "assets/parts/qilichli_upper_d.webp",
-     "w": 6.71,
-     "h": 19.29,
-     "px": 3.31,
-     "py": 0.58
+     "w": 5.22,
+     "h": 15.01,
+     "px": 2.58,
+     "py": 0.45
     },
     "fore": {
      "f": "assets/parts/qilichli_fore.webp",
-     "w": 6.4,
-     "h": 19.29,
-     "px": 3.37,
-     "py": 0.58
+     "w": 5.51,
+     "h": 16.59,
+     "px": 2.89,
+     "py": 0.5
     },
     "fore_d": {
      "f": "assets/parts/qilichli_fore_d.webp",
-     "w": 6.4,
-     "h": 19.29,
-     "px": 3.37,
-     "py": 0.58
+     "w": 5.51,
+     "h": 16.59,
+     "px": 2.89,
+     "py": 0.5
     },
     "thigh": {
      "f": "assets/parts/qilichli_thigh.webp",
-     "w": 5.9,
-     "h": 16.24,
-     "px": 3.07,
-     "py": 0.49
+     "w": 7.17,
+     "h": 19.75,
+     "px": 3.73,
+     "py": 0.59
     },
     "thigh_d": {
      "f": "assets/parts/qilichli_thigh_d.webp",
-     "w": 5.9,
-     "h": 16.24,
-     "px": 3.07,
-     "py": 0.49
+     "w": 7.17,
+     "h": 19.75,
+     "px": 3.73,
+     "py": 0.59
     },
     "shin": {
      "f": "assets/parts/qilichli_shin.webp",
-     "w": 13.49,
-     "h": 19.28,
-     "px": 3.88,
-     "py": 0.58
+     "w": 13.83,
+     "h": 19.78,
+     "px": 4.02,
+     "py": 0.69
     },
     "shin_d": {
      "f": "assets/parts/qilichli_shin_d.webp",
-     "w": 13.49,
-     "h": 19.28,
-     "px": 3.88,
-     "py": 0.58
+     "w": 13.83,
+     "h": 19.78,
+     "px": 4.02,
+     "py": 0.69
     },
     "weapon": {
      "f": "assets/parts/qilichli_weapon.webp",
-     "w": 48.59,
-     "h": 8.96,
-     "px": 4.37,
-     "py": 4.48
+     "w": 42.66,
+     "h": 7.86,
+     "px": 3.84,
+     "py": 3.93
     },
     "foot": {
      "f": "assets/parts/qilichli_foot.webp",
-     "w": 13.49,
-     "h": 3.93,
-     "px": 5.5,
-     "py": 0.44
+     "w": 13.83,
+     "h": 4.03,
+     "px": 5.64,
+     "py": 0.45
     },
     "foot_d": {
      "f": "assets/parts/qilichli_foot_d.webp",
-     "w": 13.49,
-     "h": 3.93,
-     "px": 5.5,
-     "py": 0.44
+     "w": 13.83,
+     "h": 4.03,
+     "px": 5.64,
+     "py": 0.45
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -36.7
+     -40.39
     ],
     "neck": [
-     -1.36,
-     -25.32
+     -1.23,
+     -22.91
     ],
     "shoulder": [
-     -2.07,
-     -21.83
+     -1.87,
+     -19.75
     ],
     "shoulderFar": [
-     -0.96,
-     -21.39
+     -0.87,
+     -19.36
     ],
     "hipBack": [
      -1.2,
@@ -1713,23 +1713,23 @@
      0.0
     ],
     "elbow": [
-     0.79,
-     17.75
+     0.61,
+     13.81
     ],
     "hand": [
-     0.86,
-     16.78
+     0.74,
+     14.43
     ],
     "knee": [
-     -0.74,
-     14.95
+     -0.9,
+     18.17
     ],
-    "foot": 21.76,
+    "foot": 22.22,
     "ankle": [
-     1.61,
-     18.27
+     1.62,
+     18.64
     ],
-    "sole": 3.49
+    "sole": 3.58
    }
   },
   "nayzachi": {
@@ -1737,119 +1737,119 @@
    "parts": {
     "head": {
      "f": "assets/parts/nayzachi_head.webp",
-     "w": 14.21,
-     "h": 19.29,
-     "px": 8.24,
-     "py": 16.97
+     "w": 10.88,
+     "h": 14.76,
+     "px": 6.31,
+     "py": 12.99
     },
     "torso": {
      "f": "assets/parts/nayzachi_torso.webp",
-     "w": 22.0,
-     "h": 43.66,
-     "px": 11.79,
-     "py": 26.19
+     "w": 19.9,
+     "h": 39.5,
+     "px": 10.67,
+     "py": 23.7
     },
     "shield": {
      "f": "assets/parts/nayzachi_shield.webp",
-     "w": 9.25,
-     "h": 35.08,
-     "px": 4.06,
-     "py": 1.05
+     "w": 6.25,
+     "h": 23.7,
+     "px": 3.12,
+     "py": 10.66
     },
     "upper": {
      "f": "assets/parts/nayzachi_upper.webp",
-     "w": 5.92,
-     "h": 19.29,
-     "px": 2.81,
-     "py": 0.58
+     "w": 4.61,
+     "h": 15.01,
+     "px": 2.19,
+     "py": 0.45
     },
     "upper_d": {
      "f": "assets/parts/nayzachi_upper_d.webp",
-     "w": 5.92,
-     "h": 19.29,
-     "px": 2.81,
-     "py": 0.58
+     "w": 4.61,
+     "h": 15.01,
+     "px": 2.19,
+     "py": 0.45
     },
     "fore": {
      "f": "assets/parts/nayzachi_fore.webp",
-     "w": 7.0,
-     "h": 19.29,
-     "px": 2.86,
-     "py": 0.58
+     "w": 6.02,
+     "h": 16.59,
+     "px": 2.46,
+     "py": 0.5
     },
     "fore_d": {
      "f": "assets/parts/nayzachi_fore_d.webp",
-     "w": 7.0,
-     "h": 19.29,
-     "px": 2.86,
-     "py": 0.58
+     "w": 6.02,
+     "h": 16.59,
+     "px": 2.46,
+     "py": 0.5
     },
     "thigh": {
      "f": "assets/parts/nayzachi_thigh.webp",
-     "w": 5.86,
-     "h": 16.24,
-     "px": 2.67,
-     "py": 0.49
+     "w": 7.13,
+     "h": 19.75,
+     "px": 3.25,
+     "py": 0.59
     },
     "thigh_d": {
      "f": "assets/parts/nayzachi_thigh_d.webp",
-     "w": 5.86,
-     "h": 16.24,
-     "px": 2.67,
-     "py": 0.49
+     "w": 7.13,
+     "h": 19.75,
+     "px": 3.25,
+     "py": 0.59
     },
     "shin": {
      "f": "assets/parts/nayzachi_shin.webp",
-     "w": 12.2,
-     "h": 19.16,
-     "px": 3.79,
-     "py": 0.57
+     "w": 12.51,
+     "h": 19.65,
+     "px": 3.89,
+     "py": 0.69
     },
     "shin_d": {
      "f": "assets/parts/nayzachi_shin_d.webp",
-     "w": 12.2,
-     "h": 19.16,
-     "px": 3.79,
-     "py": 0.57
+     "w": 12.51,
+     "h": 19.65,
+     "px": 3.89,
+     "py": 0.69
     },
     "weapon": {
      "f": "assets/parts/nayzachi_weapon.webp",
-     "w": 99.53,
-     "h": 3.16,
-     "px": 29.86,
-     "py": 1.58
+     "w": 106.65,
+     "h": 3.39,
+     "px": 32.0,
+     "py": 1.64
     },
     "foot": {
      "f": "assets/parts/nayzachi_foot.webp",
-     "w": 12.2,
-     "h": 4.04,
-     "px": 5.09,
-     "py": 0.43
+     "w": 12.51,
+     "h": 4.14,
+     "px": 5.22,
+     "py": 0.44
     },
     "foot_d": {
      "f": "assets/parts/nayzachi_foot_d.webp",
-     "w": 12.2,
-     "h": 4.04,
-     "px": 5.09,
-     "py": 0.43
+     "w": 12.51,
+     "h": 4.14,
+     "px": 5.22,
+     "py": 0.44
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -36.7
+     -40.39
     ],
     "neck": [
-     -1.41,
-     -25.32
+     -1.28,
+     -22.91
     ],
     "shoulder": [
-     -1.89,
-     -21.83
+     -1.71,
+     -19.75
     ],
     "shoulderFar": [
-     -0.79,
-     -21.39
+     -0.71,
+     -19.36
     ],
     "hipBack": [
      -1.2,
@@ -1860,23 +1860,23 @@
      0.0
     ],
     "elbow": [
-     1.29,
-     17.75
+     1.0,
+     13.81
     ],
     "hand": [
-     1.88,
-     16.78
+     1.61,
+     14.43
     ],
     "knee": [
-     -0.33,
-     14.94
+     -0.4,
+     18.17
     ],
-    "foot": 21.76,
+    "foot": 22.22,
     "ankle": [
-     1.3,
-     18.15
+     1.33,
+     18.52
     ],
-    "sole": 3.61
+    "sole": 3.7
    }
   },
   "kamonchi": {
@@ -1884,126 +1884,126 @@
    "parts": {
     "head": {
      "f": "assets/parts/kamonchi_head.webp",
-     "w": 16.48,
-     "h": 19.38,
-     "px": 9.56,
-     "py": 16.67
+     "w": 11.26,
+     "h": 13.24,
+     "px": 6.53,
+     "py": 11.39
     },
     "torso": {
      "f": "assets/parts/kamonchi_torso.webp",
-     "w": 20.57,
-     "h": 43.87,
-     "px": 10.88,
-     "py": 26.32
+     "w": 18.53,
+     "h": 39.5,
+     "px": 9.8,
+     "py": 23.7
     },
     "quiver": {
      "f": "assets/parts/kamonchi_quiver.webp",
-     "w": 10.52,
-     "h": 39.26,
-     "px": 5.26,
-     "py": 9.81
+     "w": 7.2,
+     "h": 26.86,
+     "px": 3.6,
+     "py": 6.72
     },
     "upper": {
      "f": "assets/parts/kamonchi_upper.webp",
-     "w": 6.01,
-     "h": 19.38,
-     "px": 3.15,
-     "py": 0.58
+     "w": 4.65,
+     "h": 15.01,
+     "px": 2.44,
+     "py": 0.45
     },
     "upper_d": {
      "f": "assets/parts/kamonchi_upper_d.webp",
-     "w": 6.01,
-     "h": 19.38,
-     "px": 3.15,
-     "py": 0.58
+     "w": 4.65,
+     "h": 15.01,
+     "px": 2.44,
+     "py": 0.45
     },
     "fore": {
      "f": "assets/parts/kamonchi_fore.webp",
-     "w": 7.06,
-     "h": 19.38,
-     "px": 2.67,
-     "py": 0.58
+     "w": 6.05,
+     "h": 16.59,
+     "px": 2.29,
+     "py": 0.5
     },
     "fore_d": {
      "f": "assets/parts/kamonchi_fore_d.webp",
-     "w": 7.06,
-     "h": 19.38,
-     "px": 2.67,
-     "py": 0.58
+     "w": 6.05,
+     "h": 16.59,
+     "px": 2.29,
+     "py": 0.5
     },
     "thigh": {
      "f": "assets/parts/kamonchi_thigh.webp",
-     "w": 5.32,
-     "h": 16.32,
-     "px": 2.59,
-     "py": 0.49
+     "w": 6.44,
+     "h": 19.75,
+     "px": 3.14,
+     "py": 0.59
     },
     "thigh_d": {
      "f": "assets/parts/kamonchi_thigh_d.webp",
-     "w": 5.32,
-     "h": 16.32,
-     "px": 2.59,
-     "py": 0.49
+     "w": 6.44,
+     "h": 19.75,
+     "px": 3.14,
+     "py": 0.59
     },
     "shin": {
      "f": "assets/parts/kamonchi_shin.webp",
-     "w": 12.38,
-     "h": 19.19,
-     "px": 3.56,
-     "py": 0.58
+     "w": 12.63,
+     "h": 19.59,
+     "px": 3.64,
+     "py": 0.69
     },
     "shin_d": {
      "f": "assets/parts/kamonchi_shin_d.webp",
-     "w": 12.38,
-     "h": 19.19,
-     "px": 3.56,
-     "py": 0.58
+     "w": 12.63,
+     "h": 19.59,
+     "px": 3.64,
+     "py": 0.69
     },
     "weapon": {
      "f": "assets/parts/kamonchi_weapon.webp",
-     "w": 17.67,
-     "h": 51.29,
-     "px": 8.83,
-     "py": 25.65
+     "w": 17.41,
+     "h": 50.56,
+     "px": 8.71,
+     "py": 25.28
     },
     "arrow": {
      "f": "assets/parts/kamonchi_arrow.webp",
-     "w": 58.11,
-     "h": 4.26,
-     "px": 2.91,
-     "py": 2.13
+     "w": 33.97,
+     "h": 2.49,
+     "px": 1.7,
+     "py": 1.31
     },
     "foot": {
      "f": "assets/parts/kamonchi_foot.webp",
-     "w": 12.38,
-     "h": 4.11,
-     "px": 4.93,
-     "py": 0.43
+     "w": 12.63,
+     "h": 4.2,
+     "px": 5.03,
+     "py": 0.44
     },
     "foot_d": {
      "f": "assets/parts/kamonchi_foot_d.webp",
-     "w": 12.38,
-     "h": 4.11,
-     "px": 4.93,
-     "py": 0.43
+     "w": 12.63,
+     "h": 4.2,
+     "px": 5.03,
+     "py": 0.44
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -36.89
+     -40.39
     ],
     "neck": [
-     -0.95,
-     -25.44
+     -0.85,
+     -22.91
     ],
     "shoulder": [
-     -1.62,
-     -21.93
+     -1.46,
+     -19.75
     ],
     "shoulderFar": [
-     -0.59,
-     -21.5
+     -0.53,
+     -19.36
     ],
     "hipBack": [
      -1.2,
@@ -2014,26 +2014,26 @@
      0.0
     ],
     "elbow": [
-     0.57,
-     17.83
+     0.44,
+     13.81
     ],
     "hand": [
-     2.07,
-     16.86
+     1.77,
+     14.43
     ],
     "knee": [
-     -0.28,
-     15.02
+     -0.34,
+     18.17
     ],
-    "foot": 21.87,
+    "foot": 22.22,
     "ankle": [
-     1.37,
-     18.19
+     1.4,
+     18.46
     ],
-    "sole": 3.68,
+    "sole": 3.76,
     "quiver": [
-     -6.35,
-     -13.16
+     -5.72,
+     -11.85
     ]
    }
   },
@@ -2042,126 +2042,126 @@
    "parts": {
     "head": {
      "f": "assets/parts/konchi_head.webp",
-     "w": 16.13,
-     "h": 18.31,
-     "px": 8.87,
-     "py": 16.11
+     "w": 11.58,
+     "h": 13.14,
+     "px": 6.37,
+     "py": 11.57
     },
     "torso": {
      "f": "assets/parts/konchi_torso.webp",
-     "w": 18.14,
-     "h": 41.44,
-     "px": 9.36,
-     "py": 24.86
+     "w": 16.41,
+     "h": 37.5,
+     "px": 8.47,
+     "py": 22.5
     },
     "upper": {
      "f": "assets/parts/konchi_upper.webp",
-     "w": 6.41,
-     "h": 18.31,
-     "px": 3.94,
-     "py": 0.55
+     "w": 4.99,
+     "h": 14.25,
+     "px": 3.06,
+     "py": 0.43
     },
     "upper_d": {
      "f": "assets/parts/konchi_upper_d.webp",
-     "w": 6.41,
-     "h": 18.31,
-     "px": 3.94,
-     "py": 0.55
+     "w": 4.99,
+     "h": 14.25,
+     "px": 3.06,
+     "py": 0.43
     },
     "fore": {
      "f": "assets/parts/konchi_fore.webp",
-     "w": 6.69,
-     "h": 18.31,
-     "px": 2.78,
-     "py": 0.55
+     "w": 5.75,
+     "h": 15.75,
+     "px": 2.39,
+     "py": 0.47
     },
     "fore_d": {
      "f": "assets/parts/konchi_fore_d.webp",
-     "w": 6.69,
-     "h": 18.31,
-     "px": 2.78,
-     "py": 0.55
+     "w": 5.75,
+     "h": 15.75,
+     "px": 2.39,
+     "py": 0.47
     },
     "thigh": {
      "f": "assets/parts/konchi_thigh.webp",
-     "w": 6.51,
-     "h": 15.42,
-     "px": 2.84,
-     "py": 0.46
+     "w": 7.91,
+     "h": 18.75,
+     "px": 3.45,
+     "py": 0.56
     },
     "thigh_d": {
      "f": "assets/parts/konchi_thigh_d.webp",
-     "w": 6.51,
-     "h": 15.42,
-     "px": 2.84,
-     "py": 0.46
+     "w": 7.91,
+     "h": 18.75,
+     "px": 3.45,
+     "py": 0.56
     },
     "shin": {
      "f": "assets/parts/konchi_shin.webp",
-     "w": 13.13,
-     "h": 17.81,
-     "px": 3.81,
-     "py": 0.53
+     "w": 13.47,
+     "h": 18.27,
+     "px": 3.91,
+     "py": 0.65
     },
     "shin_d": {
      "f": "assets/parts/konchi_shin_d.webp",
-     "w": 13.13,
-     "h": 17.81,
-     "px": 3.81,
-     "py": 0.53
+     "w": 13.47,
+     "h": 18.27,
+     "px": 3.91,
+     "py": 0.65
     },
     "weapon": {
      "f": "assets/parts/konchi_weapon.webp",
-     "w": 40.6,
-     "h": 20.77,
-     "px": 10.15,
-     "py": 10.38
+     "w": 35.25,
+     "h": 18.03,
+     "px": 8.81,
+     "py": 8.16
     },
     "basket": {
      "f": "assets/parts/konchi_basket.webp",
-     "w": 18.73,
-     "h": 23.03,
-     "px": 10.3,
-     "py": 6.91
+     "w": 16.71,
+     "h": 20.54,
+     "px": 9.19,
+     "py": 6.16
     },
     "basketfull": {
      "f": "assets/parts/konchi_basketfull.webp",
-     "w": 19.12,
-     "h": 24.0,
-     "px": 10.52,
-     "py": 7.2
+     "w": 17.06,
+     "h": 21.41,
+     "px": 9.38,
+     "py": 6.42
     },
     "foot": {
      "f": "assets/parts/konchi_foot.webp",
-     "w": 13.13,
-     "h": 4.48,
-     "px": 5.69,
-     "py": 0.55
+     "w": 13.47,
+     "h": 4.6,
+     "px": 5.84,
+     "py": 0.56
     },
     "foot_d": {
      "f": "assets/parts/konchi_foot_d.webp",
-     "w": 13.13,
-     "h": 4.48,
-     "px": 5.69,
-     "py": 0.55
+     "w": 13.47,
+     "h": 4.6,
+     "px": 5.84,
+     "py": 0.56
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -34.85
+     -38.35
     ],
     "neck": [
-     0.52,
-     -24.03
+     0.47,
+     -21.75
     ],
     "shoulder": [
-     -1.19,
-     -20.72
+     -1.08,
+     -18.75
     ],
     "shoulderFar": [
-     -0.29,
-     -20.31
+     -0.26,
+     -18.38
     ],
     "hipBack": [
      -1.2,
@@ -2172,26 +2172,26 @@
      0.0
     ],
     "elbow": [
-     -0.78,
-     16.85
+     -0.61,
+     13.11
     ],
     "hand": [
-     1.44,
-     15.93
+     1.24,
+     13.7
     ],
     "knee": [
-     0.86,
-     14.19
+     1.04,
+     17.25
     ],
-    "foot": 20.67,
+    "foot": 21.1,
     "ankle": [
-     1.88,
-     16.73
+     1.93,
+     17.06
     ],
-    "sole": 3.93,
+    "sole": 4.04,
     "basket": [
-     -6.09,
-     -10.77
+     -5.51,
+     -9.75
     ]
    }
   },
@@ -2200,119 +2200,119 @@
    "parts": {
     "head": {
      "f": "assets/parts/kochmanchi_qilichli_head.webp",
-     "w": 12.99,
-     "h": 19.39,
-     "px": 6.75,
-     "py": 16.67
+     "w": 13.08,
+     "h": 19.52,
+     "px": 7.93,
+     "py": 13.46
     },
     "torso": {
      "f": "assets/parts/kochmanchi_qilichli_torso.webp",
-     "w": 22.51,
-     "h": 43.88,
-     "px": 11.73,
-     "py": 26.33
+     "w": 20.26,
+     "h": 39.5,
+     "px": 10.56,
+     "py": 23.7
     },
     "shield": {
      "f": "assets/parts/kochmanchi_qilichli_shield.webp",
-     "w": 7.94,
-     "h": 36.12,
-     "px": 4.07,
-     "py": 1.08
+     "w": 5.21,
+     "h": 23.7,
+     "px": 2.61,
+     "py": 10.66
     },
     "upper": {
      "f": "assets/parts/kochmanchi_qilichli_upper.webp",
-     "w": 5.9,
-     "h": 19.39,
-     "px": 3.5,
-     "py": 0.58
+     "w": 4.56,
+     "h": 15.01,
+     "px": 2.71,
+     "py": 0.45
     },
     "upper_d": {
      "f": "assets/parts/kochmanchi_qilichli_upper_d.webp",
-     "w": 5.9,
-     "h": 19.39,
-     "px": 3.5,
-     "py": 0.58
+     "w": 4.56,
+     "h": 15.01,
+     "px": 2.71,
+     "py": 0.45
     },
     "fore": {
      "f": "assets/parts/kochmanchi_qilichli_fore.webp",
-     "w": 5.97,
-     "h": 19.39,
-     "px": 3.04,
-     "py": 0.58
+     "w": 5.11,
+     "h": 16.59,
+     "px": 2.6,
+     "py": 0.5
     },
     "fore_d": {
      "f": "assets/parts/kochmanchi_qilichli_fore_d.webp",
-     "w": 5.97,
-     "h": 19.39,
-     "px": 3.04,
-     "py": 0.58
+     "w": 5.11,
+     "h": 16.59,
+     "px": 2.6,
+     "py": 0.5
     },
     "thigh": {
      "f": "assets/parts/kochmanchi_qilichli_thigh.webp",
-     "w": 4.99,
-     "h": 16.33,
-     "px": 2.26,
-     "py": 0.49
+     "w": 6.04,
+     "h": 19.75,
+     "px": 2.74,
+     "py": 0.59
     },
     "thigh_d": {
      "f": "assets/parts/kochmanchi_qilichli_thigh_d.webp",
-     "w": 4.99,
-     "h": 16.33,
-     "px": 2.26,
-     "py": 0.49
+     "w": 6.04,
+     "h": 19.75,
+     "px": 2.74,
+     "py": 0.59
     },
     "shin": {
      "f": "assets/parts/kochmanchi_qilichli_shin.webp",
-     "w": 11.98,
-     "h": 19.83,
-     "px": 3.85,
-     "py": 0.59
+     "w": 12.22,
+     "h": 20.23,
+     "px": 3.93,
+     "py": 0.69
     },
     "shin_d": {
      "f": "assets/parts/kochmanchi_qilichli_shin_d.webp",
-     "w": 11.98,
-     "h": 19.83,
-     "px": 3.85,
-     "py": 0.59
+     "w": 12.22,
+     "h": 20.23,
+     "px": 3.93,
+     "py": 0.69
     },
     "weapon": {
      "f": "assets/parts/kochmanchi_qilichli_weapon.webp",
-     "w": 29.78,
-     "h": 5.51,
-     "px": 2.23,
-     "py": 2.31
+     "w": 39.5,
+     "h": 7.31,
+     "px": 2.96,
+     "py": 3.07
     },
     "foot": {
      "f": "assets/parts/kochmanchi_qilichli_foot.webp",
-     "w": 11.98,
-     "h": 4.26,
-     "px": 4.89,
-     "py": 0.82
+     "w": 12.22,
+     "h": 4.35,
+     "px": 4.99,
+     "py": 0.84
     },
     "foot_d": {
      "f": "assets/parts/kochmanchi_qilichli_foot_d.webp",
-     "w": 11.98,
-     "h": 4.26,
-     "px": 4.89,
-     "py": 0.82
+     "w": 12.22,
+     "h": 4.35,
+     "px": 4.99,
+     "py": 0.84
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -36.88
+     -40.39
     ],
     "neck": [
-     -0.57,
-     -25.45
+     -0.51,
+     -22.91
     ],
     "shoulder": [
-     -2.27,
-     -21.94
+     -2.05,
+     -19.75
     ],
     "shoulderFar": [
-     -1.15,
-     -21.5
+     -1.03,
+     -19.36
     ],
     "hipBack": [
      -1.2,
@@ -2323,23 +2323,23 @@
      0.0
     ],
     "elbow": [
-     0.15,
-     17.84
+     0.12,
+     13.81
     ],
     "hand": [
-     0.79,
-     16.87
+     0.68,
+     14.43
     ],
     "knee": [
-     0.1,
-     15.02
+     0.12,
+     18.17
     ],
-    "foot": 21.85,
+    "foot": 22.22,
     "ankle": [
-     1.03,
-     18.41
+     1.05,
+     18.71
     ],
-    "sole": 3.44
+    "sole": 3.51
    }
   },
   "sovutli_qilichli": {
@@ -2347,119 +2347,119 @@
    "parts": {
     "head": {
      "f": "assets/parts/sovutli_qilichli_head.webp",
-     "w": 13.8,
-     "h": 19.38,
-     "px": 7.18,
-     "py": 16.67
+     "w": 9.77,
+     "h": 13.73,
+     "px": 7.28,
+     "py": 12.62
     },
     "torso": {
      "f": "assets/parts/sovutli_qilichli_torso.webp",
-     "w": 25.84,
-     "h": 43.87,
-     "px": 12.92,
-     "py": 26.32
+     "w": 23.27,
+     "h": 39.5,
+     "px": 11.63,
+     "py": 23.7
     },
     "shield": {
      "f": "assets/parts/sovutli_qilichli_shield.webp",
-     "w": 10.86,
-     "h": 37.79,
-     "px": 5.43,
-     "py": 1.13
+     "w": 6.81,
+     "h": 23.7,
+     "px": 3.41,
+     "py": 10.66
     },
     "upper": {
      "f": "assets/parts/sovutli_qilichli_upper.webp",
-     "w": 6.53,
-     "h": 19.38,
-     "px": 3.32,
-     "py": 0.58
+     "w": 5.06,
+     "h": 15.01,
+     "px": 2.57,
+     "py": 0.45
     },
     "upper_d": {
      "f": "assets/parts/sovutli_qilichli_upper_d.webp",
-     "w": 6.53,
-     "h": 19.38,
-     "px": 3.32,
-     "py": 0.58
+     "w": 5.06,
+     "h": 15.01,
+     "px": 2.57,
+     "py": 0.45
     },
     "fore": {
      "f": "assets/parts/sovutli_qilichli_fore.webp",
-     "w": 6.78,
-     "h": 19.38,
-     "px": 2.97,
-     "py": 0.58
+     "w": 5.8,
+     "h": 16.59,
+     "px": 2.54,
+     "py": 0.5
     },
     "fore_d": {
      "f": "assets/parts/sovutli_qilichli_fore_d.webp",
-     "w": 6.78,
-     "h": 19.38,
-     "px": 2.97,
-     "py": 0.58
+     "w": 5.8,
+     "h": 16.59,
+     "px": 2.54,
+     "py": 0.5
     },
     "thigh": {
      "f": "assets/parts/sovutli_qilichli_thigh.webp",
-     "w": 4.87,
-     "h": 16.32,
-     "px": 2.4,
-     "py": 0.49
+     "w": 5.89,
+     "h": 19.75,
+     "px": 2.9,
+     "py": 0.59
     },
     "thigh_d": {
      "f": "assets/parts/sovutli_qilichli_thigh_d.webp",
-     "w": 4.87,
-     "h": 16.32,
-     "px": 2.4,
-     "py": 0.49
+     "w": 5.89,
+     "h": 19.75,
+     "px": 2.9,
+     "py": 0.59
     },
     "shin": {
      "f": "assets/parts/sovutli_qilichli_shin.webp",
-     "w": 10.0,
-     "h": 19.34,
-     "px": 3.46,
-     "py": 0.58
+     "w": 10.2,
+     "h": 19.74,
+     "px": 3.59,
+     "py": 0.69
     },
     "shin_d": {
      "f": "assets/parts/sovutli_qilichli_shin_d.webp",
-     "w": 10.0,
-     "h": 19.34,
-     "px": 3.46,
-     "py": 0.58
+     "w": 10.2,
+     "h": 19.74,
+     "px": 3.59,
+     "py": 0.69
     },
     "weapon": {
      "f": "assets/parts/sovutli_qilichli_weapon.webp",
-     "w": 53.69,
-     "h": 8.86,
-     "px": 4.83,
-     "py": 4.43
+     "w": 42.66,
+     "h": 7.04,
+     "px": 3.84,
+     "py": 3.52
     },
     "foot": {
      "f": "assets/parts/sovutli_qilichli_foot.webp",
-     "w": 10.0,
-     "h": 4.46,
-     "px": 3.41,
-     "py": 0.68
+     "w": 10.2,
+     "h": 4.55,
+     "px": 3.48,
+     "py": 0.69
     },
     "foot_d": {
      "f": "assets/parts/sovutli_qilichli_foot_d.webp",
-     "w": 10.0,
-     "h": 4.46,
-     "px": 3.41,
-     "py": 0.68
+     "w": 10.2,
+     "h": 4.55,
+     "px": 3.48,
+     "py": 0.69
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -36.88
+     -40.39
     ],
     "neck": [
-     0.43,
-     -25.45
+     0.39,
+     -22.91
     ],
     "shoulder": [
-     -2.07,
-     -21.94
+     -1.86,
+     -19.75
     ],
     "shoulderFar": [
-     -0.78,
-     -21.5
+     -0.7,
+     -19.36
     ],
     "hipBack": [
      -1.2,
@@ -2470,23 +2470,23 @@
      0.0
     ],
     "elbow": [
-     0.57,
-     17.83
+     0.44,
+     13.81
     ],
     "hand": [
-     1.37,
-     16.86
+     1.17,
+     14.43
     ],
     "knee": [
      0.04,
-     15.02
+     18.17
     ],
-    "foot": 21.87,
+    "foot": 22.22,
     "ankle": [
-     -0.06,
-     18.08
+     -0.12,
+     18.36
     ],
-    "sole": 3.79
+    "sole": 3.86
    }
   },
   "kochmanchi_nayzachi": {
@@ -2494,119 +2494,119 @@
    "parts": {
     "head": {
      "f": "assets/parts/kochmanchi_nayzachi_head.webp",
-     "w": 13.71,
-     "h": 19.39,
-     "px": 7.13,
-     "py": 16.68
+     "w": 13.72,
+     "h": 19.41,
+     "px": 8.33,
+     "py": 12.01
     },
     "torso": {
      "f": "assets/parts/kochmanchi_nayzachi_torso.webp",
-     "w": 24.16,
-     "h": 43.88,
-     "px": 11.99,
-     "py": 26.33
+     "w": 21.75,
+     "h": 39.5,
+     "px": 10.79,
+     "py": 23.7
     },
     "shield": {
      "f": "assets/parts/kochmanchi_nayzachi_shield.webp",
-     "w": 8.89,
-     "h": 36.15,
-     "px": 4.25,
-     "py": 1.08
+     "w": 5.83,
+     "h": 23.7,
+     "px": 2.91,
+     "py": 10.66
     },
     "upper": {
      "f": "assets/parts/kochmanchi_nayzachi_upper.webp",
-     "w": 5.45,
-     "h": 19.39,
-     "px": 2.88,
-     "py": 0.58
+     "w": 4.22,
+     "h": 15.01,
+     "px": 2.23,
+     "py": 0.45
     },
     "upper_d": {
      "f": "assets/parts/kochmanchi_nayzachi_upper_d.webp",
-     "w": 5.45,
-     "h": 19.39,
-     "px": 2.88,
-     "py": 0.58
+     "w": 4.22,
+     "h": 15.01,
+     "px": 2.23,
+     "py": 0.45
     },
     "fore": {
      "f": "assets/parts/kochmanchi_nayzachi_fore.webp",
-     "w": 5.74,
-     "h": 19.39,
-     "px": 3.04,
-     "py": 0.58
+     "w": 4.91,
+     "h": 16.59,
+     "px": 2.6,
+     "py": 0.5
     },
     "fore_d": {
      "f": "assets/parts/kochmanchi_nayzachi_fore_d.webp",
-     "w": 5.74,
-     "h": 19.39,
-     "px": 3.04,
-     "py": 0.58
+     "w": 4.91,
+     "h": 16.59,
+     "px": 2.6,
+     "py": 0.5
     },
     "thigh": {
      "f": "assets/parts/kochmanchi_nayzachi_thigh.webp",
-     "w": 5.18,
-     "h": 16.33,
-     "px": 2.33,
-     "py": 0.49
+     "w": 6.27,
+     "h": 19.75,
+     "px": 2.82,
+     "py": 0.59
     },
     "thigh_d": {
      "f": "assets/parts/kochmanchi_nayzachi_thigh_d.webp",
-     "w": 5.18,
-     "h": 16.33,
-     "px": 2.33,
-     "py": 0.49
+     "w": 6.27,
+     "h": 19.75,
+     "px": 2.82,
+     "py": 0.59
     },
     "shin": {
      "f": "assets/parts/kochmanchi_nayzachi_shin.webp",
-     "w": 10.84,
-     "h": 20.07,
-     "px": 3.65,
-     "py": 0.6
+     "w": 11.07,
+     "h": 20.48,
+     "px": 3.73,
+     "py": 0.69
     },
     "shin_d": {
      "f": "assets/parts/kochmanchi_nayzachi_shin_d.webp",
-     "w": 10.84,
-     "h": 20.07,
-     "px": 3.65,
-     "py": 0.6
+     "w": 11.07,
+     "h": 20.48,
+     "px": 3.73,
+     "py": 0.69
     },
     "weapon": {
      "f": "assets/parts/kochmanchi_nayzachi_weapon.webp",
-     "w": 66.71,
-     "h": 3.29,
-     "px": 20.01,
-     "py": 1.64
+     "w": 106.65,
+     "h": 5.25,
+     "px": 32.0,
+     "py": 2.36
     },
     "foot": {
      "f": "assets/parts/kochmanchi_nayzachi_foot.webp",
-     "w": 10.84,
-     "h": 3.79,
-     "px": 4.66,
-     "py": 0.7
+     "w": 11.07,
+     "h": 3.87,
+     "px": 4.75,
+     "py": 0.72
     },
     "foot_d": {
      "f": "assets/parts/kochmanchi_nayzachi_foot_d.webp",
-     "w": 10.84,
-     "h": 3.79,
-     "px": 4.66,
-     "py": 0.7
+     "w": 11.07,
+     "h": 3.87,
+     "px": 4.75,
+     "py": 0.72
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -36.87
+     -40.39
     ],
     "neck": [
-     0.97,
-     -25.45
+     0.87,
+     -22.91
     ],
     "shoulder": [
-     -1.84,
-     -21.94
+     -1.65,
+     -19.75
     ],
     "shoulderFar": [
-     -0.63,
-     -21.5
+     -0.57,
+     -19.36
     ],
     "hipBack": [
      -1.2,
@@ -2617,23 +2617,23 @@
      0.0
     ],
     "elbow": [
-     0.86,
-     17.84
+     0.66,
+     13.81
     ],
     "hand": [
-     0.63,
-     16.87
+     0.54,
+     14.43
     ],
     "knee": [
-     0.29,
-     15.02
+     0.35,
+     18.17
     ],
-    "foot": 21.85,
+    "foot": 22.22,
     "ankle": [
-     1.0,
-     18.76
+     1.02,
+     19.07
     ],
-    "sole": 3.09
+    "sole": 3.15
    }
   },
   "sovutli_nayzachi": {
@@ -2641,119 +2641,119 @@
    "parts": {
     "head": {
      "f": "assets/parts/sovutli_nayzachi_head.webp",
-     "w": 14.73,
-     "h": 19.38,
-     "px": 7.66,
-     "py": 16.67
+     "w": 10.06,
+     "h": 13.24,
+     "px": 7.52,
+     "py": 12.23
     },
     "torso": {
      "f": "assets/parts/sovutli_nayzachi_torso.webp",
-     "w": 24.83,
-     "h": 43.87,
-     "px": 12.62,
-     "py": 26.32
+     "w": 22.36,
+     "h": 39.5,
+     "px": 11.37,
+     "py": 23.7
     },
     "shield": {
      "f": "assets/parts/sovutli_nayzachi_shield.webp",
-     "w": 9.73,
-     "h": 38.07,
-     "px": 4.55,
-     "py": 1.14
+     "w": 6.05,
+     "h": 23.7,
+     "px": 3.03,
+     "py": 10.67
     },
     "upper": {
      "f": "assets/parts/sovutli_nayzachi_upper.webp",
-     "w": 6.11,
-     "h": 19.38,
-     "px": 3.32,
-     "py": 0.58
+     "w": 4.73,
+     "h": 15.01,
+     "px": 2.57,
+     "py": 0.45
     },
     "upper_d": {
      "f": "assets/parts/sovutli_nayzachi_upper_d.webp",
-     "w": 6.11,
-     "h": 19.38,
-     "px": 3.32,
-     "py": 0.58
+     "w": 4.73,
+     "h": 15.01,
+     "px": 2.57,
+     "py": 0.45
     },
     "fore": {
      "f": "assets/parts/sovutli_nayzachi_fore.webp",
-     "w": 6.59,
-     "h": 19.38,
-     "px": 2.98,
-     "py": 0.58
+     "w": 5.64,
+     "h": 16.59,
+     "px": 2.55,
+     "py": 0.5
     },
     "fore_d": {
      "f": "assets/parts/sovutli_nayzachi_fore_d.webp",
-     "w": 6.59,
-     "h": 19.38,
-     "px": 2.98,
-     "py": 0.58
+     "w": 5.64,
+     "h": 16.59,
+     "px": 2.55,
+     "py": 0.5
     },
     "thigh": {
      "f": "assets/parts/sovutli_nayzachi_thigh.webp",
-     "w": 4.81,
-     "h": 16.32,
-     "px": 2.69,
-     "py": 0.49
+     "w": 5.82,
+     "h": 19.75,
+     "px": 3.26,
+     "py": 0.59
     },
     "thigh_d": {
      "f": "assets/parts/sovutli_nayzachi_thigh_d.webp",
-     "w": 4.81,
-     "h": 16.32,
-     "px": 2.69,
-     "py": 0.49
+     "w": 5.82,
+     "h": 19.75,
+     "px": 3.26,
+     "py": 0.59
     },
     "shin": {
      "f": "assets/parts/sovutli_nayzachi_shin.webp",
-     "w": 9.59,
-     "h": 19.12,
-     "px": 3.68,
-     "py": 0.57
+     "w": 9.79,
+     "h": 19.52,
+     "px": 3.7,
+     "py": 0.69
     },
     "shin_d": {
      "f": "assets/parts/sovutli_nayzachi_shin_d.webp",
-     "w": 9.59,
-     "h": 19.12,
-     "px": 3.68,
-     "py": 0.57
+     "w": 9.79,
+     "h": 19.52,
+     "px": 3.7,
+     "py": 0.69
     },
     "weapon": {
      "f": "assets/parts/sovutli_nayzachi_weapon.webp",
-     "w": 71.41,
-     "h": 3.52,
-     "px": 21.42,
-     "py": 1.76
+     "w": 106.65,
+     "h": 5.25,
+     "px": 32.0,
+     "py": 2.1
     },
     "foot": {
      "f": "assets/parts/sovutli_nayzachi_foot.webp",
-     "w": 9.59,
-     "h": 4.65,
-     "px": 3.35,
-     "py": 0.66
+     "w": 9.79,
+     "h": 4.74,
+     "px": 3.42,
+     "py": 0.68
     },
     "foot_d": {
      "f": "assets/parts/sovutli_nayzachi_foot_d.webp",
-     "w": 9.59,
-     "h": 4.65,
-     "px": 3.35,
-     "py": 0.66
+     "w": 9.79,
+     "h": 4.74,
+     "px": 3.42,
+     "py": 0.68
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -36.89
+     -40.39
     ],
     "neck": [
-     0.21,
-     -25.44
+     0.19,
+     -22.91
     ],
     "shoulder": [
-     -2.19,
-     -21.93
+     -1.97,
+     -19.75
     ],
     "shoulderFar": [
-     -0.95,
-     -21.5
+     -0.86,
+     -19.36
     ],
     "hipBack": [
      -1.2,
@@ -2764,23 +2764,23 @@
      0.0
     ],
     "elbow": [
-     0.84,
-     17.83
+     0.65,
+     13.81
     ],
     "hand": [
-     1.39,
-     16.86
+     1.19,
+     14.43
     ],
     "knee": [
-     -0.32,
-     15.02
+     -0.39,
+     18.17
     ],
-    "foot": 21.87,
+    "foot": 22.22,
     "ankle": [
-     -0.33,
-     17.89
+     -0.28,
+     18.16
     ],
-    "sole": 3.98
+    "sole": 4.07
    }
   },
   "kochmanchi_kamonchi": {
@@ -2788,126 +2788,126 @@
    "parts": {
     "head": {
      "f": "assets/parts/kochmanchi_kamonchi_head.webp",
-     "w": 13.18,
-     "h": 19.39,
-     "px": 6.85,
-     "py": 16.68
+     "w": 12.93,
+     "h": 19.03,
+     "px": 8.1,
+     "py": 11.08
     },
     "torso": {
      "f": "assets/parts/kochmanchi_kamonchi_torso.webp",
-     "w": 22.72,
-     "h": 43.88,
-     "px": 11.07,
-     "py": 26.33
+     "w": 20.45,
+     "h": 39.5,
+     "px": 9.96,
+     "py": 23.7
     },
     "quiver": {
      "f": "assets/parts/kochmanchi_kamonchi_quiver.webp",
-     "w": 7.77,
-     "h": 38.45,
-     "px": 3.88,
-     "py": 9.61
+     "w": 5.43,
+     "h": 26.86,
+     "px": 2.71,
+     "py": 6.72
     },
     "upper": {
      "f": "assets/parts/kochmanchi_kamonchi_upper.webp",
-     "w": 4.72,
-     "h": 19.39,
-     "px": 2.46,
-     "py": 0.58
+     "w": 3.65,
+     "h": 15.01,
+     "px": 1.91,
+     "py": 0.45
     },
     "upper_d": {
      "f": "assets/parts/kochmanchi_kamonchi_upper_d.webp",
-     "w": 4.72,
-     "h": 19.39,
-     "px": 2.46,
-     "py": 0.58
+     "w": 3.65,
+     "h": 15.01,
+     "px": 1.91,
+     "py": 0.45
     },
     "fore": {
      "f": "assets/parts/kochmanchi_kamonchi_fore.webp",
-     "w": 5.91,
-     "h": 19.39,
-     "px": 2.78,
-     "py": 0.58
+     "w": 5.06,
+     "h": 16.59,
+     "px": 2.38,
+     "py": 0.5
     },
     "fore_d": {
      "f": "assets/parts/kochmanchi_kamonchi_fore_d.webp",
-     "w": 5.91,
-     "h": 19.39,
-     "px": 2.78,
-     "py": 0.58
+     "w": 5.06,
+     "h": 16.59,
+     "px": 2.38,
+     "py": 0.5
     },
     "thigh": {
      "f": "assets/parts/kochmanchi_kamonchi_thigh.webp",
-     "w": 5.08,
-     "h": 16.33,
-     "px": 2.31,
-     "py": 0.49
+     "w": 6.14,
+     "h": 19.75,
+     "px": 2.8,
+     "py": 0.59
     },
     "thigh_d": {
      "f": "assets/parts/kochmanchi_kamonchi_thigh_d.webp",
-     "w": 5.08,
-     "h": 16.33,
-     "px": 2.31,
-     "py": 0.49
+     "w": 6.14,
+     "h": 19.75,
+     "px": 2.8,
+     "py": 0.59
     },
     "shin": {
      "f": "assets/parts/kochmanchi_kamonchi_shin.webp",
-     "w": 11.29,
-     "h": 20.02,
-     "px": 3.54,
-     "py": 0.6
+     "w": 11.52,
+     "h": 20.43,
+     "px": 3.62,
+     "py": 0.69
     },
     "shin_d": {
      "f": "assets/parts/kochmanchi_kamonchi_shin_d.webp",
-     "w": 11.29,
-     "h": 20.02,
-     "px": 3.54,
-     "py": 0.6
+     "w": 11.52,
+     "h": 20.43,
+     "px": 3.62,
+     "py": 0.69
     },
     "weapon": {
      "f": "assets/parts/kochmanchi_kamonchi_weapon.webp",
-     "w": 8.56,
-     "h": 41.94,
-     "px": 4.28,
-     "py": 20.97
+     "w": 10.32,
+     "h": 50.56,
+     "px": 8.85,
+     "py": 25.28
     },
     "arrow": {
      "f": "assets/parts/kochmanchi_kamonchi_arrow.webp",
-     "w": 44.21,
-     "h": 3.67,
-     "px": 2.21,
-     "py": 1.83
+     "w": 33.97,
+     "h": 2.82,
+     "px": 1.7,
+     "py": 1.34
     },
     "foot": {
      "f": "assets/parts/kochmanchi_kamonchi_foot.webp",
-     "w": 11.29,
-     "h": 3.86,
-     "px": 4.74,
-     "py": 0.72
+     "w": 11.52,
+     "h": 3.94,
+     "px": 4.84,
+     "py": 0.73
     },
     "foot_d": {
      "f": "assets/parts/kochmanchi_kamonchi_foot_d.webp",
-     "w": 11.29,
-     "h": 3.86,
-     "px": 4.74,
-     "py": 0.72
+     "w": 11.52,
+     "h": 3.94,
+     "px": 4.84,
+     "py": 0.73
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -36.87
+     -40.39
     ],
     "neck": [
-     0.87,
-     -25.45
+     0.79,
+     -22.91
     ],
     "shoulder": [
-     -1.53,
-     -21.94
+     -1.37,
+     -19.75
     ],
     "shoulderFar": [
-     -0.39,
-     -21.5
+     -0.35,
+     -19.36
     ],
     "hipBack": [
      -1.2,
@@ -2918,26 +2918,26 @@
      0.0
     ],
     "elbow": [
-     0.77,
-     17.84
+     0.6,
+     13.81
     ],
     "hand": [
-     1.3,
-     16.87
+     1.11,
+     14.43
     ],
     "knee": [
-     0.11,
-     15.02
+     0.14,
+     18.17
     ],
-    "foot": 21.85,
+    "foot": 22.22,
     "ankle": [
-     1.2,
-     18.7
+     1.23,
+     19.01
     ],
-    "sole": 3.15,
+    "sole": 3.21,
     "quiver": [
-     -6.07,
-     -13.16
+     -5.46,
+     -11.85
     ]
    }
   },
@@ -2946,126 +2946,126 @@
    "parts": {
     "head": {
      "f": "assets/parts/sovutli_kamonchi_head.webp",
-     "w": 14.06,
-     "h": 19.38,
-     "px": 7.31,
-     "py": 16.67
+     "w": 9.3,
+     "h": 12.82,
+     "px": 6.98,
+     "py": 12.11
     },
     "torso": {
      "f": "assets/parts/sovutli_kamonchi_torso.webp",
-     "w": 22.76,
-     "h": 43.86,
-     "px": 12.0,
-     "py": 26.32
+     "w": 20.5,
+     "h": 39.5,
+     "px": 10.81,
+     "py": 23.7
     },
     "quiver": {
      "f": "assets/parts/sovutli_kamonchi_quiver.webp",
-     "w": 8.48,
-     "h": 37.86,
-     "px": 4.24,
-     "py": 9.47
+     "w": 6.02,
+     "h": 26.86,
+     "px": 3.01,
+     "py": 6.72
     },
     "upper": {
      "f": "assets/parts/sovutli_kamonchi_upper.webp",
-     "w": 5.88,
-     "h": 19.38,
-     "px": 2.83,
-     "py": 0.58
+     "w": 4.56,
+     "h": 15.01,
+     "px": 2.19,
+     "py": 0.45
     },
     "upper_d": {
      "f": "assets/parts/sovutli_kamonchi_upper_d.webp",
-     "w": 5.88,
-     "h": 19.38,
-     "px": 2.83,
-     "py": 0.58
+     "w": 4.56,
+     "h": 15.01,
+     "px": 2.19,
+     "py": 0.45
     },
     "fore": {
      "f": "assets/parts/sovutli_kamonchi_fore.webp",
-     "w": 6.68,
-     "h": 19.38,
-     "px": 2.75,
-     "py": 0.58
+     "w": 5.72,
+     "h": 16.59,
+     "px": 2.35,
+     "py": 0.5
     },
     "fore_d": {
      "f": "assets/parts/sovutli_kamonchi_fore_d.webp",
-     "w": 6.68,
-     "h": 19.38,
-     "px": 2.75,
-     "py": 0.58
+     "w": 5.72,
+     "h": 16.59,
+     "px": 2.35,
+     "py": 0.5
     },
     "thigh": {
      "f": "assets/parts/sovutli_kamonchi_thigh.webp",
-     "w": 4.78,
-     "h": 16.32,
-     "px": 2.47,
-     "py": 0.49
+     "w": 5.79,
+     "h": 19.75,
+     "px": 2.99,
+     "py": 0.59
     },
     "thigh_d": {
      "f": "assets/parts/sovutli_kamonchi_thigh_d.webp",
-     "w": 4.78,
-     "h": 16.32,
-     "px": 2.47,
-     "py": 0.49
+     "w": 5.79,
+     "h": 19.75,
+     "px": 2.99,
+     "py": 0.59
     },
     "shin": {
      "f": "assets/parts/sovutli_kamonchi_shin.webp",
-     "w": 10.07,
-     "h": 18.68,
-     "px": 2.87,
-     "py": 0.56
+     "w": 10.28,
+     "h": 19.07,
+     "px": 2.93,
+     "py": 0.69
     },
     "shin_d": {
      "f": "assets/parts/sovutli_kamonchi_shin_d.webp",
-     "w": 10.07,
-     "h": 18.68,
-     "px": 2.87,
-     "py": 0.56
+     "w": 10.28,
+     "h": 19.07,
+     "px": 2.93,
+     "py": 0.69
     },
     "weapon": {
      "f": "assets/parts/sovutli_kamonchi_weapon.webp",
-     "w": 8.94,
-     "h": 42.83,
-     "px": 4.47,
-     "py": 21.41
+     "w": 10.55,
+     "h": 50.56,
+     "px": 7.8,
+     "py": 25.28
     },
     "arrow": {
      "f": "assets/parts/sovutli_kamonchi_arrow.webp",
-     "w": 47.29,
-     "h": 3.35,
-     "px": 2.36,
-     "py": 1.68
+     "w": 33.97,
+     "h": 2.41,
+     "px": 1.7,
+     "py": 1.07
     },
     "foot": {
      "f": "assets/parts/sovutli_kamonchi_foot.webp",
-     "w": 10.07,
-     "h": 5.16,
-     "px": 3.4,
-     "py": 0.7
+     "w": 10.28,
+     "h": 5.27,
+     "px": 3.47,
+     "py": 0.71
     },
     "foot_d": {
      "f": "assets/parts/sovutli_kamonchi_foot_d.webp",
-     "w": 10.07,
-     "h": 5.16,
-     "px": 3.4,
-     "py": 0.7
+     "w": 10.28,
+     "h": 5.27,
+     "px": 3.47,
+     "py": 0.71
     }
    },
    "joints": {
     "hip": [
      0.0,
-     -36.89
+     -40.39
     ],
     "neck": [
-     -0.93,
-     -25.44
+     -0.84,
+     -22.91
     ],
     "shoulder": [
-     -2.44,
-     -21.93
+     -2.2,
+     -19.75
     ],
     "shoulderFar": [
-     -1.3,
-     -21.49
+     -1.17,
+     -19.36
     ],
     "hipBack": [
      -1.2,
@@ -3076,27 +3076,3374 @@
      0.0
     ],
     "elbow": [
-     0.92,
-     17.83
+     0.71,
+     13.81
     ],
     "hand": [
-     1.37,
-     16.86
+     1.18,
+     14.43
     ],
     "knee": [
-     -0.16,
-     15.01
+     -0.19,
+     18.17
     ],
-    "foot": 21.88,
+    "foot": 22.22,
     "ankle": [
-     0.53,
-     17.42
+     0.54,
+     17.67
     ],
-    "sole": 4.46,
+    "sole": 4.55,
     "quiver": [
-     -6.99,
-     -13.16
+     -6.3,
+     -11.85
     ]
+   }
+  },
+  "sarkarda_qilichli": {
+   "h": 79,
+   "parts": {
+    "head": {
+     "f": "assets/parts/sarkarda_qilichli_head.webp",
+     "w": 11.61,
+     "h": 19.53,
+     "px": 7.27,
+     "py": 17.91
+    },
+    "torso": {
+     "f": "assets/parts/sarkarda_qilichli_torso.webp",
+     "w": 18.94,
+     "h": 39.5,
+     "px": 10.53,
+     "py": 23.7
+    },
+    "cape": {
+     "f": "assets/parts/sarkarda_qilichli_cape.webp",
+     "w": 20.3,
+     "h": 36.34,
+     "px": 13.1,
+     "py": 1.09
+    },
+    "shield": {
+     "f": "assets/parts/sarkarda_qilichli_shield.webp",
+     "w": 6.01,
+     "h": 23.7,
+     "px": 3.01,
+     "py": 10.66
+    },
+    "upper": {
+     "f": "assets/parts/sarkarda_qilichli_upper.webp",
+     "w": 7.15,
+     "h": 15.01,
+     "px": 3.41,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/sarkarda_qilichli_upper_d.webp",
+     "w": 7.15,
+     "h": 15.01,
+     "px": 3.41,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/sarkarda_qilichli_fore.webp",
+     "w": 5.36,
+     "h": 16.59,
+     "px": 2.72,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/sarkarda_qilichli_fore_d.webp",
+     "w": 5.36,
+     "h": 16.59,
+     "px": 2.72,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/sarkarda_qilichli_thigh.webp",
+     "w": 5.28,
+     "h": 19.75,
+     "px": 2.52,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/sarkarda_qilichli_thigh_d.webp",
+     "w": 5.28,
+     "h": 19.75,
+     "px": 2.52,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/sarkarda_qilichli_shin.webp",
+     "w": 9.55,
+     "h": 19.77,
+     "px": 2.89,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/sarkarda_qilichli_shin_d.webp",
+     "w": 9.55,
+     "h": 19.77,
+     "px": 2.89,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/sarkarda_qilichli_weapon.webp",
+     "w": 42.66,
+     "h": 6.56,
+     "px": 3.84,
+     "py": 3.28
+    },
+    "foot": {
+     "f": "assets/parts/sarkarda_qilichli_foot.webp",
+     "w": 9.55,
+     "h": 3.99,
+     "px": 3.24,
+     "py": 0.42
+    },
+    "foot_d": {
+     "f": "assets/parts/sarkarda_qilichli_foot_d.webp",
+     "w": 9.55,
+     "h": 3.99,
+     "px": 3.24,
+     "py": 0.42
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     -0.19,
+     -22.91
+    ],
+    "shoulder": [
+     -4.66,
+     -16.59
+    ],
+    "shoulderFar": [
+     -3.71,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -0.32,
+     11.26
+    ],
+    "hand": [
+     0.0,
+     14.43
+    ],
+    "knee": [
+     -0.17,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.36,
+     18.66
+    ],
+    "sole": 3.56,
+    "cape": [
+     -6.55,
+     -18.96
+    ]
+   }
+  },
+  "sarkarda_nayzachi": {
+   "h": 79,
+   "parts": {
+    "head": {
+     "f": "assets/parts/sarkarda_nayzachi_head.webp",
+     "w": 13.49,
+     "h": 22.64,
+     "px": 7.91,
+     "py": 18.49
+    },
+    "torso": {
+     "f": "assets/parts/sarkarda_nayzachi_torso.webp",
+     "w": 20.08,
+     "h": 39.5,
+     "px": 10.65,
+     "py": 23.7
+    },
+    "cape": {
+     "f": "assets/parts/sarkarda_nayzachi_cape.webp",
+     "w": 19.62,
+     "h": 36.34,
+     "px": 11.98,
+     "py": 1.09
+    },
+    "shield": {
+     "f": "assets/parts/sarkarda_nayzachi_shield.webp",
+     "w": 6.41,
+     "h": 23.7,
+     "px": 3.2,
+     "py": 10.66
+    },
+    "upper": {
+     "f": "assets/parts/sarkarda_nayzachi_upper.webp",
+     "w": 7.42,
+     "h": 15.01,
+     "px": 3.92,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/sarkarda_nayzachi_upper_d.webp",
+     "w": 7.42,
+     "h": 15.01,
+     "px": 3.92,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/sarkarda_nayzachi_fore.webp",
+     "w": 5.31,
+     "h": 16.59,
+     "px": 2.73,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/sarkarda_nayzachi_fore_d.webp",
+     "w": 5.31,
+     "h": 16.59,
+     "px": 2.73,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/sarkarda_nayzachi_thigh.webp",
+     "w": 5.05,
+     "h": 19.75,
+     "px": 2.56,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/sarkarda_nayzachi_thigh_d.webp",
+     "w": 5.05,
+     "h": 19.75,
+     "px": 2.56,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/sarkarda_nayzachi_shin.webp",
+     "w": 10.43,
+     "h": 19.78,
+     "px": 3.17,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/sarkarda_nayzachi_shin_d.webp",
+     "w": 10.43,
+     "h": 19.78,
+     "px": 3.17,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/sarkarda_nayzachi_weapon.webp",
+     "w": 106.65,
+     "h": 17.3,
+     "px": 32.0,
+     "py": 2.24
+    },
+    "foot": {
+     "f": "assets/parts/sarkarda_nayzachi_foot.webp",
+     "w": 10.43,
+     "h": 4.05,
+     "px": 3.56,
+     "py": 0.46
+    },
+    "foot_d": {
+     "f": "assets/parts/sarkarda_nayzachi_foot_d.webp",
+     "w": 10.43,
+     "h": 4.05,
+     "px": 3.56,
+     "py": 0.46
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     0.28,
+     -22.91
+    ],
+    "shoulder": [
+     -4.42,
+     -16.59
+    ],
+    "shoulderFar": [
+     -3.42,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -0.62,
+     11.26
+    ],
+    "hand": [
+     0.29,
+     14.43
+    ],
+    "knee": [
+     -0.3,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.39,
+     18.63
+    ],
+    "sole": 3.59,
+    "cape": [
+     -6.43,
+     -18.96
+    ]
+   }
+  },
+  "sarkarda_kamonchi": {
+   "h": 79,
+   "parts": {
+    "head": {
+     "f": "assets/parts/sarkarda_kamonchi_head.webp",
+     "w": 11.76,
+     "h": 19.22,
+     "px": 8.31,
+     "py": 18.02
+    },
+    "torso": {
+     "f": "assets/parts/sarkarda_kamonchi_torso.webp",
+     "w": 20.58,
+     "h": 39.5,
+     "px": 10.57,
+     "py": 23.7
+    },
+    "cape": {
+     "f": "assets/parts/sarkarda_kamonchi_cape.webp",
+     "w": 18.92,
+     "h": 36.34,
+     "px": 11.16,
+     "py": 1.09
+    },
+    "quiver": {
+     "f": "assets/parts/sarkarda_kamonchi_quiver.webp",
+     "w": 6.96,
+     "h": 26.86,
+     "px": 3.48,
+     "py": 6.72
+    },
+    "upper": {
+     "f": "assets/parts/sarkarda_kamonchi_upper.webp",
+     "w": 6.96,
+     "h": 15.01,
+     "px": 3.82,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/sarkarda_kamonchi_upper_d.webp",
+     "w": 6.96,
+     "h": 15.01,
+     "px": 3.82,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/sarkarda_kamonchi_fore.webp",
+     "w": 5.26,
+     "h": 16.59,
+     "px": 2.71,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/sarkarda_kamonchi_fore_d.webp",
+     "w": 5.26,
+     "h": 16.59,
+     "px": 2.71,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/sarkarda_kamonchi_thigh.webp",
+     "w": 5.24,
+     "h": 19.75,
+     "px": 2.5,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/sarkarda_kamonchi_thigh_d.webp",
+     "w": 5.24,
+     "h": 19.75,
+     "px": 2.5,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/sarkarda_kamonchi_shin.webp",
+     "w": 9.35,
+     "h": 19.61,
+     "px": 2.77,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/sarkarda_kamonchi_shin_d.webp",
+     "w": 9.35,
+     "h": 19.61,
+     "px": 2.77,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/sarkarda_kamonchi_weapon.webp",
+     "w": 26.75,
+     "h": 50.56,
+     "px": 23.5,
+     "py": 25.28
+    },
+    "arrow": {
+     "f": "assets/parts/sarkarda_kamonchi_arrow.webp",
+     "w": 33.97,
+     "h": 2.12,
+     "px": 1.7,
+     "py": 0.97
+    },
+    "foot": {
+     "f": "assets/parts/sarkarda_kamonchi_foot.webp",
+     "w": 9.35,
+     "h": 4.12,
+     "px": 3.12,
+     "py": 0.41
+    },
+    "foot_d": {
+     "f": "assets/parts/sarkarda_kamonchi_foot_d.webp",
+     "w": 9.35,
+     "h": 4.12,
+     "px": 3.12,
+     "py": 0.41
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     -1.0,
+     -22.91
+    ],
+    "shoulder": [
+     -4.19,
+     -16.59
+    ],
+    "shoulderFar": [
+     -3.16,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -0.67,
+     11.26
+    ],
+    "hand": [
+     0.16,
+     14.43
+    ],
+    "knee": [
+     -0.15,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.35,
+     18.51
+    ],
+    "sole": 3.71,
+    "quiver": [
+     -6.04,
+     -11.85
+    ],
+    "cape": [
+     -6.24,
+     -18.96
+    ]
+   }
+  },
+  "otliq": {
+   "h": 79,
+   "parts": {
+    "h_body": {
+     "f": "assets/parts/otliq_h_body.webp",
+     "w": 66.36,
+     "h": 39.26,
+     "px": 33.18,
+     "py": 19.63
+    },
+    "h_neck": {
+     "f": "assets/parts/otliq_h_neck.webp",
+     "w": 39.94,
+     "h": 41.14,
+     "px": 11.18,
+     "py": 36.21
+    },
+    "h_tail": {
+     "f": "assets/parts/otliq_h_tail.webp",
+     "w": 7.89,
+     "h": 27.87,
+     "px": 3.85,
+     "py": 0.84
+    },
+    "h_fu": {
+     "f": "assets/parts/otliq_h_fu.webp",
+     "w": 11.5,
+     "h": 21.9,
+     "px": 6.77,
+     "py": 0.66
+    },
+    "h_fu_d": {
+     "f": "assets/parts/otliq_h_fu_d.webp",
+     "w": 11.5,
+     "h": 21.9,
+     "px": 6.77,
+     "py": 0.66
+    },
+    "h_fl": {
+     "f": "assets/parts/otliq_h_fl.webp",
+     "w": 7.91,
+     "h": 24.55,
+     "px": 2.6,
+     "py": 0.98
+    },
+    "h_fl_d": {
+     "f": "assets/parts/otliq_h_fl_d.webp",
+     "w": 7.91,
+     "h": 24.55,
+     "px": 2.6,
+     "py": 0.98
+    },
+    "h_hu": {
+     "f": "assets/parts/otliq_h_hu.webp",
+     "w": 16.03,
+     "h": 24.55,
+     "px": 6.48,
+     "py": 0.74
+    },
+    "h_hu_d": {
+     "f": "assets/parts/otliq_h_hu_d.webp",
+     "w": 16.03,
+     "h": 24.55,
+     "px": 6.48,
+     "py": 0.74
+    },
+    "h_hl": {
+     "f": "assets/parts/otliq_h_hl.webp",
+     "w": 7.74,
+     "h": 28.53,
+     "px": 3.26,
+     "py": 1.14
+    },
+    "h_hl_d": {
+     "f": "assets/parts/otliq_h_hl_d.webp",
+     "w": 7.74,
+     "h": 28.53,
+     "px": 3.26,
+     "py": 1.14
+    },
+    "head": {
+     "f": "assets/parts/otliq_head.webp",
+     "w": 11.47,
+     "h": 18.76,
+     "px": 6.61,
+     "py": 13.91
+    },
+    "torso": {
+     "f": "assets/parts/otliq_torso.webp",
+     "w": 21.2,
+     "h": 39.5,
+     "px": 10.8,
+     "py": 23.7
+    },
+    "upper": {
+     "f": "assets/parts/otliq_upper.webp",
+     "w": 8.61,
+     "h": 15.01,
+     "px": 4.63,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/otliq_upper_d.webp",
+     "w": 8.61,
+     "h": 15.01,
+     "px": 4.63,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/otliq_fore.webp",
+     "w": 6.14,
+     "h": 16.59,
+     "px": 3.35,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/otliq_fore_d.webp",
+     "w": 6.14,
+     "h": 16.59,
+     "px": 3.35,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/otliq_thigh.webp",
+     "w": 5.55,
+     "h": 19.75,
+     "px": 2.78,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/otliq_thigh_d.webp",
+     "w": 5.55,
+     "h": 19.75,
+     "px": 2.78,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/otliq_shin.webp",
+     "w": 9.84,
+     "h": 20.24,
+     "px": 3.19,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/otliq_shin_d.webp",
+     "w": 9.84,
+     "h": 20.24,
+     "px": 3.19,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/otliq_weapon.webp",
+     "w": 122.45,
+     "h": 25.83,
+     "px": 33.06,
+     "py": 2.65
+    },
+    "shield": {
+     "f": "assets/parts/otliq_shield.webp",
+     "w": 5.98,
+     "h": 23.7,
+     "px": 2.99,
+     "py": 10.66
+    },
+    "foot": {
+     "f": "assets/parts/otliq_foot.webp",
+     "w": 9.84,
+     "h": 3.7,
+     "px": 3.8,
+     "py": 0.51
+    },
+    "foot_d": {
+     "f": "assets/parts/otliq_foot_d.webp",
+     "w": 9.84,
+     "h": 3.7,
+     "px": 3.8,
+     "py": 0.51
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     0.21,
+     -22.91
+    ],
+    "shoulder": [
+     -4.23,
+     -16.59
+    ],
+    "shoulderFar": [
+     -3.17,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -0.46,
+     11.26
+    ],
+    "hand": [
+     0.92,
+     14.43
+    ],
+    "knee": [
+     -0.3,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.6,
+     19.04
+    ],
+    "sole": 3.18,
+    "horse": {
+     "W": 66.36,
+     "body": [
+      0.0,
+      -50.78
+     ],
+     "fore": [
+      17.92,
+      7.07
+     ],
+     "hind": [
+      -18.58,
+      0.8
+     ],
+     "fuKnee": [
+      -0.89,
+      20.15
+     ],
+     "huHock": [
+      1.36,
+      22.59
+     ],
+     "neck": [
+      25.98,
+      -7.85
+     ],
+     "tail": [
+      -31.19,
+      -13.35
+     ],
+     "seat": [
+      2.34,
+      -11.16
+     ],
+     "banner": [
+      -8.28,
+      -11.94
+     ]
+    }
+   }
+  },
+  "sarkarda_otliq": {
+   "h": 79,
+   "parts": {
+    "h_body": {
+     "f": "assets/parts/sarkarda_otliq_h_body.webp",
+     "w": 66.36,
+     "h": 44.45,
+     "px": 33.18,
+     "py": 22.23
+    },
+    "h_neck": {
+     "f": "assets/parts/sarkarda_otliq_h_neck.webp",
+     "w": 35.74,
+     "h": 41.14,
+     "px": 10.71,
+     "py": 36.21
+    },
+    "h_tail": {
+     "f": "assets/parts/sarkarda_otliq_h_tail.webp",
+     "w": 8.13,
+     "h": 27.87,
+     "px": 4.47,
+     "py": 0.84
+    },
+    "h_fu": {
+     "f": "assets/parts/sarkarda_otliq_h_fu.webp",
+     "w": 12.68,
+     "h": 21.9,
+     "px": 5.85,
+     "py": 0.66
+    },
+    "h_fu_d": {
+     "f": "assets/parts/sarkarda_otliq_h_fu_d.webp",
+     "w": 12.68,
+     "h": 21.9,
+     "px": 5.85,
+     "py": 0.66
+    },
+    "h_fl": {
+     "f": "assets/parts/sarkarda_otliq_h_fl.webp",
+     "w": 7.77,
+     "h": 24.55,
+     "px": 2.84,
+     "py": 0.98
+    },
+    "h_fl_d": {
+     "f": "assets/parts/sarkarda_otliq_h_fl_d.webp",
+     "w": 7.77,
+     "h": 24.55,
+     "px": 2.84,
+     "py": 0.98
+    },
+    "h_hu": {
+     "f": "assets/parts/sarkarda_otliq_h_hu.webp",
+     "w": 10.99,
+     "h": 24.55,
+     "px": 4.61,
+     "py": 0.74
+    },
+    "h_hu_d": {
+     "f": "assets/parts/sarkarda_otliq_h_hu_d.webp",
+     "w": 10.99,
+     "h": 24.55,
+     "px": 4.61,
+     "py": 0.74
+    },
+    "h_hl": {
+     "f": "assets/parts/sarkarda_otliq_h_hl.webp",
+     "w": 9.7,
+     "h": 28.53,
+     "px": 3.91,
+     "py": 1.14
+    },
+    "h_hl_d": {
+     "f": "assets/parts/sarkarda_otliq_h_hl_d.webp",
+     "w": 9.7,
+     "h": 28.53,
+     "px": 3.91,
+     "py": 1.14
+    },
+    "head": {
+     "f": "assets/parts/sarkarda_otliq_head.webp",
+     "w": 10.91,
+     "h": 18.5,
+     "px": 6.47,
+     "py": 16.09
+    },
+    "torso": {
+     "f": "assets/parts/sarkarda_otliq_torso.webp",
+     "w": 30.57,
+     "h": 39.5,
+     "px": 15.46,
+     "py": 23.7
+    },
+    "upper": {
+     "f": "assets/parts/sarkarda_otliq_upper.webp",
+     "w": 6.98,
+     "h": 15.01,
+     "px": 3.44,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/sarkarda_otliq_upper_d.webp",
+     "w": 6.98,
+     "h": 15.01,
+     "px": 3.44,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/sarkarda_otliq_fore.webp",
+     "w": 4.96,
+     "h": 16.59,
+     "px": 2.61,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/sarkarda_otliq_fore_d.webp",
+     "w": 4.96,
+     "h": 16.59,
+     "px": 2.61,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/sarkarda_otliq_thigh.webp",
+     "w": 5.4,
+     "h": 19.75,
+     "px": 2.63,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/sarkarda_otliq_thigh_d.webp",
+     "w": 5.4,
+     "h": 19.75,
+     "px": 2.63,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/sarkarda_otliq_shin.webp",
+     "w": 10.33,
+     "h": 19.09,
+     "px": 3.21,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/sarkarda_otliq_shin_d.webp",
+     "w": 10.33,
+     "h": 19.09,
+     "px": 3.21,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/sarkarda_otliq_weapon.webp",
+     "w": 122.45,
+     "h": 41.37,
+     "px": 33.06,
+     "py": 3.34
+    },
+    "shield": {
+     "f": "assets/parts/sarkarda_otliq_shield.webp",
+     "w": 5.52,
+     "h": 23.7,
+     "px": 2.76,
+     "py": 10.66
+    },
+    "cape": {
+     "f": "assets/parts/sarkarda_otliq_cape.webp",
+     "w": 19.96,
+     "h": 36.34,
+     "px": 11.62,
+     "py": 1.09
+    },
+    "foot": {
+     "f": "assets/parts/sarkarda_otliq_foot.webp",
+     "w": 10.33,
+     "h": 4.88,
+     "px": 3.16,
+     "py": 0.53
+    },
+    "foot_d": {
+     "f": "assets/parts/sarkarda_otliq_foot_d.webp",
+     "w": 10.33,
+     "h": 4.88,
+     "px": 3.16,
+     "py": 0.53
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     -0.09,
+     -22.91
+    ],
+    "shoulder": [
+     -5.98,
+     -16.59
+    ],
+    "shoulderFar": [
+     -4.45,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -0.05,
+     11.26
+    ],
+    "hand": [
+     -0.09,
+     14.43
+    ],
+    "knee": [
+     -0.15,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     -0.04,
+     17.87
+    ],
+    "sole": 4.35,
+    "cape": [
+     -9.04,
+     -18.96
+    ],
+    "horse": {
+     "W": 66.36,
+     "body": [
+      0.0,
+      -51.72
+     ],
+     "fore": [
+      17.92,
+      8.0
+     ],
+     "hind": [
+      -18.58,
+      1.74
+     ],
+     "fuKnee": [
+      3.54,
+      20.15
+     ],
+     "huHock": [
+      0.07,
+      22.59
+     ],
+     "neck": [
+      26.33,
+      -8.89
+     ],
+     "tail": [
+      -29.91,
+      -15.11
+     ],
+     "seat": [
+      2.34,
+      -14.72
+     ],
+     "banner": [
+      -8.28,
+      -15.61
+     ]
+    }
+   }
+  },
+  "qomondon": {
+   "h": 79,
+   "parts": {
+    "h_body": {
+     "f": "assets/parts/qomondon_h_body.webp",
+     "w": 66.36,
+     "h": 44.38,
+     "px": 33.18,
+     "py": 22.19
+    },
+    "h_neck": {
+     "f": "assets/parts/qomondon_h_neck.webp",
+     "w": 33.08,
+     "h": 41.14,
+     "px": 10.41,
+     "py": 36.21
+    },
+    "h_tail": {
+     "f": "assets/parts/qomondon_h_tail.webp",
+     "w": 7.98,
+     "h": 27.87,
+     "px": 4.04,
+     "py": 0.84
+    },
+    "h_fu": {
+     "f": "assets/parts/qomondon_h_fu.webp",
+     "w": 10.56,
+     "h": 21.9,
+     "px": 4.65,
+     "py": 0.66
+    },
+    "h_fu_d": {
+     "f": "assets/parts/qomondon_h_fu_d.webp",
+     "w": 10.56,
+     "h": 21.9,
+     "px": 4.65,
+     "py": 0.66
+    },
+    "h_fl": {
+     "f": "assets/parts/qomondon_h_fl.webp",
+     "w": 8.25,
+     "h": 24.55,
+     "px": 2.79,
+     "py": 0.98
+    },
+    "h_fl_d": {
+     "f": "assets/parts/qomondon_h_fl_d.webp",
+     "w": 8.25,
+     "h": 24.55,
+     "px": 2.79,
+     "py": 0.98
+    },
+    "h_hu": {
+     "f": "assets/parts/qomondon_h_hu.webp",
+     "w": 13.39,
+     "h": 24.55,
+     "px": 6.27,
+     "py": 0.74
+    },
+    "h_hu_d": {
+     "f": "assets/parts/qomondon_h_hu_d.webp",
+     "w": 13.39,
+     "h": 24.55,
+     "px": 6.27,
+     "py": 0.74
+    },
+    "h_hl": {
+     "f": "assets/parts/qomondon_h_hl.webp",
+     "w": 10.53,
+     "h": 28.53,
+     "px": 3.67,
+     "py": 1.14
+    },
+    "h_hl_d": {
+     "f": "assets/parts/qomondon_h_hl_d.webp",
+     "w": 10.53,
+     "h": 28.53,
+     "px": 3.67,
+     "py": 1.14
+    },
+    "head": {
+     "f": "assets/parts/qomondon_head.webp",
+     "w": 11.28,
+     "h": 18.44,
+     "px": 6.44,
+     "py": 16.39
+    },
+    "torso": {
+     "f": "assets/parts/qomondon_torso.webp",
+     "w": 23.21,
+     "h": 39.5,
+     "px": 11.81,
+     "py": 23.7
+    },
+    "upper": {
+     "f": "assets/parts/qomondon_upper.webp",
+     "w": 6.73,
+     "h": 15.01,
+     "px": 3.45,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/qomondon_upper_d.webp",
+     "w": 6.73,
+     "h": 15.01,
+     "px": 3.45,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/qomondon_fore.webp",
+     "w": 4.6,
+     "h": 16.59,
+     "px": 2.3,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/qomondon_fore_d.webp",
+     "w": 4.6,
+     "h": 16.59,
+     "px": 2.3,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/qomondon_thigh.webp",
+     "w": 5.71,
+     "h": 19.75,
+     "px": 2.7,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/qomondon_thigh_d.webp",
+     "w": 5.71,
+     "h": 19.75,
+     "px": 2.7,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/qomondon_shin.webp",
+     "w": 10.12,
+     "h": 19.26,
+     "px": 2.94,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/qomondon_shin_d.webp",
+     "w": 10.12,
+     "h": 19.26,
+     "px": 2.94,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/qomondon_weapon.webp",
+     "w": 42.66,
+     "h": 6.82,
+     "px": 3.84,
+     "py": 3.19
+    },
+    "shield": {
+     "f": "assets/parts/qomondon_shield.webp",
+     "w": 6.64,
+     "h": 23.7,
+     "px": 3.32,
+     "py": 10.66
+    },
+    "cape": {
+     "f": "assets/parts/qomondon_cape.webp",
+     "w": 16.87,
+     "h": 36.34,
+     "px": 9.96,
+     "py": 1.09
+    },
+    "banner": {
+     "f": "assets/parts/qomondon_banner.webp",
+     "w": 114.55,
+     "h": 51.78,
+     "px": 2.29,
+     "py": 2.69
+    },
+    "foot": {
+     "f": "assets/parts/qomondon_foot.webp",
+     "w": 10.12,
+     "h": 4.64,
+     "px": 3.11,
+     "py": 0.49
+    },
+    "foot_d": {
+     "f": "assets/parts/qomondon_foot_d.webp",
+     "w": 10.12,
+     "h": 4.64,
+     "px": 3.11,
+     "py": 0.49
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     -1.43,
+     -22.91
+    ],
+    "shoulder": [
+     -4.61,
+     -16.59
+    ],
+    "shoulderFar": [
+     -3.45,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     0.0,
+     11.26
+    ],
+    "hand": [
+     0.33,
+     14.43
+    ],
+    "knee": [
+     0.42,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.17,
+     18.08
+    ],
+    "sole": 4.15,
+    "cape": [
+     -6.93,
+     -18.96
+    ],
+    "horse": {
+     "W": 66.36,
+     "body": [
+      0.0,
+      -51.71
+     ],
+     "fore": [
+      17.92,
+      7.99
+     ],
+     "hind": [
+      -18.58,
+      1.72
+     ],
+     "fuKnee": [
+      1.34,
+      20.15
+     ],
+     "huHock": [
+      2.75,
+      22.59
+     ],
+     "neck": [
+      26.12,
+      -8.88
+     ],
+     "tail": [
+      -30.34,
+      -15.09
+     ],
+     "seat": [
+      1.17,
+      -14.67
+     ],
+     "banner": [
+      -9.44,
+      -15.56
+     ]
+    }
+   }
+  },
+  "kochmanchi_sarkarda_qilichli": {
+   "h": 79,
+   "parts": {
+    "head": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_head.webp",
+     "w": 12.11,
+     "h": 23.7,
+     "px": 7.94,
+     "py": 16.27
+    },
+    "torso": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_torso.webp",
+     "w": 19.5,
+     "h": 39.5,
+     "px": 10.43,
+     "py": 23.7
+    },
+    "cape": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_cape.webp",
+     "w": 13.63,
+     "h": 36.34,
+     "px": 6.16,
+     "py": 1.09
+    },
+    "shield": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_shield.webp",
+     "w": 5.05,
+     "h": 24.63,
+     "px": 2.52,
+     "py": 11.09
+    },
+    "upper": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_upper.webp",
+     "w": 8.93,
+     "h": 15.01,
+     "px": 4.94,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_upper_d.webp",
+     "w": 8.93,
+     "h": 15.01,
+     "px": 4.94,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_fore.webp",
+     "w": 5.95,
+     "h": 16.59,
+     "px": 3.52,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_fore_d.webp",
+     "w": 5.95,
+     "h": 16.59,
+     "px": 3.52,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_thigh.webp",
+     "w": 4.85,
+     "h": 19.75,
+     "px": 2.27,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_thigh_d.webp",
+     "w": 4.85,
+     "h": 19.75,
+     "px": 2.27,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_shin.webp",
+     "w": 9.76,
+     "h": 20.0,
+     "px": 2.96,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_shin_d.webp",
+     "w": 9.76,
+     "h": 20.0,
+     "px": 2.96,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_weapon.webp",
+     "w": 39.5,
+     "h": 6.91,
+     "px": 2.96,
+     "py": 4.66
+    },
+    "foot": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_foot.webp",
+     "w": 9.76,
+     "h": 4.02,
+     "px": 3.66,
+     "py": 0.56
+    },
+    "foot_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_qilichli_foot_d.webp",
+     "w": 9.76,
+     "h": 4.02,
+     "px": 3.66,
+     "py": 0.56
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     -0.68,
+     -22.91
+    ],
+    "shoulder": [
+     -4.39,
+     -16.59
+    ],
+    "shoulderFar": [
+     -3.41,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -1.13,
+     11.26
+    ],
+    "hand": [
+     -0.09,
+     14.43
+    ],
+    "knee": [
+     0.03,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.7,
+     18.76
+    ],
+    "sole": 3.46,
+    "cape": [
+     -6.34,
+     -18.96
+    ]
+   }
+  },
+  "sovutli_sarkarda_qilichli": {
+   "h": 79,
+   "parts": {
+    "head": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_head.webp",
+     "w": 13.39,
+     "h": 21.21,
+     "px": 10.86,
+     "py": 20.28
+    },
+    "torso": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_torso.webp",
+     "w": 20.34,
+     "h": 39.5,
+     "px": 11.28,
+     "py": 23.7
+    },
+    "cape": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_cape.webp",
+     "w": 14.09,
+     "h": 36.34,
+     "px": 7.79,
+     "py": 1.09
+    },
+    "shield": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_shield.webp",
+     "w": 5.56,
+     "h": 25.44,
+     "px": 2.78,
+     "py": 11.45
+    },
+    "upper": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_upper.webp",
+     "w": 8.98,
+     "h": 15.01,
+     "px": 4.37,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_upper_d.webp",
+     "w": 8.98,
+     "h": 15.01,
+     "px": 4.37,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_fore.webp",
+     "w": 5.79,
+     "h": 16.59,
+     "px": 3.03,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_fore_d.webp",
+     "w": 5.79,
+     "h": 16.59,
+     "px": 3.03,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_thigh.webp",
+     "w": 4.64,
+     "h": 19.75,
+     "px": 2.17,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_thigh_d.webp",
+     "w": 4.64,
+     "h": 19.75,
+     "px": 2.17,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_shin.webp",
+     "w": 10.29,
+     "h": 19.36,
+     "px": 3.6,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_shin_d.webp",
+     "w": 10.29,
+     "h": 19.36,
+     "px": 3.6,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_weapon.webp",
+     "w": 42.66,
+     "h": 7.81,
+     "px": 3.84,
+     "py": 3.76
+    },
+    "foot": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_foot.webp",
+     "w": 10.29,
+     "h": 4.78,
+     "px": 3.7,
+     "py": 0.61
+    },
+    "foot_d": {
+     "f": "assets/parts/sovutli_sarkarda_qilichli_foot_d.webp",
+     "w": 10.29,
+     "h": 4.78,
+     "px": 3.7,
+     "py": 0.61
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     -0.85,
+     -22.91
+    ],
+    "shoulder": [
+     -4.97,
+     -16.59
+    ],
+    "shoulderFar": [
+     -3.96,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -0.47,
+     11.26
+    ],
+    "hand": [
+     0.57,
+     14.43
+    ],
+    "knee": [
+     0.15,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.1,
+     18.06
+    ],
+    "sole": 4.17,
+    "cape": [
+     -7.01,
+     -18.96
+    ]
+   }
+  },
+  "kochmanchi_sarkarda_nayzachi": {
+   "h": 79,
+   "parts": {
+    "head": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_head.webp",
+     "w": 12.07,
+     "h": 23.7,
+     "px": 6.55,
+     "py": 15.3
+    },
+    "torso": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_torso.webp",
+     "w": 18.56,
+     "h": 39.5,
+     "px": 10.09,
+     "py": 23.7
+    },
+    "cape": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_cape.webp",
+     "w": 13.74,
+     "h": 36.34,
+     "px": 6.3,
+     "py": 1.09
+    },
+    "shield": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_shield.webp",
+     "w": 5.58,
+     "h": 24.88,
+     "px": 2.79,
+     "py": 11.2
+    },
+    "upper": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_upper.webp",
+     "w": 8.46,
+     "h": 15.01,
+     "px": 4.82,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_upper_d.webp",
+     "w": 8.46,
+     "h": 15.01,
+     "px": 4.82,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_fore.webp",
+     "w": 5.77,
+     "h": 16.59,
+     "px": 3.46,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_fore_d.webp",
+     "w": 5.77,
+     "h": 16.59,
+     "px": 3.46,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_thigh.webp",
+     "w": 4.44,
+     "h": 19.75,
+     "px": 1.93,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_thigh_d.webp",
+     "w": 4.44,
+     "h": 19.75,
+     "px": 1.93,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_shin.webp",
+     "w": 9.37,
+     "h": 20.4,
+     "px": 2.83,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_shin_d.webp",
+     "w": 9.37,
+     "h": 20.4,
+     "px": 2.83,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_weapon.webp",
+     "w": 106.65,
+     "h": 35.38,
+     "px": 32.0,
+     "py": 3.14
+    },
+    "foot": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_foot.webp",
+     "w": 9.37,
+     "h": 3.52,
+     "px": 3.8,
+     "py": 0.5
+    },
+    "foot_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_nayzachi_foot_d.webp",
+     "w": 9.37,
+     "h": 3.52,
+     "px": 3.8,
+     "py": 0.5
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     0.38,
+     -22.91
+    ],
+    "shoulder": [
+     -4.34,
+     -16.59
+    ],
+    "shoulderFar": [
+     -3.41,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -0.77,
+     11.26
+    ],
+    "hand": [
+     -0.18,
+     14.43
+    ],
+    "knee": [
+     0.39,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.97,
+     19.21
+    ],
+    "sole": 3.01,
+    "cape": [
+     -6.2,
+     -18.96
+    ]
+   }
+  },
+  "sovutli_sarkarda_nayzachi": {
+   "h": 79,
+   "parts": {
+    "head": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_head.webp",
+     "w": 13.28,
+     "h": 20.75,
+     "px": 9.74,
+     "py": 19.07
+    },
+    "torso": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_torso.webp",
+     "w": 18.17,
+     "h": 39.5,
+     "px": 9.53,
+     "py": 23.7
+    },
+    "cape": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_cape.webp",
+     "w": 13.96,
+     "h": 36.34,
+     "px": 7.7,
+     "py": 1.09
+    },
+    "shield": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_shield.webp",
+     "w": 5.72,
+     "h": 26.47,
+     "px": 2.86,
+     "py": 11.91
+    },
+    "upper": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_upper.webp",
+     "w": 8.78,
+     "h": 15.01,
+     "px": 4.79,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_upper_d.webp",
+     "w": 8.78,
+     "h": 15.01,
+     "px": 4.79,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_fore.webp",
+     "w": 5.99,
+     "h": 16.59,
+     "px": 3.26,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_fore_d.webp",
+     "w": 5.99,
+     "h": 16.59,
+     "px": 3.26,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_thigh.webp",
+     "w": 4.9,
+     "h": 19.75,
+     "px": 2.27,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_thigh_d.webp",
+     "w": 4.9,
+     "h": 19.75,
+     "px": 2.27,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_shin.webp",
+     "w": 9.71,
+     "h": 19.27,
+     "px": 3.28,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_shin_d.webp",
+     "w": 9.71,
+     "h": 19.27,
+     "px": 3.28,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_weapon.webp",
+     "w": 106.65,
+     "h": 47.01,
+     "px": 31.99,
+     "py": 2.96
+    },
+    "foot": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_foot.webp",
+     "w": 9.71,
+     "h": 4.71,
+     "px": 3.33,
+     "py": 0.54
+    },
+    "foot_d": {
+     "f": "assets/parts/sovutli_sarkarda_nayzachi_foot_d.webp",
+     "w": 9.71,
+     "h": 4.71,
+     "px": 3.33,
+     "py": 0.54
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     0.63,
+     -22.91
+    ],
+    "shoulder": [
+     -3.89,
+     -16.59
+    ],
+    "shoulderFar": [
+     -2.99,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -1.1,
+     11.26
+    ],
+    "hand": [
+     0.43,
+     14.43
+    ],
+    "knee": [
+     0.61,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.04,
+     18.05
+    ],
+    "sole": 4.18,
+    "cape": [
+     -5.71,
+     -18.96
+    ]
+   }
+  },
+  "kochmanchi_sarkarda_kamonchi": {
+   "h": 79,
+   "parts": {
+    "head": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_head.webp",
+     "w": 11.25,
+     "h": 23.7,
+     "px": 6.05,
+     "py": 15.07
+    },
+    "torso": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_torso.webp",
+     "w": 17.54,
+     "h": 39.5,
+     "px": 9.0,
+     "py": 23.7
+    },
+    "cape": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_cape.webp",
+     "w": 13.7,
+     "h": 36.34,
+     "px": 6.91,
+     "py": 1.09
+    },
+    "quiver": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_quiver.webp",
+     "w": 6.22,
+     "h": 29.68,
+     "px": 3.11,
+     "py": 7.42
+    },
+    "upper": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_upper.webp",
+     "w": 7.1,
+     "h": 15.01,
+     "px": 3.75,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_upper_d.webp",
+     "w": 7.1,
+     "h": 15.01,
+     "px": 3.75,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_fore.webp",
+     "w": 7.52,
+     "h": 16.59,
+     "px": 3.24,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_fore_d.webp",
+     "w": 7.52,
+     "h": 16.59,
+     "px": 3.24,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_thigh.webp",
+     "w": 4.58,
+     "h": 19.75,
+     "px": 2.26,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_thigh_d.webp",
+     "w": 4.58,
+     "h": 19.75,
+     "px": 2.26,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_shin.webp",
+     "w": 9.79,
+     "h": 20.3,
+     "px": 2.79,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_shin_d.webp",
+     "w": 9.79,
+     "h": 20.3,
+     "px": 2.79,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_weapon.webp",
+     "w": 8.49,
+     "h": 50.56,
+     "px": 5.93,
+     "py": 25.28
+    },
+    "arrow": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_arrow.webp",
+     "w": 33.97,
+     "h": 2.83,
+     "px": 1.7,
+     "py": 1.29
+    },
+    "foot": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_foot.webp",
+     "w": 9.79,
+     "h": 3.62,
+     "px": 3.63,
+     "py": 0.5
+    },
+    "foot_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_kamonchi_foot_d.webp",
+     "w": 9.79,
+     "h": 3.62,
+     "px": 3.63,
+     "py": 0.5
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     -0.76,
+     -22.91
+    ],
+    "shoulder": [
+     -3.57,
+     -16.59
+    ],
+    "shoulderFar": [
+     -2.69,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     0.05,
+     11.26
+    ],
+    "hand": [
+     1.94,
+     14.43
+    ],
+    "knee": [
+     0.03,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.84,
+     19.11
+    ],
+    "sole": 3.11,
+    "quiver": [
+     -5.14,
+     -11.85
+    ],
+    "cape": [
+     -5.32,
+     -18.96
+    ]
+   }
+  },
+  "sovutli_sarkarda_kamonchi": {
+   "h": 79,
+   "parts": {
+    "head": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_head.webp",
+     "w": 8.41,
+     "h": 14.52,
+     "px": 5.97,
+     "py": 13.62
+    },
+    "torso": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_torso.webp",
+     "w": 16.47,
+     "h": 39.5,
+     "px": 8.58,
+     "py": 23.7
+    },
+    "cape": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_cape.webp",
+     "w": 12.64,
+     "h": 36.34,
+     "px": 6.53,
+     "py": 1.09
+    },
+    "quiver": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_quiver.webp",
+     "w": 5.77,
+     "h": 26.86,
+     "px": 2.89,
+     "py": 6.72
+    },
+    "upper": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_upper.webp",
+     "w": 5.05,
+     "h": 15.01,
+     "px": 2.62,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_upper_d.webp",
+     "w": 5.05,
+     "h": 15.01,
+     "px": 2.62,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_fore.webp",
+     "w": 4.06,
+     "h": 16.59,
+     "px": 1.75,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_fore_d.webp",
+     "w": 4.06,
+     "h": 16.59,
+     "px": 1.75,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_thigh.webp",
+     "w": 4.28,
+     "h": 19.75,
+     "px": 2.08,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_thigh_d.webp",
+     "w": 4.28,
+     "h": 19.75,
+     "px": 2.08,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_shin.webp",
+     "w": 9.32,
+     "h": 19.82,
+     "px": 2.25,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_shin_d.webp",
+     "w": 9.32,
+     "h": 19.82,
+     "px": 2.25,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_weapon.webp",
+     "w": 8.75,
+     "h": 50.56,
+     "px": 6.24,
+     "py": 25.28
+    },
+    "arrow": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_arrow.webp",
+     "w": 33.97,
+     "h": 2.8,
+     "px": 1.7,
+     "py": 1.4
+    },
+    "foot": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_foot.webp",
+     "w": 9.32,
+     "h": 4.0,
+     "px": 3.25,
+     "py": 0.45
+    },
+    "foot_d": {
+     "f": "assets/parts/sovutli_sarkarda_kamonchi_foot_d.webp",
+     "w": 9.32,
+     "h": 4.0,
+     "px": 3.25,
+     "py": 0.45
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     -1.27,
+     -22.91
+    ],
+    "shoulder": [
+     -3.47,
+     -16.59
+    ],
+    "shoulderFar": [
+     -2.65,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -0.03,
+     11.26
+    ],
+    "hand": [
+     1.02,
+     14.43
+    ],
+    "knee": [
+     0.24,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.99,
+     18.68
+    ],
+    "sole": 3.55,
+    "quiver": [
+     -4.96,
+     -11.85
+    ],
+    "cape": [
+     -5.12,
+     -18.96
+    ]
+   }
+  },
+  "kochmanchi_otliq": {
+   "h": 79,
+   "parts": {
+    "h_body": {
+     "f": "assets/parts/kochmanchi_otliq_h_body.webp",
+     "w": 66.36,
+     "h": 40.76,
+     "px": 33.18,
+     "py": 20.38
+    },
+    "h_neck": {
+     "f": "assets/parts/kochmanchi_otliq_h_neck.webp",
+     "w": 35.91,
+     "h": 41.14,
+     "px": 11.28,
+     "py": 36.21
+    },
+    "h_tail": {
+     "f": "assets/parts/kochmanchi_otliq_h_tail.webp",
+     "w": 8.47,
+     "h": 27.87,
+     "px": 3.98,
+     "py": 0.84
+    },
+    "h_fu": {
+     "f": "assets/parts/kochmanchi_otliq_h_fu.webp",
+     "w": 8.17,
+     "h": 21.9,
+     "px": 4.08,
+     "py": 0.66
+    },
+    "h_fu_d": {
+     "f": "assets/parts/kochmanchi_otliq_h_fu_d.webp",
+     "w": 8.17,
+     "h": 21.9,
+     "px": 4.08,
+     "py": 0.66
+    },
+    "h_fl": {
+     "f": "assets/parts/kochmanchi_otliq_h_fl.webp",
+     "w": 8.22,
+     "h": 24.55,
+     "px": 2.82,
+     "py": 0.98
+    },
+    "h_fl_d": {
+     "f": "assets/parts/kochmanchi_otliq_h_fl_d.webp",
+     "w": 8.22,
+     "h": 24.55,
+     "px": 2.82,
+     "py": 0.98
+    },
+    "h_hu": {
+     "f": "assets/parts/kochmanchi_otliq_h_hu.webp",
+     "w": 15.92,
+     "h": 24.55,
+     "px": 6.86,
+     "py": 0.74
+    },
+    "h_hu_d": {
+     "f": "assets/parts/kochmanchi_otliq_h_hu_d.webp",
+     "w": 15.92,
+     "h": 24.55,
+     "px": 6.86,
+     "py": 0.74
+    },
+    "h_hl": {
+     "f": "assets/parts/kochmanchi_otliq_h_hl.webp",
+     "w": 8.49,
+     "h": 28.53,
+     "px": 3.92,
+     "py": 1.14
+    },
+    "h_hl_d": {
+     "f": "assets/parts/kochmanchi_otliq_h_hl_d.webp",
+     "w": 8.49,
+     "h": 28.53,
+     "px": 3.92,
+     "py": 1.14
+    },
+    "head": {
+     "f": "assets/parts/kochmanchi_otliq_head.webp",
+     "w": 12.32,
+     "h": 21.28,
+     "px": 6.79,
+     "py": 13.25
+    },
+    "torso": {
+     "f": "assets/parts/kochmanchi_otliq_torso.webp",
+     "w": 22.49,
+     "h": 39.5,
+     "px": 11.95,
+     "py": 23.7
+    },
+    "upper": {
+     "f": "assets/parts/kochmanchi_otliq_upper.webp",
+     "w": 7.36,
+     "h": 15.01,
+     "px": 4.03,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/kochmanchi_otliq_upper_d.webp",
+     "w": 7.36,
+     "h": 15.01,
+     "px": 4.03,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/kochmanchi_otliq_fore.webp",
+     "w": 6.13,
+     "h": 16.59,
+     "px": 3.15,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/kochmanchi_otliq_fore_d.webp",
+     "w": 6.13,
+     "h": 16.59,
+     "px": 3.15,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/kochmanchi_otliq_thigh.webp",
+     "w": 5.33,
+     "h": 19.75,
+     "px": 2.63,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/kochmanchi_otliq_thigh_d.webp",
+     "w": 5.33,
+     "h": 19.75,
+     "px": 2.63,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/kochmanchi_otliq_shin.webp",
+     "w": 10.78,
+     "h": 20.06,
+     "px": 3.29,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/kochmanchi_otliq_shin_d.webp",
+     "w": 10.78,
+     "h": 20.06,
+     "px": 3.29,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/kochmanchi_otliq_weapon.webp",
+     "w": 122.45,
+     "h": 35.35,
+     "px": 33.06,
+     "py": 3.03
+    },
+    "shield": {
+     "f": "assets/parts/kochmanchi_otliq_shield.webp",
+     "w": 5.43,
+     "h": 24.27,
+     "px": 2.72,
+     "py": 10.92
+    },
+    "foot": {
+     "f": "assets/parts/kochmanchi_otliq_foot.webp",
+     "w": 10.78,
+     "h": 3.87,
+     "px": 4.06,
+     "py": 0.51
+    },
+    "foot_d": {
+     "f": "assets/parts/kochmanchi_otliq_foot_d.webp",
+     "w": 10.78,
+     "h": 3.87,
+     "px": 4.06,
+     "py": 0.51
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     0.21,
+     -22.91
+    ],
+    "shoulder": [
+     -4.98,
+     -16.59
+    ],
+    "shoulderFar": [
+     -3.85,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -0.35,
+     11.26
+    ],
+    "hand": [
+     0.53,
+     14.43
+    ],
+    "knee": [
+     -0.34,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.77,
+     18.86
+    ],
+    "sole": 3.36,
+    "horse": {
+     "W": 66.36,
+     "body": [
+      0.0,
+      -51.05
+     ],
+     "fore": [
+      17.92,
+      7.34
+     ],
+     "hind": [
+      -18.58,
+      1.07
+     ],
+     "fuKnee": [
+      -0.56,
+      20.15
+     ],
+     "huHock": [
+      1.78,
+      22.59
+     ],
+     "neck": [
+      26.35,
+      -8.15
+     ],
+     "tail": [
+      -31.19,
+      -13.86
+     ],
+     "seat": [
+      2.66,
+      -13.25
+     ],
+     "banner": [
+      -7.96,
+      -14.07
+     ]
+    }
+   }
+  },
+  "sovutli_otliq": {
+   "h": 79,
+   "parts": {
+    "h_body": {
+     "f": "assets/parts/sovutli_otliq_h_body.webp",
+     "w": 66.36,
+     "h": 41.14,
+     "px": 33.18,
+     "py": 20.57
+    },
+    "h_neck": {
+     "f": "assets/parts/sovutli_otliq_h_neck.webp",
+     "w": 36.2,
+     "h": 41.14,
+     "px": 10.91,
+     "py": 36.21
+    },
+    "h_tail": {
+     "f": "assets/parts/sovutli_otliq_h_tail.webp",
+     "w": 8.68,
+     "h": 27.87,
+     "px": 4.15,
+     "py": 0.84
+    },
+    "h_fu": {
+     "f": "assets/parts/sovutli_otliq_h_fu.webp",
+     "w": 8.25,
+     "h": 21.9,
+     "px": 3.96,
+     "py": 0.66
+    },
+    "h_fu_d": {
+     "f": "assets/parts/sovutli_otliq_h_fu_d.webp",
+     "w": 8.25,
+     "h": 21.9,
+     "px": 3.96,
+     "py": 0.66
+    },
+    "h_fl": {
+     "f": "assets/parts/sovutli_otliq_h_fl.webp",
+     "w": 7.72,
+     "h": 24.55,
+     "px": 2.67,
+     "py": 0.98
+    },
+    "h_fl_d": {
+     "f": "assets/parts/sovutli_otliq_h_fl_d.webp",
+     "w": 7.72,
+     "h": 24.55,
+     "px": 2.67,
+     "py": 0.98
+    },
+    "h_hu": {
+     "f": "assets/parts/sovutli_otliq_h_hu.webp",
+     "w": 15.33,
+     "h": 24.55,
+     "px": 6.34,
+     "py": 0.74
+    },
+    "h_hu_d": {
+     "f": "assets/parts/sovutli_otliq_h_hu_d.webp",
+     "w": 15.33,
+     "h": 24.55,
+     "px": 6.34,
+     "py": 0.74
+    },
+    "h_hl": {
+     "f": "assets/parts/sovutli_otliq_h_hl.webp",
+     "w": 8.74,
+     "h": 28.53,
+     "px": 3.32,
+     "py": 1.14
+    },
+    "h_hl_d": {
+     "f": "assets/parts/sovutli_otliq_h_hl_d.webp",
+     "w": 8.74,
+     "h": 28.53,
+     "px": 3.32,
+     "py": 1.14
+    },
+    "head": {
+     "f": "assets/parts/sovutli_otliq_head.webp",
+     "w": 13.19,
+     "h": 19.92,
+     "px": 9.59,
+     "py": 18.88
+    },
+    "torso": {
+     "f": "assets/parts/sovutli_otliq_torso.webp",
+     "w": 21.85,
+     "h": 39.5,
+     "px": 11.67,
+     "py": 23.7
+    },
+    "upper": {
+     "f": "assets/parts/sovutli_otliq_upper.webp",
+     "w": 10.12,
+     "h": 15.01,
+     "px": 4.62,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/sovutli_otliq_upper_d.webp",
+     "w": 10.12,
+     "h": 15.01,
+     "px": 4.62,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/sovutli_otliq_fore.webp",
+     "w": 5.46,
+     "h": 16.59,
+     "px": 2.8,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/sovutli_otliq_fore_d.webp",
+     "w": 5.46,
+     "h": 16.59,
+     "px": 2.8,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/sovutli_otliq_thigh.webp",
+     "w": 5.9,
+     "h": 19.75,
+     "px": 3.02,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/sovutli_otliq_thigh_d.webp",
+     "w": 5.9,
+     "h": 19.75,
+     "px": 3.02,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/sovutli_otliq_shin.webp",
+     "w": 11.37,
+     "h": 19.62,
+     "px": 3.21,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/sovutli_otliq_shin_d.webp",
+     "w": 11.37,
+     "h": 19.62,
+     "px": 3.21,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/sovutli_otliq_weapon.webp",
+     "w": 122.45,
+     "h": 36.2,
+     "px": 33.06,
+     "py": 3.4
+    },
+    "shield": {
+     "f": "assets/parts/sovutli_otliq_shield.webp",
+     "w": 5.55,
+     "h": 23.7,
+     "px": 2.77,
+     "py": 10.66
+    },
+    "foot": {
+     "f": "assets/parts/sovutli_otliq_foot.webp",
+     "w": 11.37,
+     "h": 4.25,
+     "px": 4.3,
+     "py": 0.48
+    },
+    "foot_d": {
+     "f": "assets/parts/sovutli_otliq_foot_d.webp",
+     "w": 11.37,
+     "h": 4.25,
+     "px": 4.3,
+     "py": 0.48
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     0.07,
+     -22.91
+    ],
+    "shoulder": [
+     -4.9,
+     -16.59
+    ],
+    "shoulderFar": [
+     -3.81,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     0.16,
+     11.26
+    ],
+    "hand": [
+     0.61,
+     14.43
+    ],
+    "knee": [
+     0.26,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     1.1,
+     18.45
+    ],
+    "sole": 3.77,
+    "horse": {
+     "W": 66.36,
+     "body": [
+      0.0,
+      -51.12
+     ],
+     "fore": [
+      17.92,
+      7.41
+     ],
+     "hind": [
+      -18.58,
+      1.14
+     ],
+     "fuKnee": [
+      -0.46,
+      20.15
+     ],
+     "huHock": [
+      0.82,
+      22.59
+     ],
+     "neck": [
+      26.35,
+      -8.23
+     ],
+     "tail": [
+      -31.0,
+      -13.99
+     ],
+     "seat": [
+      2.65,
+      -12.89
+     ],
+     "banner": [
+      -7.96,
+      -13.71
+     ]
+    }
+   }
+  },
+  "kochmanchi_sarkarda_otliq": {
+   "h": 79,
+   "parts": {
+    "h_body": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_body.webp",
+     "w": 66.36,
+     "h": 37.29,
+     "px": 33.18,
+     "py": 18.65
+    },
+    "h_neck": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_neck.webp",
+     "w": 39.18,
+     "h": 41.14,
+     "px": 12.2,
+     "py": 36.21
+    },
+    "h_tail": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_tail.webp",
+     "w": 8.03,
+     "h": 27.87,
+     "px": 4.02,
+     "py": 0.84
+    },
+    "h_fu": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_fu.webp",
+     "w": 8.96,
+     "h": 21.9,
+     "px": 3.88,
+     "py": 0.66
+    },
+    "h_fu_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_fu_d.webp",
+     "w": 8.96,
+     "h": 21.9,
+     "px": 3.88,
+     "py": 0.66
+    },
+    "h_fl": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_fl.webp",
+     "w": 8.38,
+     "h": 24.55,
+     "px": 3.67,
+     "py": 0.98
+    },
+    "h_fl_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_fl_d.webp",
+     "w": 8.38,
+     "h": 24.55,
+     "px": 3.67,
+     "py": 0.98
+    },
+    "h_hu": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_hu.webp",
+     "w": 9.72,
+     "h": 24.55,
+     "px": 4.92,
+     "py": 0.74
+    },
+    "h_hu_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_hu_d.webp",
+     "w": 9.72,
+     "h": 24.55,
+     "px": 4.92,
+     "py": 0.74
+    },
+    "h_hl": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_hl.webp",
+     "w": 9.3,
+     "h": 28.53,
+     "px": 4.14,
+     "py": 1.14
+    },
+    "h_hl_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_h_hl_d.webp",
+     "w": 9.3,
+     "h": 28.53,
+     "px": 4.14,
+     "py": 1.14
+    },
+    "head": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_head.webp",
+     "w": 13.08,
+     "h": 22.42,
+     "px": 7.02,
+     "py": 16.0
+    },
+    "torso": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_torso.webp",
+     "w": 24.75,
+     "h": 39.5,
+     "px": 13.14,
+     "py": 23.7
+    },
+    "upper": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_upper.webp",
+     "w": 6.82,
+     "h": 15.01,
+     "px": 3.56,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_upper_d.webp",
+     "w": 6.82,
+     "h": 15.01,
+     "px": 3.56,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_fore.webp",
+     "w": 5.0,
+     "h": 16.59,
+     "px": 2.5,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_fore_d.webp",
+     "w": 5.0,
+     "h": 16.59,
+     "px": 2.5,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_thigh.webp",
+     "w": 5.9,
+     "h": 19.75,
+     "px": 3.23,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_thigh_d.webp",
+     "w": 5.9,
+     "h": 19.75,
+     "px": 3.23,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_shin.webp",
+     "w": 11.95,
+     "h": 20.14,
+     "px": 3.86,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_shin_d.webp",
+     "w": 11.95,
+     "h": 20.14,
+     "px": 3.86,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_weapon.webp",
+     "w": 122.45,
+     "h": 22.38,
+     "px": 33.06,
+     "py": 1.79
+    },
+    "shield": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_shield.webp",
+     "w": 5.82,
+     "h": 23.7,
+     "px": 2.91,
+     "py": 10.66
+    },
+    "cape": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_cape.webp",
+     "w": 17.26,
+     "h": 36.34,
+     "px": 11.13,
+     "py": 1.09
+    },
+    "foot": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_foot.webp",
+     "w": 11.95,
+     "h": 4.03,
+     "px": 4.76,
+     "py": 0.63
+    },
+    "foot_d": {
+     "f": "assets/parts/kochmanchi_sarkarda_otliq_foot_d.webp",
+     "w": 11.95,
+     "h": 4.03,
+     "px": 4.76,
+     "py": 0.63
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     0.54,
+     -22.91
+    ],
+    "shoulder": [
+     -5.47,
+     -16.59
+    ],
+    "shoulderFar": [
+     -4.23,
+     -16.2
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     -0.1,
+     11.26
+    ],
+    "hand": [
+     0.33,
+     14.43
+    ],
+    "knee": [
+     -0.32,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     0.9,
+     18.82
+    ],
+    "sole": 3.4,
+    "cape": [
+     -7.94,
+     -18.96
+    ],
+    "horse": {
+     "W": 66.36,
+     "body": [
+      0.0,
+      -50.43
+     ],
+     "fore": [
+      17.92,
+      6.71
+     ],
+     "hind": [
+      -18.58,
+      0.45
+     ],
+     "fuKnee": [
+      -0.3,
+      20.15
+     ],
+     "huHock": [
+      0.0,
+      22.59
+     ],
+     "neck": [
+      26.18,
+      -7.46
+     ],
+     "tail": [
+      -30.82,
+      -12.68
+     ],
+     "seat": [
+      1.74,
+      -11.31
+     ],
+     "banner": [
+      -8.88,
+      -12.06
+     ]
+    }
+   }
+  },
+  "sovutli_sarkarda_otliq": {
+   "h": 79,
+   "parts": {
+    "h_body": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_body.webp",
+     "w": 66.36,
+     "h": 39.44,
+     "px": 33.18,
+     "py": 19.72
+    },
+    "h_neck": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_neck.webp",
+     "w": 37.0,
+     "h": 41.14,
+     "px": 11.95,
+     "py": 36.21
+    },
+    "h_tail": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_tail.webp",
+     "w": 9.02,
+     "h": 27.87,
+     "px": 4.35,
+     "py": 0.84
+    },
+    "h_fu": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_fu.webp",
+     "w": 12.41,
+     "h": 21.9,
+     "px": 7.01,
+     "py": 0.66
+    },
+    "h_fu_d": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_fu_d.webp",
+     "w": 12.41,
+     "h": 21.9,
+     "px": 7.01,
+     "py": 0.66
+    },
+    "h_fl": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_fl.webp",
+     "w": 9.89,
+     "h": 24.55,
+     "px": 3.85,
+     "py": 0.98
+    },
+    "h_fl_d": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_fl_d.webp",
+     "w": 9.89,
+     "h": 24.55,
+     "px": 3.85,
+     "py": 0.98
+    },
+    "h_hu": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_hu.webp",
+     "w": 18.13,
+     "h": 24.55,
+     "px": 9.18,
+     "py": 0.74
+    },
+    "h_hu_d": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_hu_d.webp",
+     "w": 18.13,
+     "h": 24.55,
+     "px": 9.18,
+     "py": 0.74
+    },
+    "h_hl": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_hl.webp",
+     "w": 12.65,
+     "h": 28.53,
+     "px": 4.43,
+     "py": 1.14
+    },
+    "h_hl_d": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_h_hl_d.webp",
+     "w": 12.65,
+     "h": 28.53,
+     "px": 4.43,
+     "py": 1.14
+    },
+    "head": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_head.webp",
+     "w": 12.22,
+     "h": 18.56,
+     "px": 8.43,
+     "py": 17.43
+    },
+    "torso": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_torso.webp",
+     "w": 25.99,
+     "h": 39.5,
+     "px": 13.77,
+     "py": 23.7
+    },
+    "upper": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_upper.webp",
+     "w": 5.42,
+     "h": 15.01,
+     "px": 2.78,
+     "py": 3.0
+    },
+    "upper_d": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_upper_d.webp",
+     "w": 5.42,
+     "h": 15.01,
+     "px": 2.78,
+     "py": 3.0
+    },
+    "fore": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_fore.webp",
+     "w": 5.86,
+     "h": 16.59,
+     "px": 2.8,
+     "py": 0.5
+    },
+    "fore_d": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_fore_d.webp",
+     "w": 5.86,
+     "h": 16.59,
+     "px": 2.8,
+     "py": 0.5
+    },
+    "thigh": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_thigh.webp",
+     "w": 5.59,
+     "h": 19.75,
+     "px": 2.83,
+     "py": 0.59
+    },
+    "thigh_d": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_thigh_d.webp",
+     "w": 5.59,
+     "h": 19.75,
+     "px": 2.83,
+     "py": 0.59
+    },
+    "shin": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_shin.webp",
+     "w": 11.65,
+     "h": 19.39,
+     "px": 3.31,
+     "py": 0.69
+    },
+    "shin_d": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_shin_d.webp",
+     "w": 11.65,
+     "h": 19.39,
+     "px": 3.31,
+     "py": 0.69
+    },
+    "weapon": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_weapon.webp",
+     "w": 122.45,
+     "h": 32.27,
+     "px": 33.06,
+     "py": 2.48
+    },
+    "shield": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_shield.webp",
+     "w": 5.82,
+     "h": 23.7,
+     "px": 2.91,
+     "py": 10.66
+    },
+    "cape": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_cape.webp",
+     "w": 16.76,
+     "h": 36.34,
+     "px": 11.6,
+     "py": 1.09
+    },
+    "foot": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_foot.webp",
+     "w": 11.65,
+     "h": 4.7,
+     "px": 4.34,
+     "py": 0.59
+    },
+    "foot_d": {
+     "f": "assets/parts/sovutli_sarkarda_otliq_foot_d.webp",
+     "w": 11.65,
+     "h": 4.7,
+     "px": 4.34,
+     "py": 0.59
+    }
+   },
+   "joints": {
+    "hip": [
+     0.0,
+     -40.39
+    ],
+    "neck": [
+     -1.62,
+     -22.91
+    ],
+    "shoulder": [
+     -6.23,
+     -15.01
+    ],
+    "shoulderFar": [
+     -4.93,
+     -14.62
+    ],
+    "hipBack": [
+     -1.2,
+     0.0
+    ],
+    "hipFront": [
+     1.2,
+     0.0
+    ],
+    "elbow": [
+     0.59,
+     11.26
+    ],
+    "hand": [
+     0.59,
+     14.43
+    ],
+    "knee": [
+     -0.17,
+     18.17
+    ],
+    "foot": 22.22,
+    "ankle": [
+     1.04,
+     18.11
+    ],
+    "sole": 4.11,
+    "cape": [
+     -8.83,
+     -17.38
+    ],
+    "horse": {
+     "W": 66.36,
+     "body": [
+      0.0,
+      -50.82
+     ],
+     "fore": [
+      17.92,
+      7.1
+     ],
+     "hind": [
+      -18.58,
+      0.83
+     ],
+     "fuKnee": [
+      -0.36,
+      20.15
+     ],
+     "huHock": [
+      -0.23,
+      22.59
+     ],
+     "neck": [
+      26.16,
+      -7.89
+     ],
+     "tail": [
+      -31.0,
+      -13.41
+     ],
+     "seat": [
+      1.9,
+      -11.9
+     ],
+     "banner": [
+      -8.72,
+      -12.69
+     ]
+    }
    }
   }
  }

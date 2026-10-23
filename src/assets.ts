@@ -1,6 +1,6 @@
 // Rasmlarni yuklash. O'lchamlar va tayanch nuqtalar tools/prepare_assets.py yasagan assets.json dan.
 import meta from './assets.json';
-import type { FactionId, Kind, Terrain } from './config.ts';
+import type { FactionId, Kind, Rank, Terrain } from './config.ts';
 
 export interface Frame {
   img: HTMLImageElement | HTMLCanvasElement;
@@ -133,6 +133,21 @@ export interface RigJoints {
   foot: number; // tizzadan oyoq tagigacha
   ankle?: [number, number]; // tovon: tizzadan
   sole?: number; // tovondan oyoq tagigacha
+  horse?: HorseJoints; // otliq: ot skeleti (chavandoz shu odam skeleti)
+}
+
+// Ot: hamma nuqta tana markaziga nisbatan; body — tana markazi yerdan (x, y), W — yag'rin balandligi
+export interface HorseJoints {
+  W: number;
+  body: [number, number];
+  fore: [number, number]; // old va orqa oyoq tayanchi
+  hind: [number, number];
+  fuKnee: [number, number]; // old oyoq: yuqori bo'lakdan tizzagacha
+  huHock: [number, number]; // orqa oyoq: yuqori bo'lakdan to'pig'igacha
+  neck: [number, number];
+  tail: [number, number];
+  seat: [number, number]; // egar o'rindig'i (chavandozning son bo'g'ini)
+  banner: [number, number]; // egar orqasi (qo'mondon bayrog'i)
 }
 
 export interface Rig {
@@ -155,9 +170,11 @@ for (const [k, m] of Object.entries(rigMeta)) {
   RIG_DATA[k] = { h: m.h, parts, joints: m.joints };
 }
 
-// Bizning jangchilar skeleti
-export const RIGS: Partial<Record<Kind, Rig>> = {};
-for (const k of ['amir', 'qilichli', 'nayzachi', 'kamonchi', 'konchi'] as Kind[]) if (RIG_DATA[k]) RIGS[k] = RIG_DATA[k];
+// Bizning jangchilar skeleti: sarkarda va qo'mondonning o'z rasmi bor
+export function ownRig(kind: Kind, rank: Rank): Rig | undefined {
+  const name = rank === 'qomondon' ? 'qomondon' : rank === 'sarkarda' ? `sarkarda_${kind}` : kind;
+  return RIG_DATA[name] ?? RIG_DATA[kind];
+}
 
 export const MAP_IMAGE = meta.map.f;
 
@@ -266,11 +283,12 @@ export function enemyFrames(kind: Kind, hex: string, faction: FactionId): Frame[
 // Dushman skeleti: xalqning o'z bo'laklari bo'lsa (ko'k mato jang rangiga bo'yaladi), bo'lmasa bizning skelet bo'yalgan
 const tintedRigs = new Map<string, Rig>();
 
-export function enemyRig(kind: Kind, hex: string, faction: FactionId): Rig | undefined {
-  const own = RIG_DATA[`${faction}_${kind}`];
-  const src = own ?? RIGS[kind];
+export function enemyRig(kind: Kind, rank: Rank, hex: string, faction: FactionId): Rig | undefined {
+  // dushmanda qo'mondon yo'q: bo'lsa ham sarkarda rasmi
+  const own = (rank !== 'oddiy' ? RIG_DATA[`${faction}_sarkarda_${kind}`] : undefined) ?? RIG_DATA[`${faction}_${kind}`];
+  const src = own ?? ownRig(kind, rank);
   if (!src) return undefined;
-  const k = `${faction}:${kind}:${hex}`;
+  const k = `${faction}:${kind}:${rank}:${hex}`;
   let out = tintedRigs.get(k);
   if (!out) {
     const parts: Record<string, RigPart> = {};

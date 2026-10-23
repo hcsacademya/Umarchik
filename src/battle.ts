@@ -269,7 +269,7 @@ export class Battle {
         castleMax: enemyCastleHp(level),
         castleDmg: CASTLE_DMG * eMult,
         castleCd: 1,
-        items: itemsFor(stepFor(1, level)),
+        items: itemsFor(stepFor(1, level)).filter((id) => id !== 'qomondon'), // dushmanda qo'mondon yo'q (Amir kabi)
         popCap: popCap(stepFor(1, level)),
         queue: [],
         queueT: 0,

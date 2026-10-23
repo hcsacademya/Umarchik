@@ -548,8 +548,324 @@ export function drawRig(ctx: Ctx, rig: Rig, p: Pose, kind: Kind): void {
   ctx.restore();
 }
 
+// ---------------- Otliq: ot va chavandoz ----------------
+// Ot o'z skeleti bilan: tana, bo'yin-bosh, dum, to'rt oyoq (har biri ikki bo'g'inli). Yurishda to'rt zarbli
+// qadam, yugurishda chopish (galop: orqa oyoqlar ketma-ket, keyin old oyoqlar, tana chayqaladi). Chavandoz
+// egarda o'tiradi: oyoqlari bukilgan, qo'lida nayza (yoki qilich), uzoq qo'lida qalqon.
+
+interface HPose {
+  x: number;
+  y: number;
+  pitch: number; // tana old-orqaga qiyshayishi
+  nfU: number; // yaqin old oyoq: yuqori bo'lak, pastki bo'lak
+  nfL: number;
+  ffU: number; // uzoq old oyoq
+  ffL: number;
+  nhU: number; // yaqin orqa oyoq
+  nhL: number;
+  fhU: number; // uzoq orqa oyoq
+  fhL: number;
+  neck: number;
+  tail: number;
+  rider: Pose;
+  rx: number; // chavandoz siljishi va burilishi (yiqilganda egardan tushadi)
+  ry: number;
+  rrot: number;
+  lance: number; // nayza burchagi (dunyoda): 0 — oldinga gorizontal, manfiy — uchi yuqoriga
+  banner: number;
+}
+
+// Chavandoz egarda: son oldinga, boldir pastga; nayzali — nayza qo'ltiqda, qilichli — qilich ko'tarilgan
+const RIDER_LANCE: Pose = {
+  ...BASE, body: 0.05, hipN: -1.25, kneeN: 1.4, hipF: -1.2, kneeF: 1.35,
+  sh: 0.3, el: -1.45, shF: -0.4, elF: -1.1, cape: 0.15, aim: 0,
+};
+const RIDER_SWORD: Pose = { ...RIDER_LANCE, sh: -0.35, el: -1.25, bl: -0.85 };
+
+// Nayza bilan: A — oldinga sanchish, B — tepadan pastga, C — pastdan yuqoriga (aim — nayza burchagiga qo'shimcha)
+const LANCE: Track[] = [
+  [
+    [0.3, { sh: 0.75, el: -1.6, body: -0.1, aim: -0.06 }],
+    [HIT_M, { sh: -0.7, el: -0.4, body: 0.22, aim: 0.07 }],
+    [0.62, { sh: -0.45, el: -0.7, body: 0.15, aim: 0.05 }],
+  ],
+  [
+    [0.3, { sh: -2.6, el: -0.5, body: -0.12, aim: -0.85 }],
+    [HIT_M, { sh: -1.6, el: -0.25, body: 0.2, aim: 0.5 }],
+    [0.62, { sh: -1.2, el: -0.5, body: 0.12, aim: 0.3 }],
+  ],
+  [
+    [0.3, { sh: 0.55, el: -1.25, body: -0.06, aim: -0.3 }],
+    [HIT_M, { sh: -0.6, el: -0.55, body: 0.18, aim: 0.3 }],
+    [0.62, { sh: -0.35, el: -0.85, body: 0.1, aim: 0.15 }],
+  ],
+];
+// Qilich bilan (qo'mondon): tepadan chopish, ko'ndalang, orqadan yuqoriga
+const RIDER_SWORD_T: Track[] = [
+  [
+    [0.3, { sh: -3.0, el: -0.6, bl: -0.4, body: -0.14 }],
+    [HIT_M, { sh: -1.0, el: -0.2, bl: 0.4, body: 0.24 }],
+    [0.62, { sh: -0.7, el: -0.4, bl: 0.1, body: 0.15 }],
+  ],
+  [
+    [0.3, { sh: 0.8, el: -0.5, bl: 0.2, body: -0.1 }],
+    [HIT_M, { sh: -1.4, el: -0.1, bl: 0.1, body: 0.22 }],
+    [0.62, { sh: -1.1, el: -0.3, bl: 0, body: 0.12 }],
+  ],
+  [
+    [0.3, { sh: -2.2, el: -1.6, bl: -0.8, body: -0.1 }],
+    [HIT_M, { sh: -0.6, el: -0.2, bl: 0.6, body: 0.26 }],
+    [0.62, { sh: -0.5, el: -0.5, bl: 0.2, body: 0.15 }],
+  ],
+];
+
+const HIND_REST = 0.15; // orqa oyoq tinch turganda: soni orqaga qiya, pastki qismi tik
+
+// Bitta oyoqning qadam sikli (p — 0..1): yerda turganda orqaga suriladi, havoda bukilib oldinga o'tadi
+function gaitLeg(p: number, stance: number, A: number, B: number, fore: boolean): [number, number] {
+  p = ((p % 1) + 1) % 1;
+  if (p < stance) {
+    const t = p / stance;
+    return [-A + 2 * A * t, fore ? 0.05 * Math.sin(Math.PI * t) : -0.1 * Math.sin(Math.PI * t)];
+  }
+  const t = (p - stance) / (1 - stance);
+  const lift = Math.sin(Math.PI * t);
+  return [A - 2 * A * smooth(t), fore ? B * lift : -B * lift];
+}
+
+function horseBase(rider: Pose): HPose {
+  return {
+    x: 0, y: 0, pitch: 0,
+    nfU: -0.02, nfL: 0, ffU: 0.04, ffL: 0,
+    nhU: 0, nhL: 0, fhU: -0.04, fhL: 0,
+    neck: 0, tail: 0.28, rider, rx: 0, ry: 0, rrot: 0, lance: -0.12, banner: 0,
+  };
+}
+
+function horseTarget(u: Unit, rig: Rig): HPose {
+  const W = rig.joints.horse!.W;
+  const lance = (rig.parts.weapon?.w ?? 0) > rig.h;
+  const rb = lance ? RIDER_LANCE : RIDER_SWORD;
+  const hp = horseBase({ ...rb });
+  const t = u.animT + u.id * 0.37;
+  const sw = swingPhase(u);
+  if (u.dead) {
+    // ot cho'kadi: tizzalari bukiladi, tana yerga tushadi; chavandoz orqaga yiqilib egardan tushadi
+    const k = smooth(Math.min(1, u.deadT / 0.7));
+    const kr = smooth(Math.min(1, u.deadT / 0.55));
+    hp.nfU = hp.ffU = -0.5 * k;
+    hp.nfL = hp.ffL = 2.0 * k;
+    hp.nhU = hp.fhU = 0.7 * k;
+    hp.nhL = hp.fhL = -1.7 * k;
+    hp.y = 0.42 * W * k;
+    hp.pitch = 0.1 * k;
+    hp.neck = 0.6 * k;
+    hp.tail = 0.1;
+    hp.rrot = -1.45 * kr;
+    hp.rx = -16 * kr;
+    hp.ry = 14 * kr;
+    hp.rider = { ...rb, sh: -2.2 * kr + rb.sh * (1 - kr), el: 0.2, shF: -1.8 * kr + rb.shF * (1 - kr), elF: 0.1, kneeN: rb.kneeN * (1 - 0.6 * kr), head: 0.3 * kr };
+    hp.lance = -0.12 - 0.6 * kr;
+    return hp;
+  }
+  if (u.anim === 'run' || u.anim === 'walk' || u.anim === 'carry') {
+    const run = u.anim === 'run';
+    const c = u.walkDist / ((run ? 1.7 : 1.3) * W);
+    if (run) {
+      [hp.fhU, hp.fhL] = gaitLeg(c, 0.42, 0.55, 1.1, false);
+      [hp.nhU, hp.nhL] = gaitLeg(c - 0.1, 0.42, 0.55, 1.1, false);
+      [hp.ffU, hp.ffL] = gaitLeg(c - 0.36, 0.42, 0.6, 1.6, true);
+      [hp.nfU, hp.nfL] = gaitLeg(c - 0.48, 0.42, 0.6, 1.6, true);
+      const ph = Math.PI * 2 * c;
+      hp.pitch = 0.07 * Math.sin(ph - 0.3);
+      hp.y = -2.2 * Math.max(0, Math.sin(ph + 1.9));
+      hp.neck = 0.16 + 0.1 * Math.sin(ph + 0.6);
+      hp.tail = 0.95 + 0.12 * Math.sin(ph * 2);
+      hp.rider.body = 0.2 + 0.04 * Math.sin(ph);
+      hp.ry = 1.2 * Math.max(0, Math.sin(ph + 2.4));
+      hp.rider.cape = 0.9 + 0.08 * Math.sin(ph * 2);
+      hp.lance = lance ? -0.03 : hp.lance;
+      hp.banner = -0.12;
+    } else {
+      [hp.nhU, hp.nhL] = gaitLeg(c, 0.62, 0.3, 0.8, false);
+      [hp.nfU, hp.nfL] = gaitLeg(c - 0.25, 0.62, 0.3, 1.0, true);
+      [hp.fhU, hp.fhL] = gaitLeg(c - 0.5, 0.62, 0.3, 0.8, false);
+      [hp.ffU, hp.ffL] = gaitLeg(c - 0.75, 0.62, 0.3, 1.0, true);
+      hp.neck = 0.05 + 0.05 * Math.sin(Math.PI * 4 * c);
+      hp.tail = 0.4 + 0.08 * Math.sin(Math.PI * 2 * c);
+      hp.y = -0.5 * Math.abs(Math.sin(Math.PI * 4 * c));
+      hp.rider.cape = 0.35;
+    }
+  } else {
+    // turibdi: nafas, dum silkinishi; vaqti-vaqti bilan boshini silkitadi yoki oldingi oyog'i bilan yer tepadi
+    const b = Math.sin(t * 1.7);
+    hp.y = 0.3 * b;
+    hp.neck = 0.03 * b;
+    hp.tail = 0.28 + 0.1 * Math.sin(t * 2.3 + u.id);
+    const per = 3.5 + 3 * rnd(u, 5);
+    const gt = u.animT + u.id * 1.37;
+    const i = Math.floor(gt / per);
+    const lt = gt - i * per;
+    if (lt < 1.4 && hash(u.id * 3.1 + i * 1.7) > 0.3) {
+      const e = Math.sin((Math.PI * lt) / 1.4) ** 2;
+      if (hash(u.id * 5.3 + i * 2.9) < 0.5) hp.neck += -0.2 * e + 0.12 * Math.sin(lt * 14) * e; // bosh silkitish
+      else {
+        hp.nfU = -0.35 * e;
+        hp.nfL = 1.1 * e; // yer tepadi
+      }
+    }
+  }
+  if (sw >= 0) {
+    const tracks = lance ? LANCE : RIDER_SWORD_T;
+    hp.rider = track(hp.rider, tracks[Math.min(tracks.length - 1, u.swingVar)], sw, HIT_M);
+    // ot ham zarbaga qo'shiladi: oldinga intiladi
+    const k = Math.sin(Math.PI * Math.min(1, sw / 0.6));
+    hp.pitch += 0.04 * k;
+    hp.x += 2 * k;
+  }
+  if (u.guard && sw < 0 && lance) hp.lance = -0.04;
+  if (u.hitT > 0) {
+    const k = Math.min(1, u.hitT / 0.22);
+    hp.pitch -= 0.05 * k;
+    hp.neck -= 0.15 * k;
+    hp.rider = { ...hp.rider, body: hp.rider.body - 0.2 * k, head: hp.rider.head - 0.15 * k };
+  }
+  return hp;
+}
+
+const lastH = new WeakMap<Unit, { p: HPose; t: number }>();
+
+function mixH(a: HPose, b: HPose, k: number): HPose {
+  const out = { ...b, rider: mix(a.rider, b.rider, k) };
+  for (const key of Object.keys(b) as (keyof HPose)[]) {
+    if (key === 'rider') continue;
+    (out[key] as number) = (a[key] as number) + ((b[key] as number) - (a[key] as number)) * k;
+  }
+  return out;
+}
+
+function horsePose(u: Unit, rig: Rig): HPose {
+  const target = horseTarget(u, rig);
+  const now = performance.now() / 1000;
+  const prev = lastH.get(u);
+  let p = target;
+  if (prev && !u.dead) {
+    const dt = Math.min(0.1, now - prev.t);
+    p = mixH(prev.p, target, 1 - Math.exp(-(swingPhase(u) >= 0 ? 30 : 12) * dt));
+  }
+  lastH.set(u, { p, t: now });
+  return p;
+}
+
+function horseLeg(ctx: Ctx, rig: Rig, at: [number, number], up: number, low: number, fore: boolean, far: boolean): void {
+  const P = rig.parts;
+  const H = rig.joints.horse!;
+  const d = far ? '_d' : '';
+  ctx.save();
+  ctx.translate(at[0], at[1]);
+  ctx.rotate(up + (fore ? 0 : HIND_REST));
+  part(ctx, P[(fore ? 'h_fu' : 'h_hu') + d]);
+  const j = fore ? H.fuKnee : H.huHock;
+  ctx.translate(j[0], j[1]);
+  ctx.rotate(low - (fore ? 0 : HIND_REST));
+  part(ctx, P[(fore ? 'h_fl' : 'h_hl') + d]);
+  ctx.restore();
+}
+
+function drawHorse(ctx: Ctx, rig: Rig, hp: HPose): void {
+  const H = rig.joints.horse!;
+  const J = rig.joints;
+  const P = rig.parts;
+  const r = hp.rider;
+  const lance = (P.weapon?.w ?? 0) > rig.h;
+  ctx.save();
+  ctx.translate(H.body[0] + hp.x, H.body[1] + hp.y);
+  ctx.rotate(hp.pitch);
+  const seat = (): void => {
+    ctx.translate(H.seat[0] + hp.rx, H.seat[1] + hp.ry);
+    ctx.rotate(hp.rrot);
+  };
+  // chavandozning uzoq oyog'i — ot orqasida
+  ctx.save();
+  seat();
+  ctx.rotate(r.body);
+  leg(ctx, rig, J.hipFront, r.hipF, r.kneeF, true);
+  ctx.restore();
+  horseLeg(ctx, rig, H.hind, hp.fhU, hp.fhL, false, true);
+  horseLeg(ctx, rig, H.fore, hp.ffU, hp.ffL, true, true);
+  ctx.save();
+  ctx.translate(H.tail[0], H.tail[1]);
+  ctx.rotate(hp.tail);
+  part(ctx, P.h_tail);
+  ctx.restore();
+  ctx.save();
+  ctx.translate(H.neck[0], H.neck[1]);
+  ctx.rotate(hp.neck);
+  part(ctx, P.h_neck);
+  ctx.restore();
+  horseLeg(ctx, rig, H.hind, hp.nhU, hp.nhL, false, false);
+  horseLeg(ctx, rig, H.fore, hp.nfU, hp.nfL, true, false);
+  // qo'mondon bayrog'i: egar orqasiga mahkamlangan, mato orqaga hilpiraydi
+  if (P.banner) {
+    ctx.save();
+    ctx.translate(H.banner[0], H.banner[1] + 10);
+    ctx.rotate(hp.banner + 0.04 * Math.sin(performance.now() / 260));
+    ctx.transform(0, -1, -1, 0, 0, 0);
+    part(ctx, P.banner);
+    ctx.restore();
+  }
+  part(ctx, P.h_body);
+
+  // chavandoz
+  ctx.save();
+  seat();
+  ctx.rotate(r.body);
+  const farHand = arm(ctx, rig, J.shoulderFar, r.shF, r.elF, true);
+  if (P.shield) upright(ctx, farHand, P.shield, 0.08);
+  if (P.cape && J.cape) {
+    ctx.save();
+    ctx.translate(J.cape[0], J.cape[1]);
+    ctx.rotate(r.cape);
+    part(ctx, P.cape);
+    ctx.restore();
+  }
+  part(ctx, P.torso);
+  leg(ctx, rig, J.hipBack, r.hipN, r.kneeN, false);
+  ctx.save();
+  ctx.translate(J.neck[0], J.neck[1]);
+  ctx.rotate(r.head);
+  part(ctx, P.head);
+  ctx.restore();
+  const acc = hp.pitch + hp.rrot + r.body + r.sh + r.el;
+  arm(ctx, rig, J.shoulder, r.sh, r.el, false, (c) => {
+    if (lance) {
+      c.rotate(hp.lance + r.aim - acc); // nayza dunyoga nisbatan berilgan burchakda
+      part(c, P.weapon);
+    } else {
+      c.rotate(r.bl);
+      held(c, P.weapon);
+    }
+  });
+  ctx.restore();
+  ctx.restore();
+}
+
+// Askarni skeleti bilan chizadi (odam yoki otliq). (0, 0) — oyoqlar orasi, yer sathida; jangchi o'ngga qaragan
+export function drawUnitRig(ctx: Ctx, rig: Rig, u: Unit): void {
+  if (rig.joints.horse) drawHorse(ctx, rig, horsePose(u, rig));
+  else drawRig(ctx, rig, rigPose(u), u.kind);
+}
+
+// Boshining tepasi yerdan (jon chizig'i va Amir belgisi uchun)
+export function rigTop(rig: Rig): number {
+  const H = rig.joints.horse;
+  if (!H) return rig.h;
+  return -(H.body[1] + H.seat[1]) + rig.h * 0.49;
+}
+
 // Chizish chegarasi (o'yin birligida, oyoq ostidan): yiqilgan gavda, ko'tarilgan nayza ham sig'adi
 export function rigBounds(rig: Rig): { l: number; r: number; t: number; b: number } {
   const h = rig.h;
+  if (rig.joints.horse) return { l: -(h * 1.5), r: h * 2.1, t: -(h * 2.9), b: 16 };
   return { l: -(h + 40), r: h + 70, t: -(h * 1.9), b: 14 };
 }
